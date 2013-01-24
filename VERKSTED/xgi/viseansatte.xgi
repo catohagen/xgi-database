@@ -1,0 +1,56 @@
+/*  */
+
+
+call open(log,"web-root:verksted/datafiler_ansatte/ansatt.dat",'R')
+id=readln(log)
+call close(log)
+
+htmlstart:
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Hagen Snekkerverksted Database</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<LINK REL="StyleSheet" HREF="/verksted/style/style.css" TYPE="text/css">
+</head>
+<body  bgcolor="FFFFFF">'
+
+
+do until id=0
+call open(dat,"web-root:verksted/datafiler_ansatte/ansatt."id,'R')
+com=readln(dat)
+navn=readln(dat)
+addresse=readln(dat)
+sted=readln(dat)
+konto=readln(dat)
+lonn=readln(dat)
+call close(dat)
+
+call viseinfo
+id=id-1
+end
+call end
+
+viseinfo:
+say '<table border="0" cellpadding="3" cellspacing="3">
+	<td >'
+say 'id nummer : 'id
+say '<br>'
+say 'navn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 'navn
+say '<br>'
+say 'addresse&nbsp;&nbsp;: 'addresse
+say '<br>'
+say 'sted&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 'sted
+say '<br>'
+say '<br>'
+say '<center><a href="visansatt.xgi?id='id'">Forandre data for 'navn'</a></center>'
+say '<br>'
+say '<br>
+	</td></tr>
+	</table>'
+
+return
+
+end:
+say '</body></html>'
+exit

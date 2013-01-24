@@ -1,0 +1,7 @@
+/* */
+
+call random(,, time(s))
+luckynumber=random(1, 8)
+say '<img src="error'luckynumber'.JPG" border="0"><br>'
+say 'Service unavailable until 25-08-2004.'
+exit

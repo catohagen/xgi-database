@@ -1,0 +1,131 @@
+/* */ 
+
+
+idag=date(s)
+aar=substr(idag,1,4)
+month=substr(idag,5,2)
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF">'
+
+tilbake=6
+
+new_month:
+if tilbake=0 then exit
+
+month=RIGHT('00'||month,2)
+if month=00 then do
+month=12
+aar=aar-1
+end
+
+maanedfile="web-root:verksted/datafiler_jobber/"aar"-"month".dat"
+
+if ~exists(maanedfile) then do
+month=month-1
+call new_month
+end
+
+call open(dat,maanedfile,'R')
+garbage=readln(dat)
+jobber=readln(dat)
+call close(dat)
+
+if jobber=1 then jobber=2
+
+jobber=jobber-1
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."jobber""
+
+say '<font size=-1><A href="xgi/vise_jobblinker_sort.xgi?sort=4&month='month'&aar='aar'">[ 'aar'/'month' ('jobber')]</A>&nbsp;'
+
+month=month-1
+tilbake=tilbake-1
+call new_month
+
+
+
+
+final_graph:
+
+gt_totalantall=t_totalantall/40
+gt_totruter=t_totruter/40
+gt_sumhengsler=t_sumhengsler/40
+gt_sumklips=t_sumklips
+gt_males=t_males/40
+gt_impreg=t_impreg/40
+gt_meterprofil=t_meterprofil/40
+gt_meterramme=t_meterramme/40
+gt_meter_midt=t_meter_midt/40
+gt_skruer=t_skruer/40
+gt_vekt=t_vekt/40
+gt_totcm3=t_totcm3
+
+
+say '<br><table border="1" bgcolor="#efefef" cellspacing="1" width="1000">
+<tr>
+<td>Totalt for 'aar'</td>
+<td>Statistikk</td>
+</tr>
+<td width="140">
+sprosser<br>
+ruter<br>
+hengsler<br>
+klips<br>
+ant.malte<br>
+ant.impegnerte<br>
+meter profil<br>
+meter ramme<br>
+meter midtstokk<br>
+skruer<br>
+vekt i kg.<br>
+kubikk<br></td>
+<td>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_totalantall'">' t_totalantall
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_totruter'">' t_totruter
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_sumhengsler'">' t_sumhengsler
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_sumklips'">' t_sumklips
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_males'">' t_males
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_impreg'">' t_impreg
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_meterprofil'">' t_meterprofil
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_meterramme'">' t_meterramme
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_meter_midt'">' t_meter_midt
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_skruer'">' t_skruer
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_vekt'">' t_vekt
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_totcm3'">' t_totcm3
+say '</td></table>'
+
+/*
+profil_pris=(t_meterprofil / 5) * 13
+ramme_pris=(t_meterramme / 4) * 13
+midt_pris=(t_meter_midt/2)*13
+skrue_pris=70/1000
+pris_skruer=t_skruer*skrue_pris
+henglse_pris=t_sumhengsler*2.1
+
+say profil_pris'<br>'
+say ramme_pris'<br>'
+say midt_pris'<br>'
+say pris_skruer'<br>'
+say henglse_pris'<br>'
+
+say profil_pris+ramme_pris+midt_pris+pris_skruer+henglse_pris
+*/
+exit

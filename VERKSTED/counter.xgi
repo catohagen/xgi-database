@@ -1,0 +1,67 @@
+/* Graphical counter in arexx
+   by Cato Hagen 
+   catohagen@amiga.org
+   http://arexx.kicks-ass.net
+
+*/
+
+idag=date()
+
+dato=word(idag,1)
+moned=word(idag,2)
+aar=word(idag,3)
+
+if moned="Jan" then moned="01"
+if moned="Feb" then moned="02"
+if moned="Mar" then moned="03"
+if moned="Apr" then moned="04"
+if moned="May" then moned="05"
+if moned="Jun" then moned="06"
+if moned="Jul" then moned="07"
+if moned="Aug" then moned="08"
+if moned="Sep" then moned="09"
+if moned="Oct" then moned="10"
+if moned="Nov" then moned="11"
+if moned="Dec" then moned="12"
+
+
+
+logfile="web-root:verksted/datafiler_jobber/"aar"-"moned".dat"
+
+if exists(logfile) then do
+call open(log,logfile,'R')
+blank=readln(log)
+jobber=readln(log)
+call close(log)
+tot=jobber-1
+jobber=jobber-1
+
+jobber=right('000'||jobber,3)
+
+n0=substr(jobber,1,1)
+n1=substr(jobber,2,1)
+n2=substr(jobber,3,1)
+
+opptatt=0
+jobbid=tot
+do until jobbid=0
+makefile="web-root:verksted/datafiler_jobber/"aar"/"moned"/make_id."jobbid""
+if exists(makefile) then do
+opptatt=opptatt+1
+end
+jobbid=jobbid-1
+end
+
+ledig=tot-opptatt
+ledig=right('000'||ledig,3)
+say "<b>Nye jobber for måned "moned"</b>"
+say "<br>"
+f0=substr(ledig,1,1)
+f1=substr(ledig,2,1)
+f2=substr(ledig,3,1)
+say '<img src="img/'f0'.gif" alt="img"><img src="img/'f1'.gif" alt="img"><img src="img/'f2'.gif" alt="img"> av '
+say '<img src="img/'n0'.gif" alt="img"><img src="img/'n1'.gif" alt="img"><img src="img/'n2'.gif" alt="img">'
+end
+
+
+exit

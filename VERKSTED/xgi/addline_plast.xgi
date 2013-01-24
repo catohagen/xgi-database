@@ -1,0 +1,45 @@
+/*  */
+
+PARSE ARG 'antall=' antall '&bredde=' bredde '&hoyde=' hoyde '&malenr=' malenr '&type=' type '&inndel_b=' inndel_b '&inndel_h=' inndel_h '&merknad=' merknad '&profil=' profil
+
+bredde=translate(bredde, '.',',')
+hoyde=translate(hoyde, '.',',')
+
+ramme=0
+if malenr=5 then ramme=1
+if malenr=2 then ramme=1
+
+
+merknad="'"merknad"'"
+
+if antall=""|bredde=""|hoyde=""|malenr=""|type=""|inndel_b=""|inndel_h="" then do
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="0;url=../jobb_inntast.html" />'
+say '</body></html>'
+exit
+
+exit
+end
+
+if ~show( 'P',"SKJEMA" ) then do
+say 'fant ikke skjema server'
+address command('run >nil: rx web-root:verksted/xgi/skjema-engine.xgi')
+   end
+
+address 'SKJEMA'
+open_data
+add_data antall bredde hoyde malenr type inndel_b inndel_h ramme profil merknad
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="0;url=../jobb_inntast_plast.html" />'
+say '</body></html>'
+exit
+
+exit

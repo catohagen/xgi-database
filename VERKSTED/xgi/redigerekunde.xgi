@@ -1,0 +1,25 @@
+/*  */
+
+PARSE ARG 'navn=' navn '&addresse=' addresse '&sted=' sted '&type=' type '&id=' id
+
+datafil=right('000'||id,3)
+
+call open(dat,"web-root:verksted/datafiler_kunder/"datafil,'W')
+call writeln(dat,navn)
+call writeln(dat,addresse)
+call writeln(dat,sted)
+call writeln(dat,type)
+call close(dat)
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+say 'vent...'
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="1;url=visekunder.xgi" />'
+say '</body></html>'
+
+exit

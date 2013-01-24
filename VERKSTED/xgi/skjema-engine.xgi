@@ -1,0 +1,62 @@
+/*  */
+
+OPort = openport('SKJEMA')
+
+
+/* Loop until a Cmd changes the value of [Status] */
+
+  do forever
+      call waitpkt('SKJEMA')
+      Packet = getpkt('SKJEMA')
+      if packet = '0000 0000'x then Iterate
+         Cmd = getarg(Packet)
+         interpret 'call' cmd
+         call reply(Packet,0)
+   end
+
+
+EXIT
+
+
+OPEN_DATA:
+if ~exists('ram:jobb.skjema.tmp') then do
+	call open(temp,"ram:jobb.skjema.tmp",'W')
+	call writeln(temp,'#start av sprosse data')
+	call close(temp)
+end
+return
+
+ADD_DATA:
+parse arg antall bredde hoyde malenr type inndel_b inndel_h ramme merknad profil flukte deling
+
+call open(data,"ram:jobb.skjema.tmp",'A')
+call writeln(data,antall)
+call writeln(data,bredde)
+call writeln(data,hoyde)
+call writeln(data,malenr)
+call writeln(data,type)
+call writeln(data,inndel_b)
+call writeln(data,inndel_h)
+call writeln(data,ramme)
+call writeln(data,profil' 'flukte' 'deling)
+call writeln(data,merknad)
+call writeln(data,'#')
+call close(data)
+return
+
+ADD_KUNDE:
+parse arg kundenr
+call open(kundeid,"ram:jobb.kunde.tmp",'W')
+call writeln(kundeid,kundenr)
+call close(kundeid)
+return
+
+CLOSE_DATA:
+call close(data)
+return
+
+
+SHUTDOWN:
+exit
+return
+

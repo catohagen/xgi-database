@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>nykappliste</title>
+             
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+  <body>
+     <br>
+<br>
+<table cellpadding="2" cellspacing="2" border="0" width="90%"
+ align="center">
+  <tbody>
+    <tr>
+      <td valign="top" align="center" width="50" bgcolor="#efefef">antall<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#efefef">bredde<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#efefef">h&oslash;yde<br>
+      </td>
+      <td valign="top" align="center" width="50" bgcolor="#efefef">m&aring;lenr<br>
+      </td>
+      <td valign="top" align="center" width="50" bgcolor="#efefef">type<br>
+      </td>
+      <td valign="top" align="center" width="50" bgcolor="#efefef">rut_br<br>
+      </td>
+      <td valign="top" align="center" width="50" bgcolor="#efefef">rut_h&oslash;<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#efefef">merknad<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+ 
+<form method="get" action="xgi/addline.xgi">
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input size="5"
+ name="antall" hiddenn="888" id="antall" tabindex="4"> 
+<input size="37" name="bredde" hiddenn="888" id="bredde"> &nbsp; &nbsp;<input
+ size="34" name="hoyde" hiddenn="888" id="hoyde"> <input
+ size="5" name="malenr" hiddenn="888" id="malenr"> &nbsp;<input
+ size="4" name="type" hiddenn="888" id="type">  &nbsp;<input
+ size="5" name="inndel_b" hiddenn="888" id="inndel_b">  <input
+ size="5" name="inndel_h" hiddenn="888" id="inndel_h"> &nbsp;  <input
+ size="40" name="merknad" hiddenn="888" id="merknad">
+<br>
+<br>
+<center>
+<input type="radio" name="profil" value="0" checked="checked">sekskant
+<input type="radio" name="profil" value="1">kitt
+<input type="checkbox" name="flukte" value="1">flukte
+<input type="checkbox" name="deling" value="1">deling <br>
+<br>
+<center><input type="submit" value="legg til" class="button"><br>
+<br><br>
+</form>
+
+<form method="get" action="vis_jobb.html"> <input type="submit" value="Ferdig med inntasting" class="button"></form>
+
+<center>
+<?rx execute('web-root:VERKSTED/xgi/visjobb.xgi') ?>
+</center>
+</body>
+</html>
+

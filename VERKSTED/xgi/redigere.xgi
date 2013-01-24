@@ -1,0 +1,172 @@
+/*  */
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id '&linje=' linje
+
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Hagen Snekkerverksted Database</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body  bgcolor="ffffff" text="000000" link="#FF9900" alink="#FF9900" vlink="#cc6600"></html>'
+
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+
+if aar='tilbud' then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."month""
+end
+
+say jobbfile
+
+/* lese fra database */
+opendatabase:
+i=1
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merknad=readln(dat)
+if merknad="" then merknad=" "
+levuke=readln(dat)
+garbage=readln(dat)
+
+do until i=linje+1
+
+antall=readln(dat)
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+type=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil_dat=readln(dat)
+profil=word(profil_dat,1)
+flukt=word(profil_dat,2)
+deling=word(profil_dat,3)
+if flukt="" then flukt=0
+if deling="" then deling=0
+
+/*
+if flukt=1 then flukt="X"
+if flukt=0 then flukt=""
+*/
+merk=readln(dat)
+if merk="" then merk=""
+garbage=readln(dat)
+seks=" "
+kitt=" "
+ if garbage="#andre ting" then do
+ hengsler=readln(dat)
+ klips=readln(dat)
+ maling=readln(dat)
+ impreg=readln(dat)
+ end
+i=i+1
+end
+
+call close(dat)
+
+startheader:
+say '<table cellpadding="2" cellspacing="2" border="0" width="80%" align="center">  <tbody>    <tr>      <td bgcolor="dddddd" valign="top" width="70"><font face="Helvetica, Arial, sans-serif">Merk<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Antall<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Bredde<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">H&oslash;yde<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Type<br>      </font></td>
+      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">M&aring;lenr<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Inndeling<br>      </font></td>
+      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Inndeling<br>      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Sekskant<br>      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Kittprofil<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Flukte 1=ja/0=nei<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">deling 1=ja/0=nei<br>      </font></td>    </tr>'
+
+say '<form method="get" action="lagre_rediger.xgi"><br>
+    <tr>
+      <td " valign="top" width="52" align="center"><font face="Helvetica, Arial, sans-serif">
+<input size="30" name="merk" id="merk" value="'merk'">
+      </font></td>
+      <td " valign="top" width="35" align="center"><font face="Helvetica, Arial, sans-serif">
+<input size="5" name="antall" id="antall" value="'antall'">      </font></td>
+      <td " valign="top" width="65" align="center"><font face="Helvetica, Arial, sans-serif">
+<input size="26" name="bredde" id="bredde" value="'bredde'">
+      </font></td>
+      <td " valign="top" width="65" align="center"><font face="Helvetica, Arial, sans-serif">
+<input size="22" name="hoyde" id="hoyde" value="'hoyde'">
+      </font></td>
+      <td " valign="top" width="30" align="center"><font face="Helvetica, Arial, sans-serif">
+<input size="4" name="type" id="type" value="'type'">
+      </font></td>
+      <td " valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">
+<input size="5" name="malenr" id="malenr" value="'malenr'">
+      </font></td>
+      <td " valign="top" width="60" align="center"><font face="Helvetica, Arial, sans-serif">
+<input size="5" name="inndel_b" id="inndel_b" value="'inndel_b'">
+      </font></td> 
+      <td " valign="top" width="60" align="center"><font face="Helvetica, Arial, sans-serif">
+<input size="5" name="inndel_h" id="inndel_h" value="'inndel_h'">
+      </font></td> '
+
+if profil=0 then do
+say '
+      <td " valign="top" width="45" align="center"><font face="Helvetica, Arial, sans-serif">
+<input type="radio" name="profil" value="0" checked="checked">
+      </font></td>      <td " valign="top" width="57" align="center"><font face="Helvetica, Arial, sans-serif">
+<input type="radio" name="profil" value="1">
+      </font></td>'
+end
+
+if profil=1 then do
+say '
+      <td " valign="top" width="45" align="center"><font face="Helvetica, Arial, sans-serif">
+<input type="radio" name="profil" value="0">
+      </font></td>      <td " valign="top" width="57" align="center"><font face="Helvetica, Arial, sans-serif">
+<input type="radio" name="profil" value="1" checked="checked">
+      </font></td>'
+end
+
+
+if flukt=1 then do
+say '
+      <td " valign="top" width="45" align="center"><font face="Helvetica, Arial, sans-serif">
+<input type="text" name="flukte" value="1">
+      </font></td>'
+end
+
+if flukt=0 then do
+say '
+      <td " valign="top" width="45" align="center"><font face="Helvetica, Arial, sans-serif">
+<input type="text" name="flukte" value="0">
+      </font></td>'
+end
+
+if deling=1 then do
+say '
+      <td " valign="top" width="45" align="center"><font face="Helvetica, Arial, sans-serif">
+<input type="text" name="deling" value="1">
+      </font></td>'
+end
+
+if deling=0 then do
+say '
+      <td " valign="top" width="45" align="center"><font face="Helvetica, Arial, sans-serif">
+<input type="text" name="deling" value="0">
+      </font></td>'
+end
+
+
+say '</tr>'
+
+say '
+<input type="hidden" name="linje" value="'linje'">
+<input type="hidden" name="aar" value="'aar'">
+<input type="hidden" name="month" value="'month'">
+<input type="hidden" name="jobbid" value="'id'">
+<input type="submit" value="lagre" class="button"><br>
+</form> '
+
+exit
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+call close(kundeid)
+return

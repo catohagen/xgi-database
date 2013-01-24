@@ -1,0 +1,13 @@
+/* */
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+address command ('delete ram:jobb#?')
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="5;url=../index.html" />'
+say '</body></html>'
+
+exit

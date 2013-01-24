@@ -1,0 +1,352 @@
+/*  */
+
+PARSE ARG 'kundenr=' kundenr
+
+if kundenr="" then do
+say 'må ha kundenr<br>'
+exit
+end
+
+
+call hentkundeinfo
+
+prisliste='web-root:verksted/datafiler_kunder/priser.'kundenr''
+
+/* ja det er omvendt :) */
+
+if forhandler=0 then standardpriser='web-root:verksted/datafiler_kunder/priser.forhandler'
+if forhandler=1 then standardpriser='web-root:verksted/datafiler_kunder/priser.default'
+
+a.0=0
+a.1=0
+b.0=0
+b.1=0
+c.0=0
+c.1=0
+d.0=0
+d.1=0
+e.0=0
+e.1=0
+f.0=0
+f.1=0
+g.0=0
+g.1=0
+h.0=0
+h.1=0
+i.0=0
+i.1=0
+j.0=0
+j.1=0
+k.0=0
+k.1=0
+l.0=0
+l.1=0
+m.0=0
+m.1=0
+n.0=0
+n.1=0
+o.0=0
+o.1=0
+p.0=0
+p.1=0
+obue=0
+m1pris=0
+m2pris=0
+impris=0
+hengslepris=0
+klipspris=0
+flukte=0
+minstepris.0=0
+minstepris.1=0
+minstepris_maling=0
+
+
+if exists(prisliste) then do
+call open(pris,prisliste,'R')
+com=readln(pris)
+
+apris=readln(pris)
+A_seks.0=word(apris,2)
+A_seks.1=word(apris,3)
+A_kitt.0=word(apris,4)
+A_kitt.1=word(apris,5)
+
+bpris=readln(pris)
+B_seks.0=word(bpris,2)
+B_seks.1=word(bpris,3)
+B_kitt.0=word(bpris,4)
+B_kitt.1=word(bpris,5)
+
+cpris=readln(pris)
+C_seks.0=word(cpris,2)
+C_seks.1=word(cpris,3)
+C_kitt.0=word(cpris,4)
+C_kitt.1=word(cpris,5)
+
+dpris=readln(pris)
+D_seks.0=word(dpris,2)
+D_seks.1=word(dpris,3)
+D_kitt.0=word(dpris,4)
+D_kitt.1=word(dpris,5)
+
+epris=readln(pris)
+E_seks.0=word(epris,2)
+E_seks.1=word(epris,3)
+E_kitt.0=word(epris,4)
+E_kitt.1=word(epris,5)
+
+fpris=readln(pris)
+F_seks.0=word(fpris,2)
+F_seks.1=word(fpris,3)
+F_Kitt.0=word(fpris,4)
+F_kitt.1=word(fpris,5)
+
+gpris=readln(pris)
+G_seks.0=word(gpris,2)
+G_seks.1=word(gpris,3)
+G_kitt.0=word(gpris,4)
+G_kitt.1=word(gpris,5)
+
+hpris=readln(pris)
+H_seks.0=word(hpris,2)
+H_seks.1=word(hpris,3)
+H_kitt.0=word(hpris,4)
+H_kitt.1=word(hpris,5)
+
+ipris=readln(pris)
+I_seks.0=word(ipris,2)
+I_seks.1=word(ipris,3)
+I_kitt.0=word(ipris,4)
+I_kitt.1=word(ipris,5)
+
+jpris=readln(pris)
+J_seks.0=word(jpris,2)
+J_seks.1=word(jpris,3)
+J_kitt.0=word(jpris,4)
+J_kitt.1=word(jpris,5)
+
+kpris=readln(pris)
+K_seks.0=word(kpris,2)
+K_seks.1=word(kpris,3)
+K_kitt.0=word(kpris,4)
+K_kitt.1=word(kpris,5)
+
+lpris=readln(pris)
+L_seks.0=word(lpris,2)
+L_seks.1=word(lpris,3)
+L_kitt.0=word(lpris,4)
+L_kitt.1=word(lpris,5)
+
+mpris=readln(pris)
+M_seks.0=word(mpris,2)
+M_seks.1=word(mpris,3)
+M_kitt.0=word(mpris,4)
+M_kitt.1=word(mpris,5)
+
+npris=readln(pris)
+N_seks.0=word(npris,2)
+N_seks.1=word(npris,3)
+N_kitt.0=word(npris,4)
+N_kitt.1=word(npris,5)
+
+opris=readln(pris)
+O_seks.0=word(opris,2)
+O_seks.1=word(opris,3)
+O_kitt.0=word(opris,4)
+O_kitt.1=word(opris,5)
+
+ppris=readln(pris)
+P_seks.0=word(ppris,2)
+P_seks.1=word(ppris,3)
+P_kitt.0=word(ppris,4)
+P_kitt.1=word(ppris,5)
+
+com=readln(pris)
+
+m1pris=word(readln(pris),2)
+m2pris=word(readln(pris),2)
+impris=word(readln(pris),2)
+
+com=readln(pris)
+
+hengslepris=word(readln(pris),2)
+klipspris=word(readln(pris),2)
+
+com=readln(pris)
+
+fluktdel=readln(pris)
+flukte=word(fluktdel,2)
+deling=word(fluktdel,3)
+xtram=word(fluktdel,4)
+if deling="" then deling=0
+if xtram="" then xtram=0
+
+mseks.0=word(readln(pris),2)
+mseks.1=word(readln(pris),2)
+mkitt.0=word(readln(pris),2)
+mkitt.1=word(readln(pris),2)
+
+call close(pris)
+end
+
+
+if ~exists(prisliste) then do
+say 'Finner ikke prisliste!<br>'
+end
+
+
+
+/*
+A_seks.0=word(apris,2)
+A_seks.1=word(apris,3)
+A_kitt.0=word(apris,4)
+A_kitt.1=word(apris,5)
+*/
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><body bgcolor="FFFFFF">
+<br>
+<table border="0" align="center" cellspacing="0" cellpadding="0" width="80%">
+<tr>
+<td bgcolor="eeeeee" align="right" width="50%">
+<form method="get" action="lagre_pris_fast.xgi" style="margin: 0px">
+<br>
+A Sekskant :<input size="10" name="a_6.0" hidden="888" value="'a_seks.0'" id="a_6.0" />
+A Sekskant malt:<input size="10" name="a_6.1" hidden="888" value="'a_seks.1'" id="a_6.1" />
+A Kitt :<input size="10" name="a_kitt.0" hidden="888" value="'a_kitt.0'" id="a_kitt.0" />
+A Kitt malt :<input size="10" name="a_kitt.1" hidden="888" value="'a_kitt.1'" id="a_kitt.1" />
+<br>
+<br>
+B Sekskant :<input size="10" name="b_6.0" hidden="888" value="'b_seks.0'" id="b_6.0" />
+B Sekskant malt:<input size="10" name="b_6.1" hidden="888" value="'b_seks.1'" id="b_6.1" />
+B Kitt :<input size="10" name="b_kitt.0" hidden="888" value="'b_kitt.0'" id="b_kitt.0" />
+B Kitt malt :<input size="10" name="b_kitt.1" hidden="888" value="'b_kitt.1'" id="b_kitt.1" />
+<br>
+<br>
+C Sekskant :<input size="10" name="c_6.0" hidden="888" value="'c_seks.0'" id="c_6.0" />
+C Sekskant malt:<input size="10" name="c_6.1" hidden="888" value="'c_seks.1'" id="c_6.1" />
+C Kitt :<input size="10" name="c_kitt.0" hidden="888" value="'c_kitt.0'" id="c_kitt.0" />
+C Kitt malt :<input size="10" name="c_kitt.1" hidden="888" value="'c_kitt.1'" id="c_kitt.1" />
+<br>
+<br>
+D Sekskant :<input size="10" name="d_6.0" hidden="888" value="'d_seks.0'" id="d_6.0" />
+D Sekskant malt:<input size="10" name="d_6.1" hidden="888" value="'d_seks.1'" id="d_6.1" />
+<br>
+<br>
+E Sekskant :<input size="10" name="e_6.0" hidden="888" value="'e_seks.0'" id="e_6.0" />
+E Sekskant malt:<input size="10" name="e_6.1" hidden="888" value="'e_seks.1'" id="e_6.1" />
+E Kitt :<input size="10" name="e_kitt.0" hidden="888" value="'e_kitt.0'" id="e_kitt.0" />
+E Kitt malt :<input size="10" name="e_kitt.1" hidden="888" value="'e_kitt.1'" id="e_kitt.1" />
+<br>
+<br>
+F Sekskant :<input size="10" name="f_6.0" hidden="888" value="'f_seks.0'" id="f_6.0" />
+F Sekskant malt:<input size="10" name="f_6.1" hidden="888" value="'f_seks.1'" id="f_6.1" />
+F Kitt :<input size="10" name="f_kitt.0" hidden="888" value="'f_kitt.0'" id="f_kitt.0" />
+F Kitt malt :<input size="10" name="f_kitt.1" hidden="888" value="'f_kitt.1'" id="f_kitt.1" />
+<br>
+<br>
+G Sekskant :<input size="10" name="g_6.0" hidden="888" value="'g_seks.0'" id="g_6.0" />
+G Sekskant malt:<input size="10" name="g_6.1" hidden="888" value="'g_seks.1'" id="g_6.1" />
+G Kitt :<input size="10" name="g_kitt.0" hidden="888" value="'g_kitt.0'" id="g_kitt.0" />
+G Kitt malt :<input size="10" name="g_kitt.1" hidden="888" value="'g_kitt.1'" id="g_kitt.1" />
+<br>
+<br>
+H Sekskant :<input size="10" name="h_6.0" hidden="888" value="'h_seks.0'" id="h_6.0" />
+H Sekskant malt:<input size="10" name="h_6.1" hidden="888" value="'h_seks.1'" id="h_6.1" />
+H Kitt :<input size="10" name="h_kitt.0" hidden="888" value="'h_kitt.0'" id="h_kitt.0" />
+H Kitt malt :<input size="10" name="h_kitt.1" hidden="888" value="'h_kitt.1'" id="h_kitt.1" />
+<br>
+<br>
+I Sekskant :<input size="10" name="i_6.0" hidden="888" value="'i_seks.0'" id="i_6.0" />
+I Sekskant malt:<input size="10" name="i_6.1" hidden="888" value="'i_seks.1'" id="i_6.1" />
+<br>
+<br>
+J Sekskant :<input size="10" name="j_6.0" hidden="888" value="'j_seks.0'" id="j_6.0" />
+J Sekskant malt:<input size="10" name="j_6.1" hidden="888" value="'j_seks.1'" id="j_6.1" />
+J Kitt :<input size="10" name="j_kitt.0" hidden="888" value="'j_kitt.0'" id="j_kitt.0" />
+J Kitt malt :<input size="10" name="j_kitt.1" hidden="888" value="'j_kitt.1'" id="j_kitt.1" />
+<br>
+<br>
+K Sekskant :<input size="10" name="k_6.0" hidden="888" value="'k_seks.0'" id="k_6.0" />
+K Sekskant malt:<input size="10" name="k_6.1" hidden="888" value="'k_seks.1'" id="k_6.1" />
+K Kitt :<input size="10" name="k_kitt.0" hidden="888" value="'k_kitt.0'" id="k_kitt.0" />
+K Kitt malt :<input size="10" name="k_kitt.1" hidden="888" value="'k_kitt.1'" id="k_kitt.1" />
+<br>
+<br>
+L Sekskant :<input size="10" name="l_6.0" hidden="888" value="'l_seks.0'" id="l_6.0" />
+L Sekskant malt:<input size="10" name="l_6.1" hidden="888" value="'l_seks.1'" id="l_6.1" />
+L Kitt :<input size="10" name="l_kitt.0" hidden="888" value="'l_kitt.0'" id="l_kitt.0" />
+L Kitt malt :<input size="10" name="l_kitt.1" hidden="888" value="'l_kitt.1'" id="l_kitt.1" />
+<br>
+<br>
+M Sekskant :<input size="10" name="m_6.0" hidden="888" value="'m_seks.0'" id="m_6.0" />
+M Sekskant malt:<input size="10" name="m_6.1" hidden="888" value="'m_seks.1'" id="m_6.1" />
+M Kitt :<input size="10" name="m_kitt.0" hidden="888" value="'m_kitt.0'" id="m_kitt.0" />
+M Kitt malt :<input size="10" name="m_kitt.1" hidden="888" value="'m_kitt.1'" id="m_kitt.1" />
+<br>
+<br>
+N Sekskant :<input size="10" name="n_6.0" hidden="888" value="'n_seks.0'" id="n_6.0" />
+N Sekskant malt:<input size="10" name="n_6.1" hidden="888" value="'n_seks.1'" id="n_6.1" />
+N Kitt :<input size="10" name="n_kitt.0" hidden="888" value="'n_kitt.0'" id="n_kitt.0" />
+N Kitt malt :<input size="10" name="n_kitt.1" hidden="888" value="'n_kitt.1'" id="n_kitt.1" />
+<br>
+<br>
+O Sekskant :<input size="10" name="o_6.0" hidden="888" value="'o_seks.0'" id="o_6.0" />
+O Sekskant malt:<input size="10" name="o_6.1" hidden="888" value="'o_seks.1'" id="o_6.1" />
+O Kitt :<input size="10" name="o_kitt.0" hidden="888" value="'o_kitt.0'" id="o_kitt.0" />
+O Kitt malt :<input size="10" name="o_kitt.1" hidden="888" value="'o_kitt.1'" id="o_kitt.1" />
+<br>
+<br>
+P Sekskant :<input size="10" name="p_6.0" hidden="888" value="'p_seks.0'" id="p_6.0" />
+P Sekskant malt:<input size="10" name="p_6.1" hidden="888" value="'p_seks.1'" id="p_6.1" />
+P Kitt :<input size="10" name="p_kitt.0" hidden="888" value="'p_kitt.0'" id="p_kitt.0" />
+P Kitt malt :<input size="10" name="p_kitt.1" hidden="888" value="'p_kitt.1'" id="p_kitt.1" />
+<br>
+Type O & P Bue :<input size="10" name="obue" hidden="888" value="'obue'" id="obue" />
+<br>
+<br>
+Maling 1 strøk :<input size="10" name="m1pris" hidden="888" value="'m1pris'" id="m1pris" />&nbsp;
+Maling 2 strøk :<input size="10" name="m2pris" hidden="888" value="'m2pris'" id="m2pris" />
+<br>
+<br>
+Impregnering :<input size="10" name="impris" hidden="888" value="'impris'" id="impris" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+Hengsler pr.stk :<input size="10" name="hengslepris" hidden="888" value="'hengslepris'" id="hengslepris" />&nbsp;&nbsp;&nbsp;
+Klips pr.stk :<input size="10" name="klipspris" hidden="888" value="'klipspris'" id="klipspris" />
+<br>
+<br>
+Pris for Flukting :<input size="10" name="flukte" hidden="888" value="'flukte'" id="flukte" /><br>
+Pris for Deling :<input size="10" name="deling" hidden="888" value="'deling'" id="deling" /><br>
+Pris Xtra Midtstokk :<input size="10" name="xtram" hidden="888" value="'xtram'" id="xtram" />
+<br>
+<br>
+Minstepris Sekskant :<input size="10" name="mseks.0" hidden="888" value="'mseks.0'" id="mseks.0" /><br>
+Minstepris Sekskant malt :<input size="10" name="mseks.1" hidden="888" value="'mseks.1'" id="mseks.1" /><br>
+Minstepris Kitt :<input size="10" name="mkitt.0" hidden="888" value="'mkitt.0'" id="mkitt.0" /><br>
+Minstepris Kitt malt:<input size="10" name="mkitt.1" hidden="888" value="'mkitt.1'" id="mkitt.1" /><br>
+<input type=hidden name=kundenr value='kundenr'>
+<br><br>
+<input type="submit" value="Ferdig" class="button" />
+</form>
+</td>
+</tr>
+</td></tr></table><br><br>
+<a href="../index.html"> [ Tilbake til hovedsiden...] </a>
+</body></html>'
+
+exit
+
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+forhandler=readln(kundeid)
+call close(kundeid)
+return
+
+
+

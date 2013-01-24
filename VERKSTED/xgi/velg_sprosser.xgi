@@ -1,0 +1,14 @@
+/* */
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '</body>'
+say '<center><br><br><br><br>'
+say '<a href="../jobb_inntast.html">tresposser</a><br><br>'
+say '<a href="../jobb_inntast_plast.html">plastsposser</a>'
+say '</center></html>'
+
+exit

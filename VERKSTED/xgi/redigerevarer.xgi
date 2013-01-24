@@ -1,0 +1,23 @@
+/*  */
+
+PARSE ARG 'skruer=' skruer '&hengsler=' hengsler
+
+call open(dat,"web-root:verksted/datafiler_varer/varelager.dat",'W')
+call writeln(dat,'#skruer hengsler')
+call writeln(dat,skruer)
+call writeln(dat,hengsler)
+call close(dat)
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+say 'vent...'
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="0;url=v_lager.xgi" />'
+say '</body></html>'
+
+exit

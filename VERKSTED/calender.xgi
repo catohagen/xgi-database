@@ -1,0 +1,250 @@
+/*
+
+
+Calendar in Arexx/XGI by Cato Hagen catohagen@fastmail.fm
+
+
+This script should be called from a html file, so you provide the
+header/footer of html layout yourself...
+
+
+ */
+
+PARSE ARG 'month=' month
+
+idag=date(s)
+
+today=substr(idag,7,2)
+
+
+
+if month="" then do
+month=substr(idag,5,2)
+end
+
+if month>12 then month=01
+
+if month<0 then month=01
+
+
+if month=01 then days=31
+if month=02 then days=28
+if month=03 then days=31
+if month=04 then days=30
+if month=05 then days=31
+if month=06 then days=30
+if month=07 then days=31
+if month=08 then days=31
+if month=09 then days=30
+if month=10 then days=31
+if month=11 then days=30
+if month=12 then days=31
+
+
+year=substr(idag,1,4)
+day=01
+
+    isleap=year//4
+    if isleap=0 then leap=1
+    if isleap>0 then leap=0
+    a = (year +  (year % 4) - leap + 1) // 7      /*find weekday for Jan 1 (1 = Sat, 2 = Sun)*/
+    
+    m = 4 - a                                     /*find date of Monday in first week*/
+    
+    int=30.56*month
+    d = day + (int % 1) - 32                      /*calculate day number*/
+    
+    if month < 3 then d = d + 2                   /*adjust for Jan and Feb*/
+    week=d-m
+    uke =  ((week % 1) / 7 + 1  ) % 1             /*find number of whole weeks*/
+    dag = ((d - m) // 7) + 2                      /*'remainder gives weekday*/
+
+if month=02 then do
+ if leap=1 then days=days+1
+end
+
+dag.1=""
+dag.2=""
+dag.3=""
+dag.4=""
+dag.5=""
+dag.6=""
+dag.7=""
+i=1
+week=1
+
+
+todaycolor.1="ffffff"
+todaycolor.2="ffffff"
+todaycolor.3="ffffff"
+todaycolor.4="ffffff"
+todaycolor.5="ffffff"
+todaycolor.6="ffffff"
+todaycolor.7="ffffff"
+
+fontcolor.1="000000"
+fontcolor.2="000000"
+fontcolor.3="000000"
+fontcolor.4="000000"
+fontcolor.5="000000"
+fontcolor.6="000000"
+fontcolor.7="000000"
+
+
+
+do until dag=8
+dag.dag=i
+todaycolor.dag="ffffff"
+if right(i,2,00)=today then todaycolor.dag="cc6666"
+dag=dag+1
+if i>days-1 then i=0
+i=i+1
+end
+call header
+call make_week
+
+uke=uke+1
+dag=1
+ do until dag=8
+ dag.dag=i
+ todaycolor.dag="ffffff"
+ if right(i,2,00)=today then todaycolor.dag="cc6666"
+ dag=dag+1
+ if i>days-1 then i=0
+ i=i+1
+end
+
+call make_week
+
+uke=uke+1
+dag=1
+do until dag=8
+dag.dag=i
+todaycolor.dag="ffffff"
+if right(i,2,00)=today then todaycolor.dag="cc6666"
+dag=dag+1
+if i>days-1 then i=0
+i=i+1
+
+end
+call make_week
+
+uke=uke+1
+dag=1
+do until dag=8
+dag.dag=i
+todaycolor.dag="ffffff"
+if right(i,2,00)=today then todaycolor.dag="cc6666"
+dag=dag+1
+if i>days-1 then i=0
+i=i+1
+
+end
+call make_week
+
+uke=uke+1
+dag=1
+do until dag=8
+dag.dag=i
+fontcolor.dag="000000"
+if dag.dag>days then fontcolor.dag="ffffff"
+todaycolor.dag="ffffff"
+if right(i,2,00)=today then todaycolor.dag="cc6666"
+dag=dag+1
+i=i+1
+
+end
+call make_week
+
+uke=uke+1
+if uke>52 then uke=1
+dag=1
+do until dag=8
+if i=days+1 then do
+ do until dag=8
+ dag.dag=""
+ dag=dag+1
+ end
+call make_week
+call end
+end
+dag.dag=i
+
+fontcolor.dag="000000"
+if dag.dag>days then fontcolor.dag="ffffff"
+
+todaycolor.dag="ffffff"
+if right(i,2,00)=today then todaycolor.dag="cc6666"
+
+dag=dag+1
+i=i+1
+end
+call make_week
+
+
+call end
+
+null:
+do until dag=8
+dag.i=" "
+i=i+1
+end
+call end
+
+header:
+say '<center>Calendar for 'month'/'year'
+
+    <table cellpadding="2" cellspacing="2" border="0" width="200">
+   <tbody>
+     <tr>
+       <td valign="top" align="center" bgcolor="#efefef">Week
+       </td>
+       <td valign="top" align="center" bgcolor="#efefef">Mon
+       </td>
+       <td valign="top" align="center" bgcolor="#efefef">Tue
+       </td>
+       <td valign="top" align="center" bgcolor="#efefef">Wed
+       </td>
+       <td valign="top" align="center" bgcolor="#efefef">Thu
+       </td>
+       <td valign="top" align="center" bgcolor="#efefef">Fri
+       </td>
+       <td valign="top" align="center" bgcolor="#efefef">Sat
+       </td>
+       <td valign="top" align="center" bgcolor="#efefef">Sun
+       </td>
+     </tr> '
+
+return
+make_week:
+say ' <tr>
+      <td valign="top" bgcolor="#ffffff" align="center"><font color="ff0000">'uke'
+      </td>
+      <td valign="top" bgcolor="'todaycolor.1'" align="center"><font color="'fontcolor.1'">'dag.1'
+      </td>
+      <td valign="top" bgcolor="'todaycolor.2'" align="center"><font color="'fontcolor.2'">'dag.2'
+      </td>
+      <td valign="top" bgcolor="'todaycolor.3'" align="center"><font color="'fontcolor.3'">'dag.3'
+      </td>
+      <td valign="top" bgcolor="'todaycolor.4'" align="center"><font color="'fontcolor.4'">'dag.4'
+      </td>
+      <td valign="top" bgcolor="'todaycolor.5'" align="center"><font color="'fontcolor.5'">'dag.5'
+      </td>
+      <td valign="top" bgcolor="'todaycolor.6'" align="center"><font color="'fontcolor.6'">'dag.6'
+      </td>
+      <td valign="top" bgcolor="'todaycolor.7'" align="center"><font color="'fontcolor.7'">'dag.7'
+      </td>
+    </tr> '
+
+week=week+1
+return
+
+end:
+say '  </tbody> 
+</table>
+</body>
+</html> 
+
+'
+
+exit

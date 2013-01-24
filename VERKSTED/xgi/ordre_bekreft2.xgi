@@ -1,0 +1,257 @@
+/* */ 
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+
+totantall=0
+
+meterprofil=0
+meterramme=0
+vekt=0
+meter_midt=0
+totcm3=0
+
+/* open file , and keep open until eof */
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+if merk="" then merk=" "
+levuke=readln(dat)
+garbage=readln(dat)
+
+call hentkundeinfo
+
+call ordre_header
+
+
+
+do until eof(dat)
+
+antall=readln(dat)
+
+totantall=totantall+antall
+
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+type=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil=readln(dat)
+merknad=readln(dat)
+if merknad="" then merknad=" "
+garbage=readln(dat) 
+seks=" "
+kitt=" "
+if profil=0 then seks="X"
+if profil=1 then kitt="X"
+
+if type=I|type=D then seks=" "
+
+call make_list
+call material
+
+if garbage="#andre ting" then do
+hengsler=readln(dat)
+klips=readln(dat)
+maling=readln(dat)
+impreg=readln(dat)
+
+call end_list
+
+end
+end
+
+
+ordre_header:
+say '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>  <title>Ordre Bekreftelse</title>  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"></head><body  bgcolor="FFFFFF"><center><img height="40" src="../bilder/ordre.gif"> <img height="40" src="../cnc/firmalogo.gif"><img height="40" src="../cnc/sprossepynt.jpg">
+<br>
+<br>
+<center>
+<table align="top" border="0" bgcolor="#000000" cellpadding="0" cellspacing="0" width="400">
+	<td bgcolor="#efefef"><font face="verdana,arial" size="2" color="#000000">'
+say 'Kunde :'
+say '<br>'
+say kunde
+say '<br>'
+say addresse
+say '<br>'
+say sted
+say '<br>'
+say '<br>'
+say 'Merk: 'merk
+say '<br>'
+say 'Leveres uke :'levuke
+say '	</font></td></tr>
+	</table><br>
+
+<hr width="90%" size="2" noshade=""><table bgcolor="ffffff" cellpadding="2" cellspacing="2" border="0" width="800" align="center">  <tbody>    <tr>      <td bgcolor="eeeeee" valign="top" width="70"><font face="Helvetica, Arial, sans-serif">Merk<br>      </font></td>      <td bgcolor="eeeeee" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Antall<br>      </font></td>      <td bgcolor="eeeeee" valign="top" width="150" align="center"><font face="Helvetica, Arial, sans-serif">Bredde<br>      </font></td>      <td bgcolor="eeeeee" valign="top" width="120" align="center"><font face="Helvetica, Arial, sans-serif">H&oslash;yde<br>      </font></td>      <td bgcolor="eeeeee" valign="top" width="30" align="center"><font face="Helvetica, Arial, sans-serif">Type<br>      </font></td>
+      <td bgcolor="eeeeee" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">M&aring;lenr<br>      </font></td>      <td bgcolor="eeeeee" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Inndeling<br>      </font></td>
+      <td bgcolor="eeeeee" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Sekskant<br>      </font></td>
+      <td bgcolor="eeeeee" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Kittprofil<br>      </font></td>    </tr> '
+/*
+  </tbody>
+</table> '
+*/
+return
+
+make_list:
+/*
+say '<table cellpadding="2" cellspacing="2" border="0" width="800" align="center">  <tbody>*/
+say '    <tr>      <td valign="top" width="52" align="center"><font face="Helvetica, Arial, sans-serif" size="-2">'merknad'<br>      </font></td>      <td valign="top" width="35" align="center"><font face="Helvetica, Arial, sans-serif">'antall'<br>      </font></td>      <td valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'bredde'<br>      </font></td>      <td valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'hoyde'<br>      </font></td>      <td valign="top" width="30" align="center"><font face="Helvetica, Arial, sans-serif">'type'<br>      </font></td>      <td valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">'malenr'<br>      </font></td>      <td valign="top" width="60" align="center"><font face="Helvetica, Arial, sans-serif">'inndel_b' X 'inndel_h'<br>      </font></td>      <td valign="top" width="45" align="center"><font face="Helvetica, Arial, sans-serif"><b>'seks'</b><br>      </font></td>      <td valign="top" width="57" align="center"><font face="Helvetica, Arial, sans-serif"><b>'kitt'</b><br>      </font></td>    </tr> '
+/*  </tbody></table> '*/
+return
+
+
+
+
+end_list:
+say ' </tbody>
+</table> 
+<hr width="90%" size="2" noshade="">
+<br> '
+
+if hengsler=1 then sumhengsler=totantall*4
+if hengsler=0 then sumhengsler="nei"
+if klips=1 then sumklips=totaltall*4
+if klips=0 then sumklips="nei"
+if impreg=1 then impreg="ja"
+if impreg=0 then impreg="nei"
+
+if impreg=0 then impreg="Nei"
+if impreg=1 then impreg="Ja"
+
+if kundenr=002 then impreg="Ja"
+
+if maling=0 then maling="ingen"
+
+if maling=1|maling=2 then impreg="Ja"
+
+
+say '<center>'
+say 'Antall Sprosser [ <b>'totantall'</b> ] Hengsler levert [ <b>'sumhengsler'</b> ] Klips levert [ <b>'sumklips'</b> ] Antall strøk maling [ <b>'maling'</b> ] Levert impregnert [ <b>'impreg'</b> ]'
+say '<br>[<b>'totcm3'</b> m3 ] [ <b>'vekt'</b> kg ]
+</body></html> '
+exit
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+call close(kundeid)
+return
+
+
+material:
+
+if type="a"|type="A"|type="C"|type="F"|type="N" then do
+
+meterprofil_b=bredde/100
+antallprofil_b=inndel_h-1
+antallprofil_b=antallprofil_b*antall
+
+meterprofil_h=hoyde/100
+antallprofil_h=inndel_b-1
+antallprofil_h=antallprofil_h*antall
+
+meterprofil_b=meterprofil_b*antallprofil_b
+meterprofil_h=meterprofil_h*antallprofil_h
+
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+
+end
+
+
+meterram_b=bredde/100
+meterram_h=hoyde/100
+
+meterram_b=meterram_b*2
+meterram_h=meterram_h*2
+meterram=meterram_b+meterram_h
+meterram=meterram*antall
+meterramme=trunc(meterramme+meterram,1)
+
+/********************************************************************************/
+if type=B|type=E|type=G|type=K|type=L|type=M|type=H then do
+
+profil_b = ((bredde - 4.4) - 3.5) / 2
+
+antall_b=(inndel_h-1)*2
+meterprofil_b=profil_b*antall_b
+
+meterprofil_b=meterprofil_b*antall
+
+meterprofil_b=meterprofil_b/100
+
+profil_h=hoyde-4.4
+antall_h=inndel_b-2
+
+meterprofil_h=antall_h*profil_h
+
+meterprofil_h=meterprofil_h*antall
+
+meterprofil_h=meterprofil_h/100
+
+m_midt=((hoyde-4.4)/100)*antall
+meter_midt=meter_midt+m_midt
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+end
+
+
+if type=D|type=I then do
+
+metermidt_b=0
+metermidt_h=0
+
+
+if inndel_h>1 then do
+ midt_b = ((bredde - 4.4) - 3.5) / 2
+ antall_midt=(inndel_h-1)*2
+ metermidt_b=midt_b*antall_midt
+ metermidt_b=metermidt_b*antall
+ metermidt_b=metermidt_b/100
+ skruer_b=(antall_midt*2)*antall
+end
+
+if inndel_b>1 then do
+ midt_h=(hoyde-4.4)/100
+ antall_h=inndel_b-1
+ metermidt_h=midt_h*antall_h
+ metermidt_h=metermidt_h*antall
+ skruer_h=(antall_h*4)*antall
+end
+
+midt=metermidt_b+metermidt_h
+meter_midt=meter_midt+midt
+
+end
+
+buevekt=0
+if type=E|type=C|type=K|type=M|type=N then do
+buevekt=(bredde/100)*antall
+buevekt=buevekt*600
+end
+
+
+kvadrat=(bredde*hoyde)/10000
+cm3=0.022*antall
+cm3=kvadrat*cm3
+totcm3=trunc(totcm3+cm3,3)
+
+
+vekt=meterprofil*130
+vekt=vekt + (meterramme*190)
+vekt=vekt + (meter_midt*430)
+vekt=vekt+buevekt
+vekt=vekt/1000
+vekt=trunc(vekt,1)
+
+return
+

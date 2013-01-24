@@ -1,0 +1,7 @@
+/*  */
+
+PARSE ARG 'merk=' merknad '&levuke=' leveringsuke '&bestdato=' bestdato '&hengsler=' hengsler '&klips=' klips '&maling=' maling '&impreg=' impregnering '&preview=' preview
+
+say preview'<br>'
+
+

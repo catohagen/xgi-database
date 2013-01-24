@@ -1,0 +1,30 @@
+#priser
+A 22.01 30.82 26.41 31.70
+B 25.24 33.75 30.28 36.34
+C 26.42 34.76 31.70 38.04
+D 43.0 53.56 D_KITT.0 D_KITT.1
+E 26.88 35.23 32.26 38.71
+F 24.95 33.75 29.94 35.92
+G 24.72 33.27 29.66 35.60
+H 87.04 113.4 104.44 125.33
+I 43 53.56 I_KITT.0 I_KITT.1
+J 0 0 0 0
+K 25.24 33.75 30.28 36.34
+L 31.93 33.75 38.32 45.98
+M 35.02 33.75 42.02 50.43
+N 35.71 33.75 42.85 51.42
+O 98.96 120.1 118.75 142.50 0
+P 106.71 130.46 128.05 153.66
+#priser maling
+maling1 0
+maling2 0
+impreg 0
+#priser oppheng
+hengsler 0
+klips 0
+#priser dilldall
+flukte 100 200 0
+minsteprisseks 120
+minsteprisseks 140
+minstepriskitt 132
+minstepriskitt 152

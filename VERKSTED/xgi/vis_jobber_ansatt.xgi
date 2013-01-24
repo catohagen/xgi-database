@@ -1,0 +1,55 @@
+/*  */
+
+PARSE ARG 'id=' id '&aar=' aar '&moned=' moned
+
+
+call open(log,"web-root:verksted/datafiler_ansatte/jobber.ansatt."id,'R')
+	com=readln(log)
+
+	call starthtml
+do until eof(log)
+	aar=readln(log)
+	moned=readln(log)
+	jobbid=readln(log)
+
+        if aar="" then call end
+	call hentheader
+
+end
+end:
+call endhtml
+call close(log)
+
+
+hentheader:
+/* Vise Jobb header */
+say "web-root:verksted/datafiler_jobber/"aar"/"moned"/jobb_id."jobbid
+say '<br>'
+say '<br>'
+call open(logg,"web-root:verksted/datafiler_jobber/"aar"/"moned"/jobb_id."jobbid,'R')
+com=readln(logg)
+dato=readln(logg)
+kundenr=readln(logg)
+merk=readln(logg)
+levuke=readln(logg)
+say 'kundenr :'kundenr
+say '<br>'
+say 'ordre :'merk
+say '<br>'
+say 'dato :'dato
+say '<br>'
+say 'leverings uke :'levuke
+say '<br>'
+call close(logg)
+return
+
+starthtml:
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+return
+
+endhtml:
+say '</body></html>'
+exit

@@ -1,0 +1,319 @@
+/* */ 
+
+PARSE ARG 'aar=' aar
+
+idag=date(s)
+
+month=substr(idag,5,2)
+
+aar=substr(idag,1,4)
+
+
+lager_skruer=5000
+lager_hengsler=1000
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF">'
+
+t_totalantall=0
+t_totruter=0
+t_sumhengsler=0
+t_sumklips=0
+t_males=0
+t_impreg=0
+t_meterprofil=0
+t_meterramme=0
+t_meter_midt=0
+t_skruer=0
+t_vekt=0
+t_totcm3=0
+
+need_skruer=0
+need_henglser=0
+maanedfile="web-root:verksted/datafiler_jobber/"aar"-"month".dat"
+
+if ~exists(maanedfile) then do
+end
+
+call open(dat,maanedfile,'R')
+garbage=readln(dat)
+jobber=readln(dat)
+call close(dat)
+
+jobber=jobber-1
+
+nyjobb:
+if jobber=0 then call vis
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."jobber""
+
+
+totcm3=0
+meterprofil=0
+meterramme=0
+skruer=0
+vekt=0
+meter_midt=0
+totalantall=0
+totruter=0
+impreg=0
+males=0
+sumhengsler=0
+sumklips=0
+
+/* open file , and keep open until eof */
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+if merk="" then merk=" "
+levuke=readln(dat)
+garbage=readln(dat)
+
+dato=date()
+tid=time()
+
+ansattid="blank"
+makefile="web-root:verksted/datafiler_jobber/"aar"/"month"/make_id."jobber""
+ if exists(makefile) then do
+ call open(data,makefile,'R')
+ com=readln(data)
+ ansattid=readln(data)
+ jobbstatus=readln(data)
+ call close(data)
+end
+
+do until eof(dat)
+antall=readln(dat)
+totalantall=totalantall+antall
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+typen=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+truter=inndel_b*inndel_h*antall
+totruter=totruter+truter
+ramme=readln(dat)
+profil=readln(dat)
+merknad=readln(dat)
+if merknad="" then merknad=" "
+garbage=readln(dat) 
+klips=0
+hengsler=0
+	if garbage="#andre ting" then do
+	 hengsler=readln(dat)
+	 klips=readln(dat)
+	 maling=readln(dat)
+	 impreg=readln(dat)
+	 dill=readln(dat)
+	end
+
+if hengsler=1 then sumhengsler=totalantall*4
+if hengsler=0 then sumhengsler=0
+if klips=1 then sumklips=totalantall*4
+if klips=0 then sumklips=0
+
+if klips=1 then say 'klips :'sumklips'<br><br>'
+
+call calc_list
+call material
+
+end
+
+if exists(makefile) then do
+if jobbstatus=1 then do
+say skruer'<br>'
+need_skruer=need_skruer+skruer
+need_henglser=need_henglser+sumhengsler
+end
+
+if jobbstatus=2 then do
+t_skruer=t_skruer+skruer
+t_sumhengsler=t_sumhengsler+sumhengsler
+end
+end
+
+
+if ~exists(makefile) then do
+t_skruer=t_skruer+skruer
+need_skruer=need_skruer+skruer
+need_henglser=need_henglser+sumhengsler
+t_sumhengsler=t_sumhengsler+sumhengsler
+t_sumklips=t_sumklips+sumklips
+
+end
+
+
+
+call close(dat) 
+jobber=jobber-1
+call nyjobb
+
+
+vis:
+say '<br>'
+say '<br>'
+say '<br>'
+say 'totalt forbruk skruer :'t_skruer'<br>'
+say 'skruer i uferdige jobber :'need_skruer'<br>'
+say 'totalt forbruk hengsler :'t_sumhengsler'<br>'
+say 'hengsler i uferdige jobber :'need_henglser'<br>'
+
+ny_lagerskruer=lager_skruer-t_skruer
+say 'nåværende varelager skruer :'ny_lagerskruer'<br>'
+/*
+samba:bin/smbclient >T:AMIPOPUP.STAT -M amiga <RAM:GG-datestamp
+*/
+exit
+
+/*
+jobber=jobber-1
+call nyjobb
+*/
+
+calc_list:
+bredde=translate(bredde, '.',',')
+hoyde=translate(hoyde, '.',',')
+
+type=left(typen,1)
+
+subtype=right(typen,1)
+
+return
+
+
+call jobb_info
+
+
+material:
+if type="a"|type="A"|type="C"|type="F"|type="N" then do
+
+meterprofil_b=bredde/100
+antallprofil_b=inndel_h-1
+antallprofil_b=antallprofil_b*antall
+
+meterprofil_h=hoyde/100
+antallprofil_h=inndel_b-1
+antallprofil_h=antallprofil_h*antall
+
+meterprofil_b=meterprofil_b*antallprofil_b
+meterprofil_h=meterprofil_h*antallprofil_h
+
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+skruer_b=(inndel_h-1) * 2
+skruer_h=(inndel_b-1) * 2
+skrue=(skruer_b+skruer_h) * antall
+skruer=skruer+skrue
+end
+
+
+meterram_b=bredde/100
+meterram_h=hoyde/100
+
+meterram_b=meterram_b*2
+meterram_h=meterram_h*2
+meterram=meterram_b+meterram_h
+meterram=meterram*antall
+meterramme=trunc(meterramme+meterram,1)
+
+/********************************************************************************/
+if type=B|type=E|type=G|type=K|type=L|type=M|type=H then do
+
+profil_b = ((bredde - 4.4) - 3.5) / 2
+
+antall_b=(inndel_h-1)*2
+meterprofil_b=profil_b*antall_b
+
+meterprofil_b=meterprofil_b*antall
+
+meterprofil_b=meterprofil_b/100
+
+profil_h=hoyde-4.4
+antall_h=inndel_b-2
+
+meterprofil_h=antall_h*profil_h
+
+meterprofil_h=meterprofil_h*antall
+
+meterprofil_h=meterprofil_h/100
+
+m_midt=((hoyde-4.4)/100)*antall
+meter_midt=meter_midt+m_midt
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+skruer_b=antall_b
+skruer_h=((inndel_b/2)-1) * 2
+skruer_midt=2
+
+skrue=(skruer_b+skruer_h+skruer_midt) * antall
+skruer=skruer+skrue
+
+end
+
+
+if type=D|type=I then do
+
+metermidt_b=0
+metermidt_h=0
+
+skruer_b=0
+skruer_h=0
+
+if inndel_h>1 then do
+ midt_b = ((bredde - 4.4) - 3.5) / 2
+ antall_midt=(inndel_h-1)*2
+ metermidt_b=midt_b*antall_midt
+ metermidt_b=metermidt_b*antall
+ metermidt_b=metermidt_b/100
+ skruer_b=(antall_midt*2)*antall
+end
+
+if inndel_b>1 then do
+ midt_h=(hoyde-4.4)/100
+ antall_h=inndel_b-1
+ metermidt_h=midt_h*antall_h
+ metermidt_h=metermidt_h*antall
+ skruer_h=(antall_h*4)*antall
+end
+
+midt=metermidt_b+metermidt_h
+meter_midt=meter_midt+midt
+
+skrue=skruer_b+skruer_h
+skruer=skruer+skrue
+
+end
+
+
+return
+
+jobb_info:
+prisfile="web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."jobber""
+typer="?"
+antall="?"
+ruter="?"
+jobbpris="?"
+antall="?"
+malepris="?"
+impregpris="?"
+if exists(prisfile) then do
+call open(data,prisfile,'R')
+	typer=readln(data)
+        antall=readln(data)
+        ruter=readln(data)
+        jobbpris=readln(data)
+	malepris=readln(data)
+	impregpris=readln(data)
+	call close(data)
+end
+return
+
+exit

@@ -1,0 +1,86 @@
+/*  */
+
+PARSE ARG 'antall=' antall '&bredde=' bredde '&type=' type '&ramme=' ramme '&profil=' profil '&address=' address
+
+if length(bredde)>4 then do
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<body  bgcolor="FFFFFF" text="000000" link="#FF9900" alink="#FF9900" vlink="#cc6600">'
+say '<br><center>'
+say 'ALT FOR LAAAAAANG SPROSSE'
+say '<br>'
+say '<img src="monkey.jpg">'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="5;url=../cncbuer.html" />'
+say '</body></html>'
+exit
+end
+
+if antall="" then do
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<body  bgcolor="FFFFFF" text="000000" link="#FF9900" alink="#FF9900" vlink="#cc6600">'
+say '<br><center>'
+say 'du skreiv jo ingenting ???? Vent 5 sekunder så går vi tilbake og prøver igjen....herregud...TENK!'
+say '<br>'
+say '<img src="monkey.jpg">'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="5;url=../cncbuer.html" />'
+say '</body></html>'
+exit
+end
+
+if antall>50 then do
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<body  bgcolor="FFFFFF" text="000000" link="#FF9900" alink="#FF9900" vlink="#cc6600">'
+say '<br>'
+say 'er du sprø ???? over 50 like sprosser ?? jaja....sikkert.'
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="5;url=../cncbuer.html" />'
+say '</body></html>'
+exit
+end
+
+if ramme=1 then rammew="22mm"
+if ramme=0 then rammew="18mm"
+if profil=1 then profilw="sekskant"
+if profil=0 then profilw="kitt"
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+say antall' stk type 'type' på bredde: 'bredde' og profil: 'profilw' ramme: 'rammew
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="0;url=../cncbuer.html" />'
+say '</body></html>'
+
+dato=date(s)
+tid=time(s)
+
+if ~open(log,"ram:cnc.dat",'R') then do
+	call open(log,"ram:cnc.dat",'W')
+	call writeln(log,'#')
+	call close(log)
+end
+
+call open(dat,"ram:cnc.dat",'A')
+call writeln(dat,antall)
+call writeln(dat,bredde)
+call writeln(dat,type)
+call writeln(dat,ramme)
+call writeln(dat,profil)
+call writeln(dat,'#')
+call close(dat)
+
+exit

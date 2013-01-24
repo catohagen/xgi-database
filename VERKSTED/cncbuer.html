@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>AREXX WEBSERVER - CNC Generator!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<LINK REL="StyleSheet" HREF="/verksted/style/style.css" TYPE="text/css">
+
+</head>
+<body bgcolor="FFFFFF">
+<br><center>
+<img src="cnc/firmalogo.gif"><img src="cnc/sprossepynt.jpg">
+
+
+<center>
+<br>
+<b>Hagen Snekkerverksted [XGI] Database</b>
+<br>
+
+	<table bgcolor="dddddd" width="70%" align="center" border="0" cellpadding="13" cellspacing="13">
+
+	<td bgcolor="dddddd" align="center">
+
+<form method="get" action="cnc/cnc.xgi" style="margin: 0px">
+antall&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bredde (i mm)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<input size="4" name="antall" hiddenn="888" accesskey="s" class="searchbox" id="antall" />
+<input size="20" name="bredde" hiddenn="888" accesskey="s" class="searchbox" id="bredde" />
+<SELECT NAME="type">
+<OPTION value="0" selected>type C
+<OPTION value="1">type E
+<OPTION value="2">type E3 buer
+<OPTION value="3">type E4 buer
+<OPTION value="4">type N2 buer
+<OPTION value="5">type N3 buer
+<OPTION value="6">type N4 buer
+</SELECT>
+<br>
+<br>
+<input type=radio name=ramme value=1 checked>22mm (viktig)<br>
+<input type=radio name=ramme value=0>18mm (viktig)<br>
+<br>
+<input type=radio name=profil value=1 checked>sekskant (type N)<br>
+<input type=radio name=profil value=0>kitt (type N)<br>
+<br>
+<input type="submit" value="legg til" class="button" />
+</form>
+<center>
+<br>
+<br>
+<a href="cnc/generate.html">Trykk her når du har lagt inn <b>ALLE</b> målene</a>
+
+	</td></tr>
+
+	</table>
+
+<table border="1" bgcolor="000000" cellpadding="20" cellspacing="3" width="80%">
+
+	<td >
+<font size="1" color="00aa00"><b>
+<?rx execute('web-root:verksted/cnc/parsecnc.xgi') ?>
+</font>
+
+	</td></tr>
+
+	</table>
+
+</center>
+</body>
+</html>
+

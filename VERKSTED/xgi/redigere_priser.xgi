@@ -1,0 +1,378 @@
+/*  */
+
+PARSE ARG 'kundenr=' kundenr
+
+if kundenr="" then do
+say 'må ha kundenr<br>'
+exit
+end
+
+
+call hentkundeinfo
+
+prisliste='web-root:verksted/datafiler_kunder/priser.'kundenr''
+
+
+/* ja det er omvendt :) */
+
+if forhandler=0 then standardpriser='web-root:verksted/datafiler_kunder/priser.forhandler'
+if forhandler=1 then standardpriser='web-root:verksted/datafiler_kunder/priser.default'
+
+a.0=0
+a.1=0
+b.0=0
+b.1=0
+c.0=0
+c.1=0
+d.0=0
+d.1=0
+e.0=0
+e.1=0
+f.0=0
+f.1=0
+g.0=0
+g.1=0
+h.0=0
+h.1=0
+i.0=0
+i.1=0
+j.0=0
+j.1=0
+k.0=0
+k.1=0
+l.0=0
+l.1=0
+m.0=0
+m.1=0
+n.0=0
+n.1=0
+o.0=0
+o.1=0
+p.0=0
+p.1=0
+obue=0
+m1pris=0
+m2pris=0
+impris=0
+hengslepris=0
+klipspris=0
+flukte=0
+deling=0
+minstepris.0=0
+minstepris.1=0
+minstepris_maling=0
+
+
+if exists(prisliste) then do
+call open(pris,prisliste,'R')
+com=readln(pris)
+
+apris=readln(pris)
+A.0=word(apris,2)
+A.1=word(apris,3)
+
+bpris=readln(pris)
+b.0=word(bpris,2)
+b.1=word(bpris,3)
+
+cpris=readln(pris)
+c.0=word(cpris,2)
+c.1=word(cpris,3)
+
+dpris=readln(pris)
+d.0=word(dpris,2)
+d.1=word(dpris,3)
+
+epris=readln(pris)
+e.0=word(epris,2)
+e.1=word(epris,3)
+
+fpris=readln(pris)
+f.0=word(fpris,2)
+f.1=word(fpris,3)
+
+gpris=readln(pris)
+g.0=word(gpris,2)
+g.1=word(gpris,3)
+
+hpris=readln(pris)
+h.0=word(hpris,2)
+h.1=word(hpris,3)
+
+ipris=readln(pris)
+i.0=word(ipris,2)
+i.1=word(ipris,3)
+
+jpris=readln(pris)
+j.0=word(jpris,2)
+j.1=word(jpris,3)
+
+kpris=readln(pris)
+k.0=word(kpris,2)
+k.1=word(kpris,3)
+
+lpris=readln(pris)
+l.0=word(lpris,2)
+l.1=word(lpris,3)
+
+mpris=readln(pris)
+m.0=word(mpris,2)
+m.1=word(mpris,3)
+
+npris=readln(pris)
+n.0=word(npris,2)
+n.1=word(npris,3)
+
+opris=readln(pris)
+o.0=word(opris,2)
+o.1=word(opris,3)
+obue=word(opris,4)
+
+ppris=readln(pris)
+p.0=word(ppris,2)
+p.1=word(ppris,3)
+
+com=readln(pris)
+
+m1pris=word(readln(pris),2)
+m2pris=word(readln(pris),2)
+impris=word(readln(pris),2)
+
+com=readln(pris)
+
+hengslepris=word(readln(pris),2)
+klipspris=word(readln(pris),2)
+com=readln(pris)
+
+fluktdel=readln(pris)
+flukte=word(fluktdel,2)
+deling=word(fluktdel,3)
+xtram=word(fluktdel,4)
+if deling="" then deling=0
+if xtram="" then xtram=0
+
+
+minstepris.0=word(readln(pris),2)
+minstepris.1=word(readln(pris),2)
+minstepris_maling=word(readln(pris),2)
+
+call close(pris)
+end
+
+
+
+if ~exists(prisliste) then do
+call open(pris,standardpriser,'R')
+com=readln(pris)
+
+apris=readln(pris)
+A.0=word(apris,2)
+A.1=word(apris,3)
+
+bpris=readln(pris)
+b.0=word(bpris,2)
+b.1=word(bpris,3)
+
+cpris=readln(pris)
+c.0=word(cpris,2)
+c.1=word(cpris,3)
+
+dpris=readln(pris)
+d.0=word(dpris,2)
+d.1=word(dpris,3)
+
+epris=readln(pris)
+e.0=word(epris,2)
+e.1=word(epris,3)
+
+fpris=readln(pris)
+f.0=word(fpris,2)
+f.1=word(fpris,3)
+
+gpris=readln(pris)
+g.0=word(gpris,2)
+g.1=word(gpris,3)
+
+hpris=readln(pris)
+h.0=word(hpris,2)
+h.1=word(hpris,3)
+
+ipris=readln(pris)
+i.0=word(ipris,2)
+i.1=word(ipris,3)
+
+jpris=readln(pris)
+j.0=word(jpris,2)
+j.1=word(jpris,3)
+
+kpris=readln(pris)
+k.0=word(kpris,2)
+k.1=word(kpris,3)
+
+lpris=readln(pris)
+l.0=word(lpris,2)
+l.1=word(lpris,3)
+
+mpris=readln(pris)
+m.0=word(mpris,2)
+m.1=word(mpris,3)
+
+npris=readln(pris)
+n.0=word(npris,2)
+n.1=word(npris,3)
+
+opris=readln(pris)
+o.0=word(opris,2)
+o.1=word(opris,3)
+obue=word(opris,4)
+
+ppris=readln(pris)
+p.0=word(ppris,2)
+p.1=word(ppris,3)
+
+com=readln(pris)
+
+m1pris=word(readln(pris),2)
+m2pris=word(readln(pris),2)
+impris=word(readln(pris),2)
+
+com=readln(pris)
+
+hengslepris=word(readln(pris),2)
+klipspris=word(readln(pris),2)
+
+com=readln(pris)
+
+fluktdel=readln(pris)
+flukte=word(fluktdel,2)
+deling=word(fluktdel,3)
+xtram=word(fluktdel,4)
+if deling="" then deling=0
+if xtram="" then xtram=0
+
+minstepris.0=word(readln(pris),2)
+minstepris.1=word(readln(pris),2)
+minstepris_maling=word(readln(pris),2)
+
+call close(pris)
+end
+
+
+
+
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><body bgcolor="FFFFFF">
+<br>
+<table border="0" align="center" cellspacing="0" cellpadding="0" width="60%">
+<tr>
+<td bgcolor="eeeeee" align="right" width="100%">
+<form method="get" action="lagre_pris.xgi" style="margin: 0px">
+<br>
+Type A Sekskant :<input size="10" name="a.0" hidden-="888" value="'a.0'" id="a.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type A Kitt :<input size="10" name="a.1" hidden-="888" value="'a.1'" id="a.1" />
+<br>
+<br>
+Type B Sekskant :<input size="10" name="b.0" hidden-="888" value="'b.0'" id="b.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type B Kitt :<input size="10" name="b.1" hidden-="888" value="'b.1'" id="b.1" />
+<br>
+<br>
+Type C Sekskant :<input size="10" name="c.0" hidden-="888" value="'c.0'" id="c.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type C Kitt :<input size="10" name="c.1" hidden-="888" value="'c.1'" id="c.1" />
+<br>
+<br>
+Type D :<input size="10" name="d.0" hidden-="888" value="'d.0'" id="d.0" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+Type E Sekskant :<input size="10" name="e.0" hidden-="888" value="'e.0'" id="e.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type E Kitt :<input size="10" name="e.1" hidden-="888" value="'e.1'" id="e.1" />
+<br>
+<br>
+Type F Sekskant :<input size="10" name="f.0" hidden-="888" value="'f.0'" id="f.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type F Kitt :<input size="10" name="f.1" hidden-="888" value="'f.1'" id="f.1" />
+<br>
+<br>
+Type G Sekskant :<input size="10" name="g.0" hidden-="888" value="'g.0'" id="g.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type G Kitt :<input size="10" name="g.1" hidden-="888" value="'g.1'" id="g.1" />
+<br>
+<br>
+Type H Sekskant :<input size="10" name="h.0" hidden-="888" value="'h.0'" id="h.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type H Kitt :<input size="10" name="h.1" hidden-="888" value="'h.1'" id="h.1" />
+<br>
+<br>
+Type I :<input size="10" name="i.0" hidden-="888" value="'i.0'" id="i.0" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+Type J Sekskant :<input size="10" name="j.0" hidden-="888" value="'j.0'" id="j.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type J Kitt :<input size="10" name="j.1" hidden-="888" value="'j.1'" id="j.1" />
+<br>
+<br>
+Type K Sekskant :<input size="10" name="k.0" hidden-="888" value="'k.0'" id="k.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type K Kitt :<input size="10" name="k.1" hidden-="888" value="'k.1'" id="k.1" />
+<br>
+<br>
+Type L Sekskant :<input size="10" name="l.0" hidden-="888" value="'l.0'" id="l.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type L Kitt :<input size="10" name="l.1" hidden-="888" value="'l.1'" id="l.1" />
+<br>
+<br>
+Type M Sekskant :<input size="10" name="m.0" hidden-="888" value="'m.0'" id="m.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type M Kitt :<input size="10" name="m.1" hidden-="888" value="'m.1'" id="m.1" />
+<br>
+<br>
+Type N Sekskant :<input size="10" name="n.0" hidden-="888" value="'n.0'" id="n.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type N Kitt :<input size="10" name="n.1" hidden-="888" value="'n.1'" id="n.1" />
+<br>
+<br>
+Type O Sekskant :<input size="10" name="o.0" hidden-="888" value="'o.0'" id="o.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type O Kitt :<input size="10" name="o.1" hidden-="888" value="'o.1'" id="o.1" />
+<br>
+<br>
+Type P Sekskant :<input size="10" name="p.0" hidden-="888" value="'p.0'" id="p.0" />
+&nbsp;&nbsp;&nbsp;&nbsp;Type P Kitt :<input size="10" name="p.1" hidden-="888" value="'p.1'" id="p.1" />
+<br>
+Type O & P Bue :<input size="10" name="obue" hidden-="888" value="'obue'" id="obue" />
+<br>
+<br>
+Maling 1 strøk :<input size="10" name="m1pris" hidden-="888" value="'m1pris'" id="m1pris" />&nbsp;
+Maling 2 strøk :<input size="10" name="m2pris" hidden-="888" value="'m2pris'" id="m2pris" />
+<br>
+<br>
+Impregnering :<input size="10" name="impris" hidden-="888" value="'impris'" id="impris" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+Hengsler pr.stk :<input size="10" name="hengslepris" hidden-="888" value="'hengslepris'" id="hengslepris" />&nbsp;&nbsp;&nbsp;
+Klips pr.stk :<input size="10" name="klipspris" hidden-="888" value="'klipspris'" id="klipspris" />
+<br>
+<br>
+Pris for Flukting :<input size="10" name="flukte" hidden-="888" value="'flukte'" id="flukte" />
+<br>
+Pris for Deling :<input size="10" name="deling" hidden-="888" value="'deling'" id="deling" />
+<br>
+Pris Xtra Midtstokk :<input size="10" name="xtram" hidden-="888" value="'xtram'" id="xtram" />
+<br>
+Minstepris Sekskant :<input size="10" name="minstepris.0" hidden-="888" value="'minstepris.0'" id="minstepris.0" /><br>
+Minstepris Kitt :<input size="10" name="minstepris.1" hidden-="888" value="'minstepris.1'" id="minstepris.1" /><br>
+Minstepris Maling :<input size="10" name="minstepris_maling" hidden-="888" value="'minstepris_maling'" id="minstepris_maling" /><br>
+<input type=hidden- name=kundenr value='kundenr'>
+<br><br>
+<input type="submit" value="Ferdig" class="button" />
+</form>
+</td>
+</tr>
+</td></tr></table><br><br>
+<a href="../index.html"> [ Tilbake til hovedsiden...] </a>
+</body></html>'
+
+exit
+
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+forhandler=readln(kundeid)
+call close(kundeid)
+return
+

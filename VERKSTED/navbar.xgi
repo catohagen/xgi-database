@@ -1,0 +1,116 @@
+/*
+
+Persistent navbar 
+This script should be called from a html file
+
+*/
+
+say '<link rel="stylesheet" href="../css/style.css"/>
+
+<!--[if IE]>
+
+  <style type="text/css"> 
+   button { padding:5px; background-color:#D3D3D3;}
+   .default { background-color:#9BC6DD;}
+   button.default { background-color:#9BC6DD;}
+  
+  </style> 
+<![endif]-->
+
+<script>
+
+$(document).ready(function()
+{
+
+$.preloadImages = function()
+{
+       for(var i = 0; i<arguments.length; i++)
+       {
+               $("<img />").attr("src", arguments[i]);
+       }
+}
+
+$.preloadImages("images/toparrow.png","images/bottomarrow.png");
+
+
+var $top1= $("#floatingbar").offset().top + 20;   
+var $mid1 =  Math.floor($(window).height() / 2);
+$("#dirbutton").data("mode","scrollup");
+
+
+
+
+$("#dirbutton").click(function()
+{
+   $mode = $(this).data("mode");
+   
+   switch($mode)
+   {
+     case "scrolldown":
+	     $("html, body").animate({scrollTop:0}, "slow");
+		 return false;
+		 break;
+	 case "scrollup":
+	    $scrollpos = $("body").outerHeight();
+	    $("html, body").animate({scrollTop:$scrollpos}, "slow");
+		return false;
+		break;
+   }
+   
+   
+});
+
+$(window).scroll(function()
+{   
+
+		if ($(window).scrollTop()>$top1)   
+		{
+		 $("#floatingbar").addClass("floater");
+		}
+		else
+		{
+		 $("#floatingbar").removeClass("floater");
+
+		 }
+		 
+		 
+		 if($(window).scrollTop() > $mid1)
+		  {
+		     $("#dirbutton").find("img").attr("src","images/toparrow.png");
+			 $("#dirbutton").data("mode","scrolldown");
+		     $("#dirbutton").show();
+		  }else
+		  {	    
+			 $("#dirbutton").find("img").attr("src","images/bottomarrow.png");
+			 $("#dirbutton").data("mode","scrollup");
+			 
+		  }
+});
+ 
+});
+ 
+</script>
+
+
+<div id="container">
+
+	<div  id="floatingbar">
+		 <ul>
+		  
+		   <li><a href="../index.html"><button>Home</button></a></li>
+		   <li><a href="../backup.xgi"><button class="default">Backup</button></a></li>
+                   <li><a href="../nykunde.html"><button class="default">Ny Kunde</button></a></li>
+		   <li><a href="../xgi/viseansatte.xgi"><button class="default">Redigere Ansatt</button></a></li>
+		   <li><a href="../cncbuer.html"><button class="default">Manuell CNC</button></a></li>
+		   <li><a href="../xgi/print_stats.xgi"><button class="default">Statistikk</button></a></li>
+		   <li><a href="../admin.html"><button class="default">Redigere Kunde</button></a></li>
+		   <li><a href="../xgi/vise_jobb_tilbud.xgi"><button class="default">Midl. jobber</button></a></li>
+		   <li><a href="../xgi/vise_jobblinker_sort.xgi?sort=1"><button class="default">Se jobber</button></a></li>
+		   <li><a href="../nyjobb.html"><button class="default">Ny jobb</button></a></li> 
+                   <li><a href="../xgi/v_lager.xgi"><button class="default">Varelager</button></a></li> 
+                   <li><a href="../xgi/cnc_preset.xgi"><button class="default">CNC preset</button></a></li> 
+		   </button></a></li>
+		 </ul>
+	</div>
+
+'

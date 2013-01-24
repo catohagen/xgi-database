@@ -1,0 +1,883 @@
+/*  */
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id
+
+
+idag=date(s)
+idag=date(i,idag,s)
+tilend=idag+14
+tilend=date(n,tilend,i)
+
+tegninger=""
+
+plast=0
+
+z=1
+do until z=17
+if z=1 then type='A'
+if z=2 then type='B'
+if z=3 then type='C'
+if z=4 then type='D'
+if z=5 then type='E'
+if z=6 then type='F'
+if z=7 then type='G'
+if z=8 then type='H'
+if z=9 then type='I'
+if z=10 then type='J'
+if z=11 then type='K'
+if z=12 then type='L'
+if z=13 then type='M'
+if z=14 then type='N'
+if z=15 then type='O'
+if z=16 then type='P'
+
+sprosse_minstepris.type.0=0
+sprosse_minstepris.type.1=0
+
+totalruter.type.0=0
+totalruter.type.1=0
+
+antall.type=0
+
+totalruter.type=0
+
+rute.type.0=0
+rute.type.1=0
+
+minsteruter.type.0=0
+minsteruter.type.1=0
+
+t_prisvanlig.type=0
+t_priskitt.type=0
+
+
+z=z+1
+end
+
+tillegg_rute=0
+m_ruter=0
+t_ruter=0
+t_antall=0
+totalklips=0
+totalhengsler=0
+
+temp=0
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+
+if aar='tilbud' then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."month""
+end
+
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>vh</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body  bgcolor="FFFFFF">
+
+<center><font face="Arial" size="7"><b>Pristilbud Sprosser</b><font size="2">
+'
+
+call open(dat,jobbfile,'R')
+do until garbage="#andre ting"
+garbage=readln(dat)
+end
+
+  hengsler=readln(dat)
+  klips=readln(dat)
+  maling=readln(dat)
+  impreg=readln(dat)
+  jobb=readln(dat)
+
+call close(dat)
+
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+levuke=readln(dat)
+garbage=readln(dat)
+
+say '<br>Hagen Snekkerverksted kan gi følgende pristilbud til 'merk'<br>' 
+
+call hentkundeinfo
+
+prisliste='web-root:verksted/datafiler_kunder/priser.'kundenr''
+standardpriser='web-root:verksted/datafiler_kunder/priser.default'
+
+if exists(prisliste) then do
+call open(pris,prisliste,'R')
+com=readln(pris)
+
+apris=readln(pris)
+pris.A.0=word(apris,2)
+pris.A.1=word(apris,3)
+
+bpris=readln(pris)
+pris.b.0=word(bpris,2)
+pris.b.1=word(bpris,3)
+
+cpris=readln(pris)
+pris.c.0=word(cpris,2)
+pris.c.1=word(cpris,3)
+
+dpris=readln(pris)
+pris.d.0=word(dpris,2)
+pris.d.1=word(dpris,3)
+
+epris=readln(pris)
+pris.e.0=word(epris,2)
+pris.e.1=word(epris,3)
+
+fpris=readln(pris)
+pris.f.0=word(fpris,2)
+pris.f.1=word(fpris,3)
+
+gpris=readln(pris)
+pris.g.0=word(gpris,2)
+pris.g.1=word(gpris,3)
+
+hpris=readln(pris)
+pris.h.0=word(hpris,2)
+pris.h.1=word(hpris,3)
+
+ipris=readln(pris)
+pris.I.0=word(ipris,2)
+pris.I.1=word(ipris,3)
+
+jpris=readln(pris)
+pris.j.0=word(jpris,2)
+pris.j.1=word(jpris,3)
+
+kpris=readln(pris)
+pris.k.0=word(kpris,2)
+pris.k.1=word(kpris,3)
+
+lpris=readln(pris)
+pris.l.0=word(lpris,2)
+pris.l.1=word(lpris,3)
+
+mpris=readln(pris)
+pris.m.0=word(mpris,2)
+pris.m.1=word(mpris,3)
+
+npris=readln(pris)
+pris.n.0=word(npris,2)
+pris.n.1=word(npris,3)
+
+opris=readln(pris)
+pris.o.0=word(opris,2)
+pris.o.1=word(opris,3)
+
+ppris=readln(pris)
+pris.p.0=word(ppris,2)
+pris.p.1=word(ppris,3)
+
+com=readln(pris)
+
+m1pris=word(readln(pris),2)
+m2pris=word(readln(pris),2)
+impris=word(readln(pris),2)
+
+com=readln(pris)
+
+hengslepris=word(readln(pris),2)
+klipspris=word(readln(pris),2)
+
+com=readln(pris)
+
+flukte=word(readln(pris),2)
+minstepris.0=word(readln(pris),2)
+minstepris.1=word(readln(pris),2)
+minstepris_maling=word(readln(pris),2)
+
+call close(pris)
+end
+
+if ~exists(prisliste) then do
+call open(pris,standardpriser,'R')
+com=readln(pris)
+
+apris=readln(pris)
+pris.A.0=word(apris,2)
+pris.A.1=word(apris,3)
+
+bpris=readln(pris)
+pris.b.0=word(bpris,2)
+pris.b.1=word(bpris,3)
+
+cpris=readln(pris)
+pris.c.0=word(cpris,2)
+pris.c.1=word(cpris,3)
+
+dpris=readln(pris)
+pris.d.0=word(dpris,2)
+pris.d.1=word(dpris,3)
+
+epris=readln(pris)
+pris.e.0=word(epris,2)
+pris.e.1=word(epris,3)
+
+fpris=readln(pris)
+pris.f.0=word(fpris,2)
+pris.f.1=word(fpris,3)
+
+gpris=readln(pris)
+pris.g.0=word(gpris,2)
+pris.g.1=word(gpris,3)
+
+hpris=readln(pris)
+pris.h.0=word(hpris,2)
+pris.h.1=word(hpris,3)
+
+ipris=readln(pris)
+pris.i.0=word(ipris,2)
+pris.i.1=word(ipris,3)
+
+jpris=readln(pris)
+pris.j.0=word(jpris,2)
+pris.j.1=word(jpris,3)
+
+kpris=readln(pris)
+pris.k.0=word(kpris,2)
+pris.k.1=word(kpris,3)
+
+lpris=readln(pris)
+pris.l.0=word(lpris,2)
+pris.l.1=word(lpris,3)
+
+mpris=readln(pris)
+pris.m.0=word(mpris,2)
+pris.m.1=word(mpris,3)
+
+npris=readln(pris)
+pris.n.0=word(npris,2)
+pris.n.1=word(npris,3)
+
+opris=readln(pris)
+pris.o.0=word(opris,2)
+pris.o.1=word(opris,3)
+obue=word(opris,4)
+
+ppris=readln(pris)
+pris.p.0=word(ppris,2)
+pris.p.1=word(ppris,3)
+
+com=readln(pris)
+
+m1pris=word(readln(pris),2)
+m2pris=word(readln(pris),2)
+impris=word(readln(pris),2)
+
+com=readln(pris)
+
+hengslepris=word(readln(pris),2)
+klipspris=word(readln(pris),2)
+
+com=readln(pris)
+
+flukte=word(readln(pris),2)
+minstepris.0=word(readln(pris),2)
+minstepris.1=word(readln(pris),2)
+minstepris_maling=word(readln(pris),2)
+
+call close(pris)
+end
+
+
+/***************************************************************************************/
+n=1
+as=1
+call startheader
+
+do until eof(dat)
+antall=readln(dat)
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+if malenr=30 then plast=1
+type=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil=readln(dat)
+seks=""
+kitt=""
+merknad=readln(dat)
+garbage=readln(dat)
+
+tegninger=tegninger''n'<img src="../../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" align="top" border="0">'
+
+
+
+ if garbage="#andre ting" then do
+  hengsler=readln(dat)
+  klips=readln(dat)
+  maling=readln(dat)
+  impreg=readln(dat)
+  jobb=readln(dat)
+ end
+
+if type='A' then call typea
+if type='B' then call typeB
+if type='C' then call typeC
+if type='D' then call typeD
+if type='E' then call typeE
+if type='F' then call typeF
+if type='G' then call typeG
+if type='H' then call typeH
+if type='I' then call typeI
+if type='J' then call typeJ
+if type='K' then call typeK
+if type='L' then call typeL
+if type='M' then call typeM
+if type='N' then call typeE
+if type='O' then call typeO
+if type='P' then call typeP
+
+call visjobb
+as=as+1
+n=n+1
+end
+
+
+z=1
+do until z=17
+if z=1 then type='A'
+if z=2 then type='B'
+if z=3 then type='C'
+if z=4 then type='D'
+if z=5 then type='E'
+if z=6 then type='F'
+if z=7 then type='G'
+if z=8 then type='H'
+if z=9 then type='I'
+if z=10 then type='J'
+if z=11 then type='K'
+if z=12 then type='L'
+if z=13 then type='M'
+if z=14 then type='N'
+if z=15 then type='O'
+if z=16 then type='P'
+
+t_antall=t_antall+antall.type
+t_ruter=t_ruter+totalruter.type.profil
+m_ruter=m_ruter+minsteruter.type.profil
+malepris=m_ruter+t_ruter
+z=z+1
+end
+
+say '    <tr>      <td bgcolor="dddddd" valign="top" width="115" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="dddddd" valign="top" width="52" align="center"><font size="1" face="Helvetica, Arial, sans-serif">total<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="35" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'t_antall'<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="115" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="dddddd" valign="top" width="115" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="dddddd" valign="top" width="30" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="dddddd" valign="top" width="40" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="dddddd" valign="top" width="60" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="dddddd" valign="top" width="57" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><b>'malepris'</b><br>
+      </font></td>
+    </tr>'
+t_antall=0
+t_ruter=0
+m_ruter=0
+malepris=0
+
+call endheader
+say '<br>'tegninger' '
+
+z=1
+do until z=17
+if z=1 then type='A'
+if z=2 then type='B'
+if z=3 then type='C'
+if z=4 then type='D'
+if z=5 then type='E'
+if z=6 then type='F'
+if z=7 then type='G'
+if z=8 then type='H'
+if z=9 then type='I'
+if z=10 then type='J'
+if z=11 then type='K'
+if z=12 then type='L'
+if z=13 then type='M'
+if z=14 then type='N'
+if z=15 then type='O'
+if z=16 then type='P'
+
+t_antall=t_antall+antall.type
+t_ruter=t_ruter+totalruter.type.profil
+m_ruter=m_ruter+minsteruter.type.profil
+
+malepris=m_ruter+t_ruter+tillegg_rute
+
+
+finnes=totalruter.type.0+totalruter.type.1+minsteruter.type.0+minsteruter.type.1
+
+if finnes>0 then do
+call vistyper
+end
+
+z=z+1
+end
+
+pris_impr=0
+pris_maling=0
+pris_klips=0
+pris_hengsler=0
+
+pris_hengsler=t_antall*4*hengslepris
+
+pris_klips=t_antall*4*klipspris
+
+pris_maling2=malepris*m2pris
+
+pris_maling1=malepris*m1pris
+
+pris_impr=malepris*impris
+
+
+/*sumfinale=pris_alt+pris_impr+pris_maling+pris_klips+pris_hengsler*/
+
+call endheader
+call close(dat)
+
+/*
+say '<center><a href="redigere_priser.xgi?kundenr='kundenr'">'kunde'</a><br><br><br></center>'
+*/
+
+/*
+
+say 'antall hengsler : 't_antall'x4 ='t_antall*4' (x 'hengslepris'kr pr.hengsle) = 't_antall*4*hengslepris' kr. <br>'
+
+say 'antall klips : 't_antall'x4 ='t_antall*4'<br>'
+
+say 'malt 2 strøk 'malepris' ruter * 'm2pris' = 'malepris*m2pris'<br>'
+
+say 'malt 1 strøk 'malepris' ruter * 'm1pris' = 'malepris*m1pris'<br>'
+
+
+say 'Impregnert 'malepris' ruter * 'impris' = 'malepris*impris'<br>'
+*/
+/*say '<hr width="60%" size="2" noshade="">'*/
+
+t_priskitt=0
+t_prisvanlig=0
+call prisheader
+
+z=1
+do until z=17
+if z=1 then type='A'
+if z=2 then type='B'
+if z=3 then type='C'
+if z=4 then type='D'
+if z=5 then type='E'
+if z=6 then type='F'
+if z=7 then type='G'
+if z=8 then type='H'
+if z=9 then type='I'
+if z=10 then type='J'
+if z=11 then type='K'
+if z=12 then type='L'
+if z=13 then type='M'
+if z=14 then type='N'
+if z=15 then type='O'
+if z=16 then type='P'
+
+if totalruter.type.0>totalruter.type.1 then totalruter.type=totalruter.type.0
+if totalruter.type.0<totalruter.type.1 then totalruter.type=totalruter.type.1
+
+
+if totalruter.type>0 then do
+
+prisvanlig.type=totalruter.type*pris.type.0
+priskitt.type=totalruter.type*pris.type.1
+
+/*
+
+say '<br>'totalruter.type.0
+say pris.type.0
+say '<br>--'
+say totalruter.type.1
+say pris.type.1
+say '<br>--'
+*/
+
+
+t_prisvanlig.type=t_prisvanlig.type+prisvanlig.type
+t_priskitt.type=t_priskitt.type+priskitt.type
+
+t_prisvanlig=t_prisvanlig+t_prisvanlig.type
+t_priskitt=t_priskitt+t_priskitt.type
+
+call vispris
+
+end
+
+z=z+1
+end
+
+call vistilbehor
+call endheader
+
+say '<table align="center" border="0" cellpadding="0" cellspacing="0" width="80%">
+<td><center>
+<img height=100 src="../images/ramme.gif"><br><font face="verdana,arial" size="4">ramme
+</td>
+<td><center>
+<img height=100 src="../images/midtstokk.gif"><br><font face="verdana,arial" size="4">midtstokk
+</td>
+<td><center>
+<img height=100 src="../images/sekskant.gif"><br><font face="verdana,arial" size="4">sekskant profil
+</td>
+<td><center>
+<img height=100 src="../images/kitt.gif"><br><font face="verdana,arial" size="4">kitt profil
+</td>
+</tr>
+</table>																																																																												
+'
+
+say '
+<center>
+<br><hr width="80%" size="2" noshade="">
+<center>
+<table align="center" border="0" bgcolor="#000000" cellpadding="0" cellspacing="0" width="80%">
+<td bgcolor="#ffffff"><font face="verdana,arial" size="-2" color="#000000">
+<b>Hagen Snekkerverksted<br>
+4120 Tau<br>
+</font>
+</td>
+<td bgcolor="#ffffff"><font face="verdana,arial" size="-2" color="#000000">
+<b>Telefon 51 74 66 24<br>
+Telefax 51 74 53 25<br>
+E-post post@hagen-snekkerverksted.no<br>
+Internett http://www.hagen-snekkerverksted.no
+</td>
+</tr>
+</table>'
+
+exit
+
+
+typeA:
+rutepris.type.0=pris.a.0
+rutepris.type.1=pris.a.1
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typeB:
+rutepris.type.profil=pris.b.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typeC:
+rutepris.type.profil=pris.c.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typed:
+rutepris.type.profil=pris.d.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typeE:
+rutepris.type.profil=pris.e.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typef:
+rutepris.type.profil=pris.f.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+
+typeG:
+rutepris.type.profil=pris.g.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typeH:
+rutepris.type.profil=pris.h.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+tillegg_rute=tillegg_rute+(8*antall)
+rammesum=bredde+hoyde
+
+call regne_pris
+return
+
+
+typei:
+rutepris.type.profil=pris.i.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typej:
+rutepris.type.profil=pris.j.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typek:
+rutepris.type.profil=pris.k.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typel:
+rutepris.type.profil=pris.l.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typem:
+rutepris.type.profil=pris.m.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typen:
+rutepris.type.profil=pris.n.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typeo:
+rutepris.type.profil=pris.o.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+tillegg_rute=tillegg_rute+(8*antall)
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+typep:
+rutepris.type.profil=pris.p.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+tillegg_rute=tillegg_rute+(11*antall)
+rammesum=bredde+hoyde
+call regne_pris
+return
+
+return
+
+regne_pris:
+
+if plast=1 then do
+
+samlemal.100.1=402.73;samlemal.100.2=482.04;samlemal.100.3=563.41;samlemal.100.4=643.75;samlemal.100.5=725.12;samlemal.100.6=806.49;samlemal.100.7=885.80;samlemal.100.8=968.20;samlemal.100.9=1047.51
+samlemal.150.1=454.23;samlemal.150.2=533.54;samlemal.150.3=625.21;samlemal.150.4=704.52;samlemal.150.5=785.89;samlemal.150.6=866.23;samlemal.150.7=947.60;samlemal.150.8=1026.91;samlemal.150.9=1108.28
+samlemal.200.1=502.64;samlemal.200.2=553.11;samlemal.200.3=659.20;samlemal.200.4=745.72;samlemal.200.5=825.03;samlemal.200.6=906.40;samlemal.200.7=987.77;samlemal.200.8=1068.11;samlemal.200.9=1149.48
+samlemal.250.1=552.08;samlemal.250.2=632.42;samlemal.250.3=713.79;samlemal.250.4=793.10;samlemal.250.5=876.53;samlemal.250.6=956.87;samlemal.250.7=1036.18;samlemal.250.8=1117.55;samlemal.250.9=1197.89
+samlemal.300.1=604.61;samlemal.300.2=683.92;samlemal.300.3=765.29;samlemal.300.4=845.63;samlemal.300.5=924.94;samlemal.300.6=1008.37;samlemal.300.7=1088.71;samlemal.300.8=1170.08;samlemal.300.9=1249.39
+samlemal.350.1=656.11;samlemal.350.2=736.45;samlemal.350.3=815.76;samlemal.350.4=897.13;samlemal.350.5=977.47;samlemal.350.6=1058.84;samlemal.350.7=1140.21;samlemal.350.8=1219.52;samlemal.350.9=1301.92;
+samlemal.400.1=704.52;samlemal.400.2=785.89;samlemal.400.3=866.23;samlemal.400.4=947.60;samlemal.400.5=1026.91;samlemal.400.6=1108.28;samlemal.400.7=1190.68;samlemal.400.8=1269.99;samlemal.400.9=1351.36;
+samlemal.450.1=754.99;samlemal.450.2=836.36;samlemal.450.3=915.67;samlemal.450.4=996.01;samlemal.450.5=1077.38;samlemal.450.6=1157.72;samlemal.450.7=1240.12;samlemal.450.8=1320.46;samlemal.450.9=1399.77;
+
+
+
+if rammesum>=100 then rammel=100
+if rammesum>=150 then rammel=150
+if rammesum>=200 then rammel=200
+if rammesum>=250 then rammel=250
+if rammesum>=300 then rammel=300
+if rammesum>=350 then rammel=350
+if rammesum>=400 then rammel=400
+if rammesum>=450 then rammel=450
+
+if ruter=1|ruter=2|ruter=3|ruter=4 then sprosspris=samlemal.rammel.1
+if ruter=5|ruter=6 then sprosspris=samlemal.rammel.2
+if ruter=7|ruter=8 then sprosspris=samlemal.rammel.3
+if ruter=9|ruter=10 then sprosspris=samlemal.rammel.4
+if ruter=11|ruter=12 then sprosspris=samlemal.rammel.5
+if ruter=13|ruter=14 then sprosspris=samlemal.rammel.6
+if ruter=15|ruter=16 then sprosspris=samlemal.rammel.7
+if ruter=17|ruter=18|ruter=19|ruter=20 then sprosspris=samlemal.rammel.8
+if ruter>20 then sprosspris=samlemal.rammel.9
+
+say sprosspris
+
+antall.type=antall.type+antall
+totalruter.type.profil=totalruter.type.profil+totruter
+
+end
+
+if plast=0 then do
+
+	sprosspris=rutepris.type.profil*ruter
+	antall.type=antall.type+antall
+
+	if sprosspris>minstepris.profil THEN DO
+	 totalruter.type.profil=totalruter.type.profil+totruter
+	end
+
+	if sprosspris<minstepris.profil THEN DO
+	 minsteruter.type.profil=minsteruter.type.profil+totruter
+	 sprosse_minstepris.type.profil=sprosse_minstepris.type.profil+antall
+	end
+end
+
+if hengsler=1 THEN DO
+antallhengsler=antall*4
+hengsle_pris=antallhengsler*hengslepris
+totalhengsler=totalhengsler+antallhengsler
+end
+
+if klips=1 THEN DO
+antallklips=antall*4
+sumklips=antallklips*klipspris
+totalklips=totalklips+sumklips
+end
+
+return
+
+
+startheader:
+say '<table cellpadding="2" cellspacing="2" border="0" width="90%" align="center">  <tbody>    <tr>      <td bgcolor="cccccc" valign="top" width="1"><font size="1" face="Helvetica, Arial, sans-serif">N0<br>      </font></td>      <td bgcolor="cccccc" valign="top" width="10"><font size="1" face="Helvetica, Arial, sans-serif">Merk<br>      </font></td>      <td bgcolor="cccccc" valign="top" width="40" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Antall<br>      </font></td>      <td bgcolor="cccccc" valign="top" width="150" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Bredde<br>      </font></td>      <td bgcolor="cccccc" valign="top" width="120" align="center"><font size="1" face="Helvetica, Arial, sans-serif">H&oslash;yde<br>      </font></td>      <td bgcolor="cccccc" valign="top" width="10" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Type<br>      </font></td>
+      <td bgcolor="cccccc" valign="top" width="40" align="center"><font size="1" face="Helvetica, Arial, sans-serif">M&aring;lenr<br>      </font></td>      <td bgcolor="cccccc" valign="top" width="40" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Inndeling<br>      </font></td>
+      <td bgcolor="cccccc" valign="top" width="10" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Ruter<br>      </font></td>    </tr>'
+return
+
+
+vistyper:
+totalpr=(totalruter.type.0*pris.type.0)+(totalruter.type.1*pris.type.1)+(sprosse_minstepris.type.0*minstepris.0)+(sprosse_minstepris.type.1*minstepris.1)
+/*pris_alt=pris_alt+totalpr*/
+
+return
+
+
+
+visjobb:
+if profil=0 then seks="X"
+if profil=1 then kitt="X"
+call color
+say '    <tr>      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'n'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'merknad'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'antall'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'bredde'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'hoyde'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="30" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'type'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="40" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'malenr'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="60" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'inndel_b' X 'inndel_h'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="57" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><b>'totruter'</b><br>      </font></td>    </tr>'
+
+return
+
+endheader:
+say '</tr>  </tbody></table>'
+return
+
+color:
+if right(as,1)=0|right(as,1)=2|right(as,1)=4|right(as,1)=6|right(as,1)=8 then bgcolor="efefef"
+if right(as,1)=1|right(as,1)=3|right(as,1)=5|right(as,1)=7|right(as,1)=9 then bgcolor="ffffff"
+return
+
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+call close(kundeid)
+return
+
+
+prisheader:
+
+say '<table cellpadding="2" cellspacing="2" border="0" width="90%" align="center">  <tbody>    <tr>      <td bgcolor="cccccc" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Sprosse Type<br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Sekskant Profil<br>      </font></td>      <td bgcolor="cccccc" valign="top" width="30" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="cccccc" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Kittprofil<br>      </font></td>      <td bgcolor="cccccc" valign="top" width="30"align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Andre tillegg <br>      </font></td>      <td bgcolor="cccccc" valign="top" width="30" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>    </tr>'
+return
+
+vispris:
+
+
+say ' <tr>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Type 'type'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'t_prisvanlig.type'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'t_priskitt.type'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>    </tr>
+
+ <tr>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Minstepris Type 'type'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'sprosse_minstepris.type.profil*minstepris.0'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'sprosse_minstepris.type.profil*minstepris.1'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>    </tr>
+'
+return
+
+vistilbehor:
+say '
+    <tr>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">Sum Sprosser uten tilbehør<br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">kr.'trunc(t_prisvanlig,2)' <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">kr.'trunc(t_priskitt,2)'<br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>    </tr>
+
+    <tr>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">Rabatt - 20% <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">kr.'trunc(t_prisvanlig-(t_prisvanlig*20/100),2)' <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">kr.'trunc(t_priskitt-(t_priskitt*20/100),2)'<br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>    </tr>
+
+'
+t_prisvanlig=trunc(t_prisvanlig-(t_prisvanlig*20/100),2)
+t_priskitt=trunc(t_priskitt-(t_priskitt*20/100),2)
+say '
+
+    <tr>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Tillegg for Hengsler<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'pris_hengsler'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>
+      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'pris_hengsler'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>    </tr>
+
+
+
+    <tr>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Tillegg for impregnering<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'pris_impr'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'pris_impr'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>    </tr>
+
+    <tr>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Tillegg hvis Malt 1 Strøk (grunning) + impregnering<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'pris_maling1'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'pris_maling1'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>    </tr>
+    <tr>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Tillegg hvis Malt 2 Strøk + impregnering<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'pris_maling2'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'pris_maling2'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>    </tr>
+
+    <tr>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">Komplett Sprosser m/hengsler og 2 strøk maling <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">kr.'trunc(t_prisvanlig+pris_maling2+pris_hengsler,2)' <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif">kr.'trunc(t_priskitt+pris_maling2+pris_hengsler,2)'<br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="3" face="Helvetica, Arial, sans-serif"> <br>      </font></td>    </tr>
+
+    <tr>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">24% mva <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">kr.'trunc((t_prisvanlig+pris_maling2+pris_hengsler)*24/100,2)' <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">kr.'trunc((t_priskitt+pris_maling2+pris_hengsler)*24/100,2)'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"> <br>      </font></td>    </tr>
+
+
+    <tr>      <td bgcolor="cccccc" valign="top" align="center"><font size="4" face="Helvetica, Arial, sans-serif">Totalpris m/mva <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="4" face="Helvetica, Arial, sans-serif">kr.&nbsp;'trunc(t_prisvanlig+pris_maling2+pris_hengsler + (t_prisvanlig+pris_maling2+pris_hengsler)*24/100,0)',- <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="4" face="Helvetica, Arial, sans-serif"> <br>      </font></td>
+      <td bgcolor="cccccc" valign="top" align="center"><font size="4" face="Helvetica, Arial, sans-serif">kr.&nbsp;'trunc(t_priskitt+pris_maling2+pris_hengsler + (t_priskitt+pris_maling2+pris_hengsler)*24/100,0)',-<br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="4" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="4" face="Helvetica, Arial, sans-serif"> <br>      </font></td>      <td bgcolor="cccccc" valign="top" align="center"><font size="4" face="Helvetica, Arial, sans-serif"> <br>      </font></td>    </tr> 
+
+    <tr>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">Tilbudet varer til <br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif">'tilend'<br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>
+      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>      <td bgcolor="ffffff" valign="top" align="center"><font size="1" face="Helvetica, Arial, sans-serif"><br>      </font></td>    </tr> '
+
+return
+
+
+

@@ -1,0 +1,51 @@
+/*  */
+
+parse arg 'a.0=' a.0 '&a.1=' a.1 '&b.0=' b.0 '&b.1=' b.1 '&c.0=' c.0 '&c.1=' c.1 '&d.0=' d.0 '&e.0=' e.0 '&e.1=' e.1 '&f.0=' f.0 '&f.1=' f.1 '&g.0=' g.0 '&g.1=' g.1 '&h.0=' h.0 '&h.1=' h.1 '&i.0=' i.0 '&j.0=' j.0 '&j.1=' j.1 '&k.0=' k.0 '&k.1=' k.1 '&l.0=' l.0 '&l.1=' l.1 '&m.0=' m.0 '&m.1=' m.1 '&n.0=' n.0 '&n.1=' n.1 '&o.0=' o.0 '&o.1=' o.1 '&p.0=' p.0 '&p.1=' p.1 '&obue=' obue '&m1pris=' m1pris '&m2pris=' m2pris '&impris=' impris '&hengslepris=' hengslepris '&klipspris=' klipspris '&flukte=' flukte '&deling=' deling '&xtram=' xtram '&minstepris.0=' minstepris.0 '&minstepris.1=' minstepris.1 '&minstepris_maling=' minstepris_maling '&kundenr=' kundenr
+
+prisliste='web-root:verksted/datafiler_kunder/priser.'kundenr''
+
+call open(pris,prisliste,'W')
+call writeln(pris,'#priser')
+call writeln(pris,'A 'a.0' 'a.1)
+call writeln(pris,'B 'b.0' 'b.1)
+call writeln(pris,'C 'c.0' 'c.1)
+call writeln(pris,'D 'd.0' 'd.0)
+call writeln(pris,'E 'e.0' 'e.1)
+call writeln(pris,'F 'f.0' 'f.1)
+call writeln(pris,'G 'g.0' 'g.1)
+call writeln(pris,'H 'h.0' 'h.1)
+call writeln(pris,'I 'i.0' 'i.0)
+call writeln(pris,'J 'j.0' 'j.1)
+call writeln(pris,'K 'k.0' 'k.1)
+call writeln(pris,'L 'l.0' 'l.1)
+call writeln(pris,'M 'm.0' 'm.1)
+call writeln(pris,'N 'n.0' 'n.1)
+call writeln(pris,'O 'o.0' 'o.1' 'obue)
+call writeln(pris,'P 'p.0' 'p.1)
+call writeln(pris,'#priser maling')
+call writeln(pris,'maling1 'm1pris)
+call writeln(pris,'maling2 'm2pris)
+call writeln(pris,'impreg 'impris)
+call writeln(pris,'#priser oppheng')
+call writeln(pris,'hengsler 'hengslepris)
+call writeln(pris,'klips 'klipspris)
+call writeln(pris,'#priser dilldall')
+call writeln(pris,'flukte_deling 'flukte' 'deling' 'xtram)
+call writeln(pris,'minstepris6kant 'minstepris.0)
+call writeln(pris,'minstepriskitt 'minstepris.1)
+call writeln(pris,'minstepris_maling 'minstepris_maling)
+call close(pris)
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+say 'Lagrer nye priser...'
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="1;url=redigere_priser.xgi?kundenr='kundenr'" />'
+say '</body></html>'
+
+exit

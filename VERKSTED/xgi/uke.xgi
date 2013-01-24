@@ -1,0 +1,30 @@
+/* */
+
+idag=date(s)
+/* 20020602*/
+
+year=substr(idag,1,4)
+month=substr(idag,5,2)
+day=substr(idag,7,2)
+
+    isleap=year//4
+    if isleap=0 then leap=1
+    if isleap>0 then leap=0
+    a = (year +  (year % 4) - leap + 1) // 7     /*find weekday for Jan 1 (1 = Sat, 2 = Sun)*/
+    m = 4 - a                                     /*find date of Monday in first week*/
+    int=30.56*month
+    d = day + (int % 1) - 32      /*calculate day number*/
+    if month < 3 then d = d + 2                   /*adjust for Jan and Feb*/
+    week=d-m
+    uke =  ((week % 1) / 7 + 1  ) % 1                   /*find number of whole weeks*/
+    dag = ((d - m) // 7) + 2                        /*'remainder gives weekday*/
+
+uke=right('00'||uke,2)
+
+u0=substr(uke,1,1)
+u1=substr(uke,2,1)
+
+
+d1=dag
+
+say 'Uke <img src="img/'u0'.gif" width="25" alt="img"><img src="img/'u1'.gif" width="25" alt="img"> , <img src="img/'d1'.gif" width="15" alt="img">'

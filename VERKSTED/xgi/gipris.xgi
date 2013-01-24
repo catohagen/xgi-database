@@ -1,0 +1,5 @@
+/* */
+
+PARSE ARG 'antall=' antall '&bredde=' bredde' &hoyde=' hoyde '&type=' type '&ramme=' ramme '&profil=' profil '&inndel_b=' inndel_b '&inndel_h=' inndel_h '&maling=' maling '&impreg=' impreg '&hengsler=' hengsler '&klips=' klips
+say antall' sprosser'
+exit

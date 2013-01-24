@@ -1,0 +1,92 @@
+/*  */
+
+PARSE ARG 'aar=' aar '&moned=' moned '&jobbid=' id
+/* id=compress(id)*/
+
+totantall=0
+totruter=0
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"moned"/jobb_id."id""
+
+if ~exists('ram:jobb.xls.tmp') then do
+	call open(temp,"ram:jobb.xls.tmp",'W')
+	call writeln(temp,'#exported cut n paste data')
+	call close(temp)
+end
+
+call opendatabase
+
+/* lese fra database */
+opendatabase:
+i=1
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merknad=readln(dat)
+if merknad="" then merknad=" "
+levuke=readln(dat)
+garbage=readln(dat)
+
+do until eof(dat)
+
+antall=readln(dat)
+bredde=readln(dat)
+hoyde=readln(dat)
+
+bredde=translate(bredde, ',','.')
+hoyde=translate(hoyde, ',','.')
+
+
+
+malenr=readln(dat)
+type=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil=readln(dat)
+merknad=readln(dat)
+garbage=readln(dat)
+call visjobb2
+if garbage="#andre ting" then do
+call endheader
+end
+i=i+1
+end
+
+visjobb2:
+call open(data,"ram:jobb.xls.tmp",'A')
+call writech(data,antall'	')
+call writech(data,bredde'	')
+call writech(data,'x	')
+call writech(data,hoyde'	')
+call writech(data,malenr'	')
+call writech(data,type'	')
+if profil=0 then call writech(data,'	')
+if profil=1 then call writech(data,'x	')
+call writech(data,inndel_b'	')
+call writech(data,'x	')
+call writech(data,inndel_h'	')
+call writeln(data,'')
+return
+
+
+endheader:
+call close(dat)
+call close(data)
+address command('copy ram:jobb.xls.tmp web-root:verksted/cnc-programmer/xls-data.txt')
+address command('delete ram:jobb.xls.tmp')
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<center>Vent litt<br>'
+say '<br><br><br>'
+say '<a href="../CNC-Programmer/xls-data.txt">fila ligger her, copy n paste i kapplista</a>
+</center>
+</body></html>'
+
+exit
+

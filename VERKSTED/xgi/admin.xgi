@@ -1,0 +1,33 @@
+/* */ 
+PARSE ARG 'login=' login '&passwd=' password
+
+if login="hagen" then do
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+say '<br><br>
+Login godkjent, trykk <a href="visekunder.xgi"> her!</a> for å administrere kunde data 
+<br><br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '</body></html>'
+
+exit
+end
+
+
+Say 'Restricted area, please leave'
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+Say 'Feil login, går tilbake til hovedsiden om 3 sekunder...'
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="3;url=../index.html" />'
+say '</body></html>'
+
+exit

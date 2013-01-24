@@ -1,0 +1,32 @@
+/* */
+
+PARSE ARG 'kundenr=' kundenr
+
+if open(log,"ram:jobb.kunde.tmp",'R')
+then do
+say 'Someone already have opened the database, please wait or abort'
+say '<br>'
+say '<br>'
+say '<br>'
+say '<br><center>'
+say '<a href="slett_temp.xgi"> trykk her for å slette temp filene</a>'
+exit
+end
+
+if ~show( 'P',"SKJEMA" ) then do
+say 'Kalkulerings Server må startes...vent litt...'
+address command('run >nil: rx web-root:verksted/xgi/skjema-engine.xgi')
+end
+call delay(50)
+address 'SKJEMA'
+
+add_kunde kundenr
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="0;url=velg_sprosser.xgi" />'
+say '</body></html>'
+
+exit

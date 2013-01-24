@@ -1,0 +1,107 @@
+/*  */
+
+PARSE ARG 'antall=' antall '&bredde=' bredde '&hoyde=' hoyde '&malenr=' malenr '&type=' type '&inndel_b=' inndel_b '&inndel_h=' inndel_h '&merknad=' merknad '&profil=' profil '&flukte=' flukte '&deling=' deling
+
+if profil="0&deling=1" then do
+profil=0
+deling=1
+end
+
+if profil="1&deling=1" then do
+profil=1
+deling=1
+end
+
+if flukte="" then flukte=0
+if deling="" then deling=0
+
+flukte=trunc(flukte)
+deling=trunc(deling)
+
+type=translate(type, xrange('A','Z'), xrange('a','z'))
+
+if merknad="" then merknad=" "
+
+merknad=translate(merknad, '_',' ')
+
+bredde=translate(bredde, '.',',')
+hoyde=translate(hoyde, '.',',')
+
+ramme=0
+if malenr=5 then ramme=1
+if malenr=2 then ramme=1
+
+/*merknad="'"merknad"'"*/
+
+
+if antall=""|bredde=""|hoyde=""|malenr=""|type=""|inndel_b=""|inndel_h="" then do
+ say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+ say '<html><head>'
+ say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+ say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+ say '<meta http-equiv="Refresh" content="0;url=../jobb_inntast.html" />'
+ say '</body></html>'
+ exit
+end
+
+call open_data
+call add_data antall bredde hoyde malenr type inndel_b inndel_h ramme merknad profil flukte deling
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="0;url=../jobb_inntast.html" />'
+say '</body></html>'
+
+exit
+
+OPEN_DATA:
+if ~exists('ram:jobb.skjema.tmp') then do
+	call open(temp,"ram:jobb.skjema.tmp",'W')
+	call writeln(temp,'#start av sprosse data')
+	call close(temp)
+end
+return
+
+ADD_DATA:
+parse arg data_line
+
+antall=word(data_line,1)
+bredde=word(data_line,2)
+hoyde=word(data_line,3)
+malenr=word(data_line,4)
+type=word(data_line,5)
+inndel_b=word(data_line,6)
+inndel_h=word(data_line,7)
+ramme=word(data_line,8)
+merknad=word(data_line,9)
+profil=word(data_line,10)
+flukte=word(data_line,11)
+deling=word(data_line,12)
+
+call open(data,"ram:jobb.skjema.tmp",'A')
+call writeln(data,antall)
+call writeln(data,bredde)
+call writeln(data,hoyde)
+call writeln(data,malenr)
+call writeln(data,type)
+call writeln(data,inndel_b)
+call writeln(data,inndel_h)
+call writeln(data,ramme)
+call writeln(data,profil' 'flukte' 'deling)
+call writeln(data,merknad)
+call writeln(data,'#')
+call close(data)
+return
+
+ADD_KUNDE:
+parse arg kundenr
+call open(kundeid,"ram:jobb.kunde.tmp",'W')
+call writeln(kundeid,kundenr)
+call close(kundeid)
+return
+
+CLOSE_DATA:
+call close(data)
+return

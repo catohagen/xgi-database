@@ -1,0 +1,119 @@
+/*  */
+
+PARSE ARG 'merk=' merk '&antall=' antall '&bredde=' bredde '&hoyde=' hoyde '&type=' type '&malenr=' malenr '&inndel_b=' inndel_b '&inndel_h=' inndel_h '&profil=' profil '&flukte=' flukte '&deling=' deling '&linje=' linje '&aar=' aar '&month=' month '&jobbid=' id
+
+say 'jobb file 'aar' 'month' 'id'<br>'
+
+say 'Lagrer forandringer i linje 'linje'<br>'
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Hagen Snekkerverksted Database</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Refresh" content="1;url=redigerejobb.xgi?aar='aar'&month='month'&jobbid='id'" />
+</head>
+<body  bgcolor="ffffff" text="000000" link="#FF9900" alink="#FF9900" vlink="#cc6600"></html>'
+
+changedate=date(s)
+changetime=time(s)
+
+changedate=changedate'-'changetime
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+jobbfile_change="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id"_"changedate""
+
+if aar='tilbud' then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."month""
+jobbfile_change="web-root:verksted/datafiler_jobber_temp/jobb_id."month"_"changedate""
+end
+
+
+/* lese fra database */
+opendatabase:
+i=1
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merknad=readln(dat)
+levuke=readln(dat)
+garbage=readln(dat)
+
+do until eof(dat)
+antall.i=readln(dat)
+bredde.i=readln(dat)
+hoyde.i=readln(dat)
+malenr.i=readln(dat)
+type.i=readln(dat)
+inndel_b.i=readln(dat)
+inndel_h.i=readln(dat)
+ramme.i=readln(dat)
+profil_dat=readln(dat)
+profil.i=word(profil_dat,1)
+flukt.i=word(profil_dat,2)
+flukt.i=word(profil_dat,2)
+del.i=word(profil_dat,3)
+if flukt.i="" then flukt.i=0
+if del.i="" then del.i=0
+merk.i=readln(dat)
+garbage=readln(dat)
+ if garbage="#andre ting" then do
+ hengsler=readln(dat)
+ klips=readln(dat)
+ maling=readln(dat)
+ impreg=readln(dat)
+ totlinjer=i
+ end
+i=i+1
+end
+call close(dat)
+
+antall.linje=antall
+bredde.linje=bredde
+hoyde.linje=hoyde
+malenr.linje=malenr
+type.linje=type
+inndel_b.linje=inndel_b
+inndel_h.linje=inndel_h
+
+profil.linje=profil
+flukt.linje=flukte
+del.linje=deling
+merk.linje=merk
+
+address command 'c:copy 'jobbfile' to 'jobbfile_change''
+
+i=1
+call open(ny,jobbfile,'W')
+call writeln(ny,'#kundeinfo')
+call writeln(ny,dato)
+call writeln(ny,kundenr)
+call writeln(ny,merknad)
+call writeln(ny,levuke)
+
+do until i=totlinjer+1
+call writeln(ny,'#nylinje')
+call writeln(ny,antall.i)
+call writeln(ny,bredde.i)
+call writeln(ny,hoyde.i)
+call writeln(ny,malenr.i)
+call writeln(ny,type.i)
+call writeln(ny,inndel_b.i)
+call writeln(ny,inndel_h.i)
+call writeln(ny,ramme.i)
+call writeln(ny,profil.i' 'flukt.i' 'del.i)
+call writeln(ny,merk.i)
+i=i+1
+end
+
+call writeln(ny,'#andre ting')
+call writeln(ny,hengsler)
+call writeln(ny,klips)
+call writeln(ny,maling)
+call writeln(ny,impreg)
+
+call close(ny)
+
+exit

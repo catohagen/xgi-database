@@ -1,0 +1,123 @@
+/*dill  */
+
+PARSE ARG 'aar=' aar '&moned=' moned
+
+id=1
+if moned="" then do
+idag=date()
+dato=word(idag,1)
+moned=word(idag,2)
+aar=word(idag,3)
+if moned="Jan" then moned="01"
+if moned="Feb" then moned="02"
+if moned="Mar" then moned="03"
+if moned="Apr" then moned="04"
+if moned="May" then moned="05"
+if moned="Jun" then moned="06"
+if moned="Jul" then moned="07"
+if moned="Aug" then moned="08"
+if moned="Sep" then moned="09"
+if moned="Oct" then moned="10"
+if moned="Nov" then moned="11"
+if moned="Dec" then moned="12"
+end
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF">'
+
+
+call open(log,"web-root:verksted/datafiler_ansatte/ansatt.dat",'R')
+ansatte=readln(log)
+call close(log)
+
+totpris.1=0
+totpris.2=0
+totpris.3=0
+
+jobber.1=0
+jobber.2=0
+jobber.3=0
+
+call open(log,"web-root:verksted/datafiler_jobber/"aar"-"moned".dat",'R')
+blank=readln(log)
+totjobber=readln(log)
+call close(log)
+
+jobbid=1
+
+do until jobbid=totjobber
+makefile="web-root:verksted/datafiler_jobber/"aar"/"moned"/make_id."jobbid""
+ if exists(makefile) then do
+ call lesfil
+ call close(data)
+ end
+
+jobbid=jobbid+1
+end
+
+id=1
+ do until id=ansatte+1
+  call vis
+  id=id+1
+ end
+say '<br>'
+say '<br>'
+say '<br>'
+say '<a href="xgi/ansatt_lonn.xgi?aar=2002&moned=06">forrige maaned</A>'
+
+exit
+
+lesfil:
+call open(data,makefile,'R')
+com=readln(data)
+id=readln(data)
+jobbstatus=readln(data)
+ if jobbstatus=2 then do
+ jobber.id=jobber.id+1
+ call jobb_info
+ end
+return
+
+
+jobb_info:
+prisfile="web-root:verksted/datafiler_jobber/"aar"/"moned"/pris_id."jobbid""
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"moned"/jobb_id."jobbid""
+call open(jobbfil,jobbfile,'R')
+        com=readln(jobbfil)
+        bdato=readln(jobbfil)
+        kundenr=readln(jobbfil)
+        call close(jobbfil)
+
+if exists(prisfile) then do
+call open(prisfil,prisfile,'R')
+        typer=readln(prisfil)
+        antall=readln(prisfil)
+        ruter=readln(prisfil)
+        jobbpris=readln(prisfil)
+        malepris=readln(prisfil)
+        impregpris=readln(prisfil)
+        call close(prisfil)
+hengslepris=0
+if kundenr=002 then hengslepris=antall*4.2
+totpris=jobbpris+malepris+impregpris+hengslepris
+totpris.id=totpris.id+totpris
+end
+return
+
+vis:
+malsum=18000
+restsum=malsum-totpris.id
+gfxrestsum=restsum/30
+
+gfxsum=totpris.id/30
+if totpris.id=0 then gfxsum=1
+say '<br><img src="datafiler_ansatte/'id'.jpg" width="20"> 'jobber.id' jobber 'totpris.id' kr. '
+say '<a href="xgi/vise_jobblinker_sort.xgi?sort=5&moned='moned'&ansatt='id'" border="0"><img src="img/greendot.gif" border="0" height="10" width="'gfxsum'"><img src="img/reddot.gif" border="0" height="10" width="'gfxrestsum'"></A> 18.000 kr'
+say '<br>'
+return

@@ -1,0 +1,22 @@
+/* */
+
+  say "<html><head><title>Backup</title></head><body>"
+
+say backup'<br>'
+
+dt=date(s)
+
+
+address command 'c:lha -r u ram:xgi_database'dt' SYS:html/verksted/ >ram:list'
+
+call open(dat,"ram:list",'R')
+
+do until eof(dat)
+line=readln(dat)
+say line'<br>'
+end
+call close(dat)
+
+say "</body></html>"
+exit
+

@@ -1,0 +1,69 @@
+/* */
+
+call open(log,"web-root:verksted/pris.tmp ",'R')
+antall=readln(log)
+totruter=readln(log)
+rutepris=readln(log)
+sprossepris=readln(log)
+malepris=readln(log)
+impreg_pris=readln(log)
+hengslepris=readln(log)
+klipspris=readln(log)
+totpris=readln(log)
+call close(log)
+
+blank="&nbsp"
+
+if malepris="MALEPRIS" then malepris=" -ingen maling-"
+
+if impreg_pris="IMPREG_PRIS" then impreg_pris=" -ingen impregnering-"
+
+if hengslepris="HENGSLEPRIS" then hengslepris=" -ingen hengsler-"
+
+if klipspris="KLIPSPRIS" then klipspris=" -ingen klips-"
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>AREXX WEBSERVER - NYTT KONTOR SYSTEM !!!!!!!!!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF" background="img/bg.gif" text="000000" link="#334477" alink="#FF9900" vlink="#cc6600">
+<center><img src="../cnc/firmalogo.gif"><img src="../cnc/sprossepynt.jpg">
+<br>
+<table border="1" bgcolor="#e0e0e0" cellpadding="3" cellspacing="3" width="600">
+<tr>
+<td border="0" bgcolor="#cccccc"><font face="verdana,arial" size="-1" color="#000000">'
+say 'antall sprosser...... = 'antall
+say '<br>'
+say 'antall ruter totalt.. = 'totruter
+say '<br>'
+say 'pris pr. rute........ = 'rutepris
+say '<br>'
+say 'pris pr. sprosse..... = 'sprossepris
+say '<br>'
+say 'pris for maling...... = 'malepris
+say '<br>'
+say 'pris for impregnering = 'impreg_pris
+say '<br>'
+say 'pris for hengsler.... = 'hengslepris
+say '<br>'
+say 'pris for klips ...... = 'klipspris
+say '<br>'
+say '-------------------------------------------------------'
+say '<br>'
+say 'totalt .............. = 'totpris' kr.'
+say '<br>'
+moms=totpris*24/100
+say 'moms 24%............. = 'moms' kr.'
+say '<br>'
+say '-------------------------------------------------------'
+say '<br>'
+say 'total pris m/mva..... = 'totpris+moms' kr.'
+say '<br>'
+say '</font></td>
+	</tr>
+	</table>'

@@ -1,0 +1,968 @@
+/* */ 
+
+PARSE ARG 'aar=' aar '&kundenr=' kunde
+
+if kunde="" then kunde="0"
+
+idag=date(s)
+today=substr(idag,7,2)
+year=substr(idag,1,4)
+
+
+if aar="" then aar=year
+
+
+say '<FORM action="print_stats.xgi?aar='aar'" method="get">
+<input type="submit" value="velg aar">
+<SELECT name="aar" tabindex=0 size=1>
+<option>2002</OPTION>
+<option>2003</OPTION>
+<option>2004</OPTION>
+<option>2005</OPTION>
+<option>2006</OPTION>
+<option>2007</OPTION>
+<option>2008</OPTION>
+<option>2009</OPTION>
+<option>2010</OPTION>
+<option>2011</OPTION>
+
+</SELECT>
+</form><br>'
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF">'
+
+t_totalantall=0
+t_totruter=0
+t_sumhengsler=0
+t_sumklips=0
+t_males=0
+t_impreg=0
+t_meterprofil=0
+t_meterramme=0
+t_meter_midt=0
+t_skruer=0
+t_vekt=0
+t_totcm3=0
+
+
+month=1
+
+new_month:
+month=RIGHT('00'||month,2)
+if month=13 then call final_graph
+
+statfile="web-root:verksted/datafiler_jobber/"aar"/stat_"month".dat"
+
+if aar=year then do
+address command 'delete 'statfile' >:nil'
+end
+
+if exists(statfile) then do
+call open(stat,statfile,'R')
+n_totalantall=readln(stat)
+n_totruter=readln(stat)
+n_sumhengsler=readln(stat)
+n_sumklips=readln(stat)
+n_males=readln(stat)
+n_impreg=readln(stat)
+n_meterprofil=readln(stat)
+n_meterramme=readln(stat)
+n_meter_midt=readln(stat)
+n_skruer=readln(stat)
+n_vekt=readln(stat)
+n_totcm3=readln(stat)
+call close(stat)
+call vis
+end
+
+
+maanedfile="web-root:verksted/datafiler_jobber/"aar"-"month".dat"
+
+say '#'month
+
+if ~exists(maanedfile) then do
+month=month+1
+say '#'month
+call new_month
+end
+
+call open(dat,maanedfile,'R')
+garbage=readln(dat)
+jobber=readln(dat)
+call close(dat)
+
+jobber=jobber-1
+
+nyjobb:
+if jobber=0 then call vis
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."jobber""
+
+
+totcm3=0
+meterprofil=0
+meterramme=0
+skruer=0
+vekt=0
+meter_midt=0
+totalantall=0
+totruter=0
+impreg=0
+males=0
+sumhengsler=0
+sumklips=0
+
+/* open file , and keep open until eof */
+say jobbfile
+if ~exists(jobbfile) then do
+jobber=jobber-1
+call nyjobb
+end
+
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+if kunde~=0 then do
+
+
+if kundenr~=kunde then do
+call close(dat) 
+jobber=jobber-1
+call nyjobb
+end
+
+end
+
+merk=readln(dat)
+if merk="" then merk=" "
+levuke=readln(dat)
+garbage=readln(dat)
+
+dato=date()
+tid=time()
+
+ansattid="blank"
+makefile="web-root:verksted/datafiler_jobber/"aar"/"month"/make_id."jobber""
+ if exists(makefile) then do
+ call open(data,makefile,'R')
+ com=readln(data)
+ ansattid=readln(data)
+ jobbstatus=readln(data)
+ call close(data) 
+end
+
+do until eof(dat)
+antall=readln(dat)
+if antall="" then antall=0
+totalantall=totalantall+antall
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+typen=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+truter=inndel_b*inndel_h*antall
+totruter=totruter+truter
+ramme=readln(dat)
+profil_dat=readln(dat)
+profil=word(profil_dat,1)
+flukt=word(profil_dat,2)
+
+merknad=readln(dat)
+if merknad="" then merknad=" "
+garbage=readln(dat) 
+	if garbage="#andre ting" then do
+	 hengsler=readln(dat)
+	 klips=readln(dat)
+	 maling=readln(dat)
+	 impreg=readln(dat)
+	 dill=readln(dat)
+	end
+
+call calc_list
+call material
+end
+
+call end_kappliste
+call close(dat) 
+jobber=jobber-1
+call nyjobb
+
+exit
+
+/*
+jobber=jobber-1
+call nyjobb
+*/
+
+calc_list:
+bredde=translate(bredde, '.',',')
+hoyde=translate(hoyde, '.',',')
+
+type=left(typen,1)
+
+subtype=right(typen,1)
+
+ram22=""
+ram18=""
+ramcolor="ffffff"
+if ramme=0 then do
+ramme=2.2
+ram22="X"
+end
+if ramme=1 then do
+ramme=1.6
+ram18="X"
+ramcolor="555555"
+end
+
+
+kitt=""
+kittcolor="ffffff"
+seks=""
+
+if profil=0 then do
+seks="X"
+end
+
+if profil=1 then do
+kitt="X"
+kittcolor="555555"
+end
+
+
+y_pinne="&nbsp;"
+m_pinne="&nbsp;"
+midtstokker="&nbsp;"
+kapp_midtpinne="&nbsp;"
+kapp_ytterpinne="&nbsp;"
+midtpinne_inndel="&nbsp;"
+b_pinne="&nbsp;"
+h_pinne="&nbsp;"
+
+profil_.0=0.8
+profil_.1=2.4
+midt=5.0
+midtnese=3.5
+
+
+if malenr=3 then do
+maalenr_b=2.0
+maalenr_h=1.3
+end
+
+if malenr=1 then do
+maalenr_b=2.8
+maalenr_h=2.1
+end
+
+if malenr=2 then do
+maalenr_b=3.2
+maalenr_h=3.3
+ramme=1.6
+ram18="X"
+ramcolor="555555"
+end
+
+if malenr=5 then do
+maalenr_b=0
+maalenr_h=0
+ramme=1.6
+ram18="X"
+ramcolor="555555"
+end
+
+if malenr=6 then do
+maalenr_b=0
+maalenr_h=0
+end
+
+if malenr=8 then do
+maalenr_b=22
+maalenr_h=22
+end
+
+
+if type=A then call A
+if type=C then call A
+if type=F then call A
+if type=N then call A
+if type=J then call A    /* LAGT TIL 15 AUG 2002 */
+
+
+if type=B then call B
+if type=E then call B
+if type=L then call B
+if type=G then call B
+if type=K then call B
+if type=D then call B
+if type=I then call B
+if type=M then call B
+if type=H then call B
+
+return
+
+A:
+antall_ramme=antall*2
+
+if type=C then antall_ramme=antall
+if type=N then antall_ramme=antall
+
+
+antall_ramme_hoyde=antall*2
+
+kappmal_bredde = bredde + maalenr_b
+kappmal_hoyde = hoyde + maalenr_h
+
+
+
+/* skjekke inndelingen om mer enn 3 ruter (+.8 eller ei) */
+	if inndel_b>2 then do
+		inndeling_bredde = (kappmal_bredde - (ramme*2) + profil_.profil) / inndel_b
+	end
+	else do
+		inndeling_bredde = (kappmal_bredde - (ramme*2)) / inndel_b
+	end
+
+
+
+/* skjekke inndelingen om mer enn 3 ruter (+.8 eller ei) */
+	if inndel_h>2 then do
+		inndeling_hoyde = (kappmal_hoyde - (ramme*2) + profil_.profil) / inndel_h
+	end
+	else do
+		inndeling_hoyde =  (kappmal_hoyde - (ramme*2)) / inndel_h
+	end
+
+
+
+inndeling_bredde=trunc(inndeling_bredde,2)
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+b_pinne=inndel_h-1
+b_pinne=b_pinne*antall
+h_pinne=inndel_b-1
+h_pinne=h_pinne*antall
+if h_pinne=0 then h_pinne=" "
+if inndel_b=1 then inndeling_bredde=" "
+
+return
+
+B:
+
+antall_ramme=antall*2
+
+antall_ramme_hoyde=antall*2
+
+if type=E then antall_ramme=antall
+
+if type=M then antall_ramme=antall
+if type=K then antall_ramme=antall
+kappmal_bredde = bredde + maalenr_b
+kappmal_hoyde = hoyde + maalenr_h
+
+if inndel_b/2 > 2 then do
+inndeling_bredde = (((kappmal_bredde - (ramme*2) - midtnese) / 2 ) -0.8 + profil_.profil ) / (inndel_b/2)
+end
+else do
+inndeling_bredde = (((kappmal_bredde - (ramme*2) - midtnese) / 2 ) -0.8 ) / (inndel_b/2)
+end
+
+/* skjekke HOYDE inndelingen om mer enn 3 ruter (+.8 eller ei) */
+	if inndel_h>2 then do
+		inndeling_hoyde = (kappmal_hoyde - (ramme*2) + profil_.profil) / inndel_h
+	end
+	else do
+		inndeling_hoyde =  (kappmal_hoyde - (ramme*2)) / inndel_h
+	end
+
+kapp_ytterpinne = (kappmal_bredde - (ramme*2) - midtnese) / 2
+inndeling_hoyde = (kappmal_hoyde - (ramme*2) + profil_.profil) / inndel_h
+inndeling_bredde=trunc(inndeling_bredde,2)
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+ruter_felt=inndel_b/2
+h_pinne=ruter_felt*antall
+b_pinne=(inndel_h-1)*2
+b_pinne=b_pinne*antall
+midtstokker=1
+
+if type=G then do
+h_pinne="&nbsp;"
+inndeling_bredde="&nbsp;"
+midtstokker=1
+end
+
+/* TYPE D *****************************************************************/
+
+if type=D then do
+
+ y_pinne=b_pinne
+
+  if inndel_b=1 then do
+   y_pinne=b_pinne/2
+   kapp_ytterpinne=" "
+   h_pinne=" "
+   midtstokker=0
+  end
+
+ if inndel_h=1 then kapp_ytterpinne=0
+
+ inndeling_bredde="&nbsp;"
+ inndeling_hoyde= ((kappmal_hoyde - (ramme*2) - (midt*2))) / 3
+ inndeling_hoyde=trunc(inndeling_hoyde,2)
+ b_pinne=0
+
+end
+
+/**************************************************************************/
+
+if type=H then do
+
+ inndeling_bredde = (((kappmal_bredde - (ramme*2) - midtnese) / 2 ) -0.8 ) / 2
+ inndeling_hoyde= (((kappmal_hoyde - (ramme*2) - (midt*2))) / 3 ) + 0.8
+ inndeling_hoyde=trunc(inndeling_hoyde,2)
+ h_pinne=2*antall
+ midtstokker=1*antall
+ y_pinne=2*antall
+ 
+end
+
+
+/* TYPE I *****************************************************************/
+
+if type=I then do
+
+ if inndel_b=1 then do
+ y_pinne=b_pinne/2
+ kapp_ytterpinne=" "
+ h_pinne=" "
+ midtstokker=0
+ end
+
+if inndel_h=1 then kapp_ytterpinne=0
+
+inndeling_bredde="&nbsp;"
+sum_midt = midt * (inndel_h - 1)
+inndeling_hoyde= ((kappmal_hoyde - (ramme*2) - (sum_midt))) / inndel_h
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+if inndel_b>1 then y_pinne=b_pinne
+
+b_pinne=0
+
+end
+
+/***************************************************************************/
+
+
+ruter_felt=inndel_b/2
+
+h_pinne=0
+
+if inndel_b>1 then do
+h_pinne=(ruter_felt-1)*2
+end
+h_pinne=h_pinne*antall
+
+if h_pinne=0 then h_pinne=" "
+if b_pinne=0 then b_pinne=" "
+if y_pinne=0 then y_pinne=" "
+if kapp_ytterpinne=0 then kapp_ytterpinne=" "
+
+/* 2 midtstokker*/
+
+if right(typen,1)=2 then do
+	ruter_felt=inndel_b/3
+	midtstokker=2
+	kapp_ytterpinne = ((kappmal_bredde - (ramme*2) - (midt*2)))
+	kapp_ytterpinne=(kapp_ytterpinne/3)+0.8
+	kapp_ytterpinne=trunc(kapp_ytterpinne,2)
+	kapp_midtpinne=kapp_ytterpinne+0.8
+
+	if ruter_felt=2 then do
+	 midtpinne_inndel= kapp_midtpinne  / 2
+	 ytterpinne_inndel= (kapp_ytterpinne - 0.8) / 2
+	 inndeling_bredde=ytterpinne_inndel
+	end
+
+	if ruter_felt>=3 then do
+	 midtpinne_inndel= kapp_midtpinne / ruter_felt
+         /*midtpinne_inndel= ((kapp_midtpinne - 1.6)+ profil_.profil) / ruter_felt*/
+	 ytterpinne_inndel= ((kapp_ytterpinne - 0.8)+ profil_.profil) / ruter_felt
+	inndeling_bredde=ytterpinne_inndel
+	end
+
+	if ruter_felt=1 then do
+	inndeling_bredde=0
+        midtpinne_inndel=0
+	end
+
+b_pinne="&nbsp;"
+m_pinne=inndel_h-1
+y_pinne=m_pinne*2
+h_pinne=((inndel_b/3)-1)*3
+
+m_pinne=m_pinne*antall
+y_pinne=y_pinne*antall
+h_pinne=h_pinne*antall
+
+end
+
+/* 3 midtstokker*/
+
+if right(typen,1)=3 then do
+
+ ruter_felt=inndel_b/4
+ midtstokker=3
+ kapp_ytterpinne = ((kappmal_bredde - (ramme*2) - (midt*3)))
+ kapp_ytterpinne=(kapp_ytterpinne/4)+0.8
+ kapp_ytterpinne=trunc(kapp_ytterpinne,2)
+ kapp_midtpinne=kapp_ytterpinne+0.8
+
+ m_pinne=(inndel_h-1)*2
+ y_pinne=m_pinne
+ h_pinne=inndel_b/2
+
+	if ruter_felt=2 then do
+	 midtpinne_inndel= kapp_midtpinne  / 2
+	 ytterpinne_inndel= (kapp_ytterpinne - 0.8) / 2
+	 inndeling_bredde=ytterpinne_inndel
+	end
+
+	if ruter_felt>=3 then do
+	 midtpinne_inndel= ((kapp_midtpinne - 1.6)+ profil_.profil) / ruter_felt
+	 ytterpinne_inndel= ((kapp_ytterpinne - 0.8)+ profil_.profil) / ruter_felt
+	inndeling_bredde=ytterpinne_inndel
+	end
+
+	if ruter_felt=1 then do
+	inndeling_bredde=0
+        midtpinne_inndel=0
+	h_pinne=""
+	end
+
+b_pinne="&nbsp;"
+
+end
+
+midtstokker=midtstokker*antall
+if midtstokker=0 then midtstokker=" "
+return
+
+
+end_kappliste:
+statfile="web-root:verksted/datafiler_jobber/"aar"/stat_"month".dat"
+
+/*
+call open(stat,statfile,'W')
+call writeln(stat,'#stats')
+call close(stat)
+*/
+
+if ~exists(statfile) then do
+call open(stat,statfile,'W')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call writeln(stat,'0')
+call close(stat)
+end
+
+call open(stat,statfile,'R')
+o_totalantall=readln(stat)
+o_totruter=readln(stat)
+o_sumhengsler=readln(stat)
+o_sumklips=readln(stat)
+o_males=readln(stat)
+o_impreg=readln(stat)
+o_meterprofil=readln(stat)
+o_meterramme=readln(stat)
+o_meter_midt=readln(stat)
+o_skruer=readln(stat)
+o_vekt=readln(stat)
+o_totcm3=readln(stat)
+call close(stat)
+
+if hengsler=1 then sumhengsler=totalantall*4
+if hengsler=0 then sumhengsler=0
+if klips=1 then sumklips=totalantall*4
+if klips=0 then sumklips=0
+if impreg=1 then impreg=totalantall
+if impreg=0 then impreg=0
+
+if maling>0 then impreg=totalantall
+
+if maling=0 then males=0
+if maling=1 then males=totalantall
+if maling=2 then males=totalantall*2
+
+if hengsler=1 then borres=totalantall
+
+call jobb_info
+
+n_totalantall=o_totalantall+totalantall
+n_totruter=o_totruter+totruter
+n_sumhengsler=o_sumhengsler+sumhengsler
+n_sumklips=o_sumklips+sumklips
+n_males=o_males+males
+n_impreg=o_impreg+impreg
+n_meterprofil=o_meterprofil+meterprofil
+n_meterramme=o_meterramme+meterramme
+n_meter_midt=o_meter_midt+meter_midt
+n_skruer=o_skruer+skruer
+n_vekt=o_vekt+vekt
+n_totcm3=o_totcm3+totcm3
+
+
+call open(stat,statfile,'W')
+call writeln(stat,n_totalantall)
+call writeln(stat,n_totruter)
+call writeln(stat,n_sumhengsler)
+call writeln(stat,n_sumklips)
+call writeln(stat,n_males)
+call writeln(stat,n_impreg)
+call writeln(stat,n_meterprofil)
+call writeln(stat,n_meterramme)
+call writeln(stat,n_meter_midt)
+call writeln(stat,n_skruer)
+call writeln(stat,n_vekt)
+call writeln(stat,n_totcm3)
+call close(stat)
+
+
+/*
+say 'antall sprosser :'totalantall'<br>'
+say 'total ruter 'totruter'<br>'
+say 'Hengsler = 'sumhengsler'<br>'
+say 'Klips = 'sumklips'<br>'
+say 'males = 'males'<br>'
+say 'impreg = 'impreg'<br>'
+say 'lengde profil = 'meterprofil'<br>'
+say 'lengde ramme = 'meterramme'<br>'
+say 'lengde midtstokk = 'meter_midt'<br>'
+say 'antall skruer = 'skruer'<br>'
+say 'vekt = 'vekt'<br>'
+say 'kubikk = 'totcm3'<br>'
+say '<br>'
+*/
+return
+
+
+material:
+if type="a"|type="A"|type="C"|type="F"|type="N" then do
+
+meterprofil_b=bredde/100
+antallprofil_b=inndel_h-1
+antallprofil_b=antallprofil_b*antall
+
+meterprofil_h=hoyde/100
+antallprofil_h=inndel_b-1
+antallprofil_h=antallprofil_h*antall
+
+meterprofil_b=meterprofil_b*antallprofil_b
+meterprofil_h=meterprofil_h*antallprofil_h
+
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+skruer_b=(inndel_h-1) * 2
+skruer_h=(inndel_b-1) * 2
+skrue=(skruer_b+skruer_h) * antall
+skruer=skruer+skrue
+
+end
+
+
+meterram_b=bredde/100
+meterram_h=hoyde/100
+
+meterram_b=meterram_b*2
+meterram_h=meterram_h*2
+meterram=meterram_b+meterram_h
+meterram=meterram*antall
+meterramme=trunc(meterramme+meterram,1)
+
+/********************************************************************************/
+if type=B|type=E|type=G|type=K|type=L|type=M|type=H then do
+
+profil_b = ((bredde - 4.4) - 3.5) / 2
+
+antall_b=(inndel_h-1)*2
+meterprofil_b=profil_b*antall_b
+
+meterprofil_b=meterprofil_b*antall
+
+meterprofil_b=meterprofil_b/100
+
+profil_h=hoyde-4.4
+antall_h=inndel_b-2
+
+meterprofil_h=antall_h*profil_h
+
+meterprofil_h=meterprofil_h*antall
+
+meterprofil_h=meterprofil_h/100
+
+m_midt=((hoyde-4.4)/100)*antall
+meter_midt=meter_midt+m_midt
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+skruer_b=antall_b
+skruer_h=((inndel_b/2)-1) * 2
+skruer_midt=2
+
+skrue=(skruer_b+skruer_h+skruer_midt) * antall
+skruer=skruer+skrue
+
+end
+
+
+if type=D|type=I then do
+
+metermidt_b=0
+metermidt_h=0
+
+skruer_b=0
+skruer_h=0
+
+if inndel_h>1 then do
+ midt_b = ((bredde - 4.4) - 3.5) / 2
+ antall_midt=(inndel_h-1)*2
+ metermidt_b=midt_b*antall_midt
+ metermidt_b=metermidt_b*antall
+ metermidt_b=metermidt_b/100
+ skruer_b=(antall_midt*2)*antall
+end
+
+if inndel_b>1 then do
+ midt_h=(hoyde-4.4)/100
+ antall_h=inndel_b-1
+ metermidt_h=midt_h*antall_h
+ metermidt_h=metermidt_h*antall
+ skruer_h=(antall_h*4)*antall
+end
+
+midt=metermidt_b+metermidt_h
+meter_midt=meter_midt+midt
+
+skrue=skruer_b+skruer_h
+skruer=skruer+skrue
+
+end
+
+buevekt=0
+if type=E|type=C|type=K|type=M|type=N then do
+buevekt=(bredde/100)*antall
+buevekt=buevekt*600
+end
+
+
+kvadrat=(bredde*hoyde)/10000
+cm3=0.022*antall
+cm3=kvadrat*cm3
+totcm3=trunc(totcm3+cm3,3)
+
+
+vekt=meterprofil*130
+vekt=vekt + (meterramme*190)
+vekt=vekt + (meter_midt*430)
+vekt=vekt+buevekt
+vekt=vekt/1000
+vekt=trunc(vekt,1)
+
+return
+
+jobb_info:
+prisfile="web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."jobber""
+typer="?"
+antall="?"
+ruter="?"
+jobbpris="?"
+antall="?"
+malepris="?"
+impregpris="?"
+if exists(prisfile) then do
+call open(data,prisfile,'R')
+	typer=readln(data)
+        antall=readln(data)
+        ruter=readln(data)
+        jobbpris=readln(data)
+	malepris=readln(data)
+	impregpris=readln(data)
+	call close(data)
+end
+return
+
+vis:
+
+
+g_totalantall=n_totalantall/10
+g_totruter=n_totruter/10
+g_sumhengsler=n_sumhengsler/10
+g_sumklips=n_sumklips/10
+g_males=n_males/10
+g_impreg=n_impreg/10
+g_meterprofil=n_meterprofil/10
+g_meterramme=n_meterramme/10
+g_meter_midt=n_meter_midt/10
+g_skruer=n_skruer/10
+g_vekt=n_vekt/10
+g_totcm3=n_totcm3
+
+
+t_totalantall=t_totalantall+n_totalantall
+t_totruter=t_totruter+n_totruter
+t_sumhengsler=t_sumhengsler+n_sumhengsler
+t_sumklips=t_sumklips+n_sumklips
+t_males=t_males+n_males
+t_impreg=t_impreg+n_impreg
+t_meterprofil=t_meterprofil+n_meterprofil
+t_meterramme=t_meterramme+n_meterramme
+t_meter_midt=t_meter_midt+n_meter_midt
+t_skruer=t_skruer+n_skruer
+t_vekt=t_vekt+n_vekt
+t_totcm3=t_totcm3+n_totcm3
+
+say '<br><table border="1" bgcolor="#efefef" cellspacing="1" width="1000">
+<tr>
+<td>'month'-'aar'</td>
+<td>Statistikk</td>
+</tr>
+<td width="140">
+sprosser<br>
+ruter<br>
+hengsler<br>
+klips<br>
+ant.malte<br>
+ant.impegnerte<br>
+meter profil<br>
+meter ramme<br>
+meter midtstokk<br>
+skruer<br>
+vekt i kg.<br>
+kubikk<br></td>
+<td>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_totalantall'">' n_totalantall
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_totruter'">' n_totruter
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_sumhengsler'">' n_sumhengsler
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_sumklips'">' n_sumklips
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_males'">' n_males
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_impreg'">' n_impreg
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_meterprofil'">' n_meterprofil
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_meterramme'">' n_meterramme
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_meter_midt'">' n_meter_midt
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_skruer'">' n_skruer
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_vekt'">' n_vekt
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'g_totcm3'">' n_totcm3
+say '</td></table>'
+
+month=month+1
+call new_month
+
+
+
+
+final_graph:
+
+gt_totalantall=t_totalantall/60
+gt_totruter=t_totruter/60
+gt_sumhengsler=t_sumhengsler/60
+gt_sumklips=t_sumklips/60
+gt_males=t_males/60
+gt_impreg=t_impreg/60
+gt_meterprofil=t_meterprofil/60
+gt_meterramme=t_meterramme/60
+gt_meter_midt=t_meter_midt/60
+gt_skruer=t_skruer/60
+gt_vekt=t_vekt/60
+gt_totcm3=t_totcm3
+
+
+say '<br><table border="1" bgcolor="#efefef" cellspacing="1" width="1000">
+<tr>
+<td>Totalt for 'aar'</td>
+<td>Statistikk</td>
+</tr>
+<td width="140">
+sprosser<br>
+ruter<br>
+hengsler<br>
+klips<br>
+ant.malte<br>
+ant.impegnerte<br>
+meter profil<br>
+meter ramme<br>
+meter midtstokk<br>
+skruer<br>
+vekt i kg.<br>
+kubikk<br></td>
+<td>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_totalantall'">' t_totalantall
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_totruter'">' t_totruter
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_sumhengsler'">' t_sumhengsler
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_sumklips'">' t_sumklips
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_males'">' t_males
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_impreg'">' t_impreg
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_meterprofil'">' t_meterprofil
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_meterramme'">' t_meterramme
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_meter_midt'">' t_meter_midt
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_skruer'">' t_skruer
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_vekt'">' t_vekt
+say '<br>'
+say '<img src="../img/greendot.gif" border="0" height="10" width="'gt_totcm3'">' t_totcm3
+say '</td></table>'
+
+/*
+profil_pris=(t_meterprofil / 5) * 13
+ramme_pris=(t_meterramme / 4) * 13
+midt_pris=(t_meter_midt/2)*13
+skrue_pris=70/1000
+pris_skruer=t_skruer*skrue_pris
+henglse_pris=t_sumhengsler*2.1
+
+say profil_pris'<br>'
+say ramme_pris'<br>'
+say midt_pris'<br>'
+say pris_skruer'<br>'
+say henglse_pris'<br>'
+
+say profil_pris+ramme_pris+midt_pris+pris_skruer+henglse_pris
+*/
+exit

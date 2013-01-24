@@ -1,0 +1,46 @@
+/*  */
+
+PARSE ARG 'antall=' antall '&bredde=' bredde '&type=' type '&ramme=' ramme '&profil=' profil '&address=' address
+
+if ~exists('ram:cnc.dat') then do
+say 'Program for CNC fresemaskinen kommer her... '
+exit
+end
+
+say 'Program for CNC, kontroller målene og antall...<br><br>'
+i=1
+call open(dat,"ram:cnc.dat",'R')
+garbage=readln(dat)
+do until eof(dat)
+antall=readln(dat)
+bredde=readln(dat)
+type=readln(dat)
+ramme=readln(dat)
+profil=readln(dat)
+garbage=readln(dat)
+
+if antall="" then do
+call end
+end
+antall=right('00'||antall,2)
+bredde=right('0000'||bredde,4)
+i=right('00'||i,2)
+if type=0 then info.type="type C"
+if type=1 then info.type="type E"
+if type=2 then info.type="type E3"
+if type=3 then info.type="type E4"
+if type=4 then info.type="type N2"
+if type=5 then info.type="type N3"
+if type=6 then info.type="type N4"
+if ramme=1 then ramme="22mm"
+if ramme=0 then ramme="18mm"
+if profil=1 then profil="sekskant"
+if profil=0 then profil="kittprof"
+say ' 'i'- 'antall' stk 'info.type' bredde: 'bredde' 'profil' 'ramme
+say '<br>'
+i=i+1
+end
+
+end:
+call close(dat)
+exit

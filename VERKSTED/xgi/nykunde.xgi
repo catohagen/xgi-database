@@ -1,0 +1,40 @@
+/*  */
+PARSE ARG 'navn=' kundenavn '&addresse=' addresse '&sted=' sted '&type=' type
+
+if ~open(log,"web-root:VERKSTED/datafiler_kunder/nokunder.dat",'R') then do
+	say 'ingen kundeliste'
+        call close(log)
+        exit
+	end
+
+call open(log,"web-root:VERKSTED/datafiler_kunder/nokunder.dat",'R')
+totkunder=readln(log)
+call close(log)
+
+totkunder=totkunder+1
+
+
+call open(log,"web-root:VERKSTED/datafiler_kunder/nokunder.dat",'W')
+call writeln(log,totkunder)
+call close(log)
+
+nykunde=right('000'||totkunder,3)
+
+call open(log,"web-root:VERKSTED/datafiler_kunder/"nykunde,'W')
+call writeln(log,kundenavn)
+call writeln(log,addresse)
+call writeln(log,sted)
+call writeln(log,type)
+call close(log)
+
+say '<br>'
+say nykunde
+say '<br>'
+say kundenavn
+say '<br>'
+say addresse
+say '<br>'
+say sted
+say '<br>'
+say type
+say '<br>'

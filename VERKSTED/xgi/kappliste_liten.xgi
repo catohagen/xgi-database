@@ -1,0 +1,267 @@
+/* */ 
+
+
+parse arg 'antall=' antall '&bredde=' bredde '&hoyde=' hoyde '&malenr=' malenr '&typen=' typen '&inndel_b=' inndel_b '&inndel_h=' inndel_h '&ramme=' ramme '&profil=' profil
+
+say '<br>'
+say '<br>'
+
+type=left(typen,1)
+
+subtype=right(typen,1)
+
+call kappliste_header
+
+call calc_list
+
+call make_kapplist
+
+call end_kappliste
+
+calc_list:
+
+bredde=translate(bredde, '.',',')
+hoyde=translate(bredde, '.',',')
+
+type=left(typen,1)
+
+subtype=right(typen,1)
+
+ram22=""
+ram18=""
+if ramme=0 then do
+ramme=2.2
+ram22="X"
+end
+if ramme=1 then do
+ramme=1.8
+ram18="X"
+end
+
+y_pinne="&nbsp;"
+m_pinne="&nbsp;"
+midtstokker="&nbsp;"
+kapp_midtpinne="&nbsp;"
+kapp_ytterpinne="&nbsp;"
+midtpinne_inndel="&nbsp;"
+b_pinne="&nbsp;"
+h_pinne="&nbsp;"
+
+profil_.0=0.8
+profil_.1=2.4
+midt=5.0
+midtnese=3.5
+
+
+if malenr=3 then do
+maalenr_b=2.0
+maalenr_h=1.3
+end
+
+if malenr=1 then do
+maalenr_b=2.8
+maalenr_h=2.0
+end
+
+if malenr=2 then do
+maalenr_b=2.8
+maalenr_h=2.0
+end
+
+if malenr=4 then do
+maalenr_b=2.8
+maalenr_h=2.0
+end
+
+if malenr=5 then do
+maalenr_b=2.8
+maalenr_h=2.0
+end
+
+if malenr=6 then do
+maalenr_b=2.8
+maalenr_h=2.0
+end
+
+
+if type=A then call A
+if type=C then call A
+if type=F then call A
+
+
+if type=B then call B
+if type=E then call B
+if type=L then call B
+if type=G then call B
+if type=K then call B
+if type=D then call B
+if type=I then call B
+
+return
+
+A:
+antall_ramme=antall*2
+
+if type=C then antall_ramme=antall
+
+kappmal_bredde = bredde + maalenr_b
+kappmal_hoyde = hoyde + maalenr_h
+
+/* skjekke inndelingen om mer enn 3 ruter (+.8 eller ei) */
+	if inndel_b>2 then do
+		inndeling_bredde = (kappmal_bredde - (ramme*2) + profil_.profil) / inndel_b
+	end
+	else do
+		inndeling_bredde = (kappmal_bredde - (ramme*2)) / inndel_b
+	end
+
+
+inndeling_hoyde = (kappmal_hoyde - (ramme*2) + profil_.profil) / inndel_h
+inndeling_bredde=trunc(inndeling_bredde,2)
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+b_pinne=inndel_h-1
+b_pinne=b_pinne*antall
+h_pinne=inndel_b-1
+h_pinne=h_pinne*antall
+
+return
+
+B:
+antall_ramme=antall*2
+kappmal_bredde = bredde + maalenr_b
+kappmal_hoyde = hoyde + maalenr_h
+
+inndeling_bredde = (((kappmal_bredde - (ramme*2) - midtnese) / 2 ) -0.8 )/ (inndel_b/2)
+
+kapp_ytterpinne = (kappmal_bredde - (ramme*2) - midtnese) / 2
+inndeling_hoyde = (kappmal_hoyde - (ramme*2) + profil_.profil) / inndel_h
+inndeling_bredde=trunc(inndeling_bredde,2)
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+ruter_felt=inndel_b/2
+h_pinne=ruter_felt*antall
+b_pinne=(inndel_h-1)*2
+b_pinne=b_pinne*antall
+midtstokker=1
+
+if type=G then do
+h_pinne="&nbsp;"
+inndeling_bredde="&nbsp;"
+midtstokker=1
+end
+
+if type=D then do
+inndeling_bredde="&nbsp;"
+inndeling_hoyde= ((kappmal_hoyde - (ramme*2) - (midt*2))) / 3
+end
+
+
+if type=I then do
+inndeling_bredde="&nbsp;"
+sum_midt = midt * (inndel_h - 1)
+inndeling_hoyde= ((kappmal_hoyde - (ramme*2) - (sum_midt))) / inndel_h
+end
+
+
+
+/* 2 midtstokker*/
+
+if right(typen,1)=2 then do
+	ruter_felt=inndel_b/3
+	midtstokker=2
+	kapp_ytterpinne = ((kappmal_bredde - (ramme*2) - (midt*2)))
+	kapp_ytterpinne=(kapp_ytterpinne/3)+0.8
+	kapp_ytterpinne=trunc(kapp_ytterpinne,2)
+	kapp_midtpinne=kapp_ytterpinne+0.8
+
+	if ruter_felt=2 then do
+	 midtpinne_inndel= kapp_midtpinne  / 2
+	 ytterpinne_inndel= (kapp_ytterpinne - 0.8) / 2
+	 inndeling_bredde=ytterpinne_inndel
+	end
+
+	if ruter_felt>=3 then do
+	 midtpinne_inndel= kapp_midtpinne / ruter_felt
+/*	 midtpinne_inndel= ((kapp_midtpinne - 1.6)+ profil_.profil) / ruter_felt*/
+	 ytterpinne_inndel= ((kapp_ytterpinne - 0.8)+ profil_.profil) / ruter_felt
+	inndeling_bredde=ytterpinne_inndel
+	end
+
+	if ruter_felt=1 then do
+	inndeling_bredde=0
+        midtpinne_inndel=0
+	end
+
+b_pinne="&nbsp;"
+m_pinne=inndel_h-1
+y_pinne=m_pinne*2
+h_pinne=((inndel_b/3)-1)*3
+
+m_pinne=m_pinne*antall
+y_pinne=y_pinne*antall
+h_pinne=h_pinne*antall
+
+end
+
+/* 3 midtstokker*/
+
+if right(typen,1)=3 then do
+
+ ruter_felt=inndel_b/4
+ midtstokker=3
+ kapp_ytterpinne = ((kappmal_bredde - (ramme*2) - (midt*3)))
+ kapp_ytterpinne=(kapp_ytterpinne/4)+0.8
+ kapp_ytterpinne=trunc(kapp_ytterpinne,2)
+ kapp_midtpinne=kapp_ytterpinne+0.8
+
+ m_pinne=(inndel_h-1)*2
+ y_pinne=m_pinne
+ h_pinne=inndel_b/2
+
+	if ruter_felt=2 then do
+	 midtpinne_inndel= kapp_midtpinne  / 2
+	 ytterpinne_inndel= (kapp_ytterpinne - 0.8) / 2
+	 inndeling_bredde=ytterpinne_inndel
+	end
+
+	if ruter_felt>=3 then do
+	 midtpinne_inndel= ((kapp_midtpinne - 1.6)+ profil_.profil) / ruter_felt
+	 ytterpinne_inndel= ((kapp_ytterpinne - 0.8)+ profil_.profil) / ruter_felt
+	inndeling_bredde=ytterpinne_inndel
+	end
+
+	if ruter_felt=1 then do
+	inndeling_bredde=0
+        midtpinne_inndel=0
+	h_pinne=""
+	end
+
+b_pinne="&nbsp;"
+
+end
+
+midtstokker=midtstokker*antall
+
+return
+
+
+
+kappliste_header:
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Hagen Snekkerverksted Database</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+<body  bgcolor="FFFFFF">
+    <table cellpadding="2" cellspacing="2" border="0" width="1200">   <tbody>     <tr>       <td valign="top" width="20" align="center" bgcolor="#33ccff">type<br>       </td>       <td valign="top" width="20" align="center" bgcolor="#33ccff">22<br>       </td>       <td valign="top" width="20" align="center" bgcolor="#33ccff">18<br>       </td>       <td valign="top" width="20" align="center" bgcolor="#66cccc">antall<br>       </td>       <td valign="top" width="150" align="center" bgcolor="#33ccff"><b><font face="Helvetica, Arial, sans-serif">kappm&aring;l<br>      </font></b>       </td>       <td valign="top" width="20" align="center" bgcolor="#33ccff">profiler<br>       </td>       <td valign="top" width="20" align="center" bgcolor="#33ccff">ant.midt<br>       </td>       <td valign="top" width="30" align="center" bgcolor="#33ccff">kapp.midt<br>       </td>       <td valign="top" width="30" align="center" bgcolor="#33ccff">ind.midt<br>       </td>       <td valign="top" width="30" align="center" bgcolor="#33ccff">ant.ytter<br>       </td>       <td valign="top" width="30" align="center" bgcolor="#33ccff">kapp.ytter<br>       </td>       <td valign="top" width="30" align="center" bgcolor="#33ccff">ytter.ind<br>       </td>       <td valign="top" align="center" bgcolor="#66cccc" width="30">antall<br>       </td>       <td valign="top" width="150" align="center" bgcolor="#33ccff"><b><font face="Helvetica, Arial, sans-serif">kappm&aring;l<br>      </font></b>       </td>       <td valign="top" align="center" bgcolor="#33ccff" width="20">profiler<br>       </td>       <td valign="top" align="center" bgcolor="#33ccff" width="20">midtstokk<br>       </td>       <td valign="top" align="center" width="30" bgcolor="#33ccff">inndeling<br>       </td>     </tr> '
+return
+make_kapplist:
+say ' <tr>      <td valign="top" align="center">'type'<br>      </td>      <td valign="top" align="center"><b><font face="Helvetica, Arial, sans-serif">'ram22'<br>      </font></b></td>      <td valign="top" align="center"><b><font face="Helvetica, Arial, sans-serif">'ram18'<br>      </font></b></td>      <td valign="top" align="center" bgcolor="#66cccc">'antall_ramme'<br>      </td>      <td valign="top" align="center"><b><font face="Helvetica, Arial, sans-serif">'kappmal_bredde'<br>      </font></b></td>      <td valign="top" align="center">'b_pinne'<br>      </td>      <td valign="top" align="center">'m_pinne'<br>      </td>      <td valign="top" align="center">'kapp_midtpinne'<br>      </td>      <td valign="top" align="center">'midtpinne_inndel'<br>      </td>      <td valign="top" align="center">'y_pinne'<br>      </td>      <td valign="top" align="center">'kapp_ytterpinne'<br>      </td>      <td valign="top" align="center">'inndeling_bredde'<br>      </td>      <td valign="top" align="center" bgcolor="#66cccc">'antall_ramme'<br>      </td>      <td valign="top" align="center"><b><font face="Helvetica, Arial, sans-serif">'kappmal_hoyde'<br>      </font></b></td>      <td valign="top" align="center">'h_pinne'<br>      </td>      <td valign="top" align="center">'midtstokker'<br>      </td>      <td valign="top" align="center">'inndeling_hoyde'<br>      </td>    </tr> '
+return
+
+end_kappliste:
+say '  </tbody> </table> <br> <br></body></html> '
+exit

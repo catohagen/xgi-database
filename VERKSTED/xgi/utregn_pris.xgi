@@ -1,0 +1,2032 @@
+/* SPROSSE PRISER */
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id
+
+
+address command 'rx web-root:verksted/draw.xgi aar='aar'&month='month'&jobbid='id
+jobbnum=right(id,2,00)
+
+ordrenummer=aar''month''jobbnum
+z=1
+do until z=17
+if z=1 then type='A'
+if z=2 then type='B'
+if z=3 then type='C'
+if z=4 then type='D'
+if z=5 then type='E'
+if z=6 then type='F'
+if z=7 then type='G'
+if z=8 then type='H'
+if z=9 then type='I'
+if z=10 then type='J'
+if z=11 then type='K'
+if z=12 then type='L'
+if z=13 then type='M'
+if z=14 then type='N'
+if z=15 then type='O'
+if z=16 then type='P'
+
+sprosse_minstepris.type.0=0
+sprosse_minstepris.type.1=0
+
+totalruter.type.0=0
+totalruter.type.1=0
+
+pris_deling=0
+
+antall.type=0
+
+rute.type.0=0
+rute.type.1=0
+
+minsteruter.type.0=0
+minsteruter.type.1=0
+z=z+1
+end
+tegninger=""
+no=1
+rabatt=0
+
+pris_xtramidt=0
+
+pris_del=100
+
+kvantum=0
+
+totantall=0
+
+meterprofil=0
+meterramme=0
+vekt=0
+meter_midt=0
+totcm3=0
+
+
+tillegg_rute=0
+m_ruter=0
+t_ruter=0
+t_antall=0
+totalklips=0
+totalhengsler=0
+pris_alt=0
+pris_flukt=0
+temp=0
+
+xtramidt=0
+flukting=0
+deling=0
+trekant=0
+
+mal_minstesprosser=0
+mal_minsteruter=0
+mal_ruter=0
+
+pris_midt=0
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+
+if aar='tilbud' then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."month""
+end
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Ordre :'aar''month''id'</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body  bgcolor="FFFFFF">'
+
+
+call open(dat,jobbfile,'R')
+do until garbage="#andre ting"
+garbage=readln(dat)
+end
+
+  hengsler=readln(dat)
+  klips=readln(dat)
+  maling=readln(dat)
+  impreg=readln(dat)
+  jobb=readln(dat)
+
+call close(dat)
+
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+levuke=readln(dat)
+fastpris=0
+if kundenr=002 then fastpris=1
+if kundenr=023 then fastpris=1
+
+
+call hentkundeinfo
+
+say '
+<center>
+<hr width="90%" size="2" noshade="">
+<table align="top" border="0" bgcolor="#000000" cellpadding="0" cellspacing="0" width="60%">
+<td bgcolor="#ffffff"><font face="verdana,arial" size="2" color="#000000">'
+editlink='<a href="redigere_priser.xgi?kundenr='kundenr'">'kunde'</a><br>'
+if kundenr=002|kundenr=023 then do
+editlink='<a href="redigere_priser_fast.xgi?kundenr='kundenr'">'kunde'</a><br>'
+end
+
+say editlink
+say '<br>'
+say addresse
+say '<br>'
+say sted
+say '<br>'
+say 'Merk: 'merk
+say '<br>'
+say 'Leveres uke :'levuke
+say '	</font>
+</td>
+<td bgcolor="#ffffff"><font face="verdana,arial" size="2" color="#000000">
+<font face="Helvetica, Arial, sans-serif" size=5><b> Ordrenummer : 'ordrenummer'</b><font size=2>
+</td>
+</tr>
+</table>
+<hr width="90%" size="2" noshade="">
+'
+
+
+maletillegg=0
+
+garbage=readln(dat)
+
+call hentkundeinfo
+
+prisliste='web-root:verksted/datafiler_kunder/priser.'kundenr''
+
+
+/* ja det er omvendt :) */
+
+if forhandler=0 then standardpriser='web-root:verksted/datafiler_kunder/priser.forhandler'
+if forhandler=1 then standardpriser='web-root:verksted/datafiler_kunder/priser.default'
+
+if forhandler=0 then kundetype="forhandler"
+if forhandler=1 then kundetype="utsalgs"
+
+if exists(prisliste) then do
+call open(pris,prisliste,'R')
+com=readln(pris)
+
+apris=readln(pris)
+pris.A.0=word(apris,2)
+pris.A.1=word(apris,3)
+
+bpris=readln(pris)
+pris.b.0=word(bpris,2)
+pris.b.1=word(bpris,3)
+
+cpris=readln(pris)
+pris.c.0=word(cpris,2)
+pris.c.1=word(cpris,3)
+
+dpris=readln(pris)
+pris.d.0=word(dpris,2)
+pris.d.1=word(dpris,3)
+
+epris=readln(pris)
+pris.e.0=word(epris,2)
+pris.e.1=word(epris,3)
+
+fpris=readln(pris)
+pris.f.0=word(fpris,2)
+pris.f.1=word(fpris,3)
+
+gpris=readln(pris)
+pris.g.0=word(gpris,2)
+pris.g.1=word(gpris,3)
+
+hpris=readln(pris)
+pris.h.0=word(hpris,2)
+pris.h.1=word(hpris,3)
+
+ipris=readln(pris)
+pris.I.0=word(ipris,2)
+pris.I.1=word(ipris,3)
+
+jpris=readln(pris)
+pris.j.0=word(jpris,2)
+pris.j.1=word(jpris,3)
+
+kpris=readln(pris)
+pris.k.0=word(kpris,2)
+pris.k.1=word(kpris,3)
+
+lpris=readln(pris)
+pris.l.0=word(lpris,2)
+pris.l.1=word(lpris,3)
+
+mpris=readln(pris)
+pris.m.0=word(mpris,2)
+pris.m.1=word(mpris,3)
+
+npris=readln(pris)
+pris.n.0=word(npris,2)
+pris.n.1=word(npris,3)
+
+
+opris=readln(pris)
+pris.o.0=word(opris,2)
+pris.o.1=word(opris,3)
+
+ppris=readln(pris)
+pris.p.0=word(ppris,2)
+pris.p.1=word(ppris,3)
+
+com=readln(pris)
+
+m1pris=word(readln(pris),2)
+m2pris=word(readln(pris),2)
+impris=word(readln(pris),2)
+
+com=readln(pris)
+
+hengslepris=word(readln(pris),2)
+klipspris=word(readln(pris),2)
+
+com=readln(pris)
+
+fluktdel=readln(pris)
+flukte=word(fluktdel,2)
+pris_del=word(fluktdel,3)
+xtram=word(fluktdel,4)
+
+if pris_del="" then pris_del=0
+if xtram="" then xtram=0
+pris_xtramidt=xtram
+
+minstepris.0=word(readln(pris),2)
+minstepris.1=word(readln(pris),2)
+minstepris_maling=word(readln(pris),2)
+
+call close(pris)
+end
+
+if ~exists(prisliste) then do
+call open(pris,standardpriser,'R')
+com=readln(pris)
+
+apris=readln(pris)
+pris.A.0=word(apris,2)
+pris.A.1=word(apris,3)
+
+bpris=readln(pris)
+pris.b.0=word(bpris,2)
+pris.b.1=word(bpris,3)
+
+cpris=readln(pris)
+pris.c.0=word(cpris,2)
+pris.c.1=word(cpris,3)
+
+dpris=readln(pris)
+pris.d.0=word(dpris,2)
+pris.d.1=word(dpris,3)
+
+epris=readln(pris)
+pris.e.0=word(epris,2)
+pris.e.1=word(epris,3)
+
+fpris=readln(pris)
+pris.f.0=word(fpris,2)
+pris.f.1=word(fpris,3)
+
+gpris=readln(pris)
+pris.g.0=word(gpris,2)
+pris.g.1=word(gpris,3)
+
+hpris=readln(pris)
+pris.h.0=word(hpris,2)
+pris.h.1=word(hpris,3)
+
+ipris=readln(pris)
+pris.i.0=word(ipris,2)
+pris.i.1=word(ipris,3)
+
+jpris=readln(pris)
+pris.j.0=word(jpris,2)
+pris.j.1=word(jpris,3)
+
+kpris=readln(pris)
+pris.k.0=word(kpris,2)
+pris.k.1=word(kpris,3)
+
+lpris=readln(pris)
+pris.l.0=word(lpris,2)
+pris.l.1=word(lpris,3)
+
+mpris=readln(pris)
+pris.m.0=word(mpris,2)
+pris.m.1=word(mpris,3)
+
+npris=readln(pris)
+pris.n.0=word(npris,2)
+pris.n.1=word(npris,3)
+
+opris=readln(pris)
+pris.o.0=word(opris,2)
+pris.o.1=word(opris,3)
+obue=word(opris,4)
+
+ppris=readln(pris)
+pris.p.0=word(ppris,2)
+pris.p.1=word(ppris,3)
+
+com=readln(pris)
+
+m1pris=word(readln(pris),2)
+m2pris=word(readln(pris),2)
+impris=word(readln(pris),2)
+
+com=readln(pris)
+
+hengslepris=word(readln(pris),2)
+klipspris=word(readln(pris),2)
+
+com=readln(pris)
+
+fluktdel=readln(pris)
+flukte=word(fluktdel,2)
+pris_del=word(fluktdel,3)
+xtram=word(fluktdel,4)
+
+if pris_del="" then pris_del=0
+if xtram="" then xtram=0
+pris_xtramidt=xtram
+
+minstepris.0=word(readln(pris),2)
+minstepris.1=word(readln(pris),2)
+minstepris_maling=word(readln(pris),2)
+
+call close(pris)
+end
+
+
+/***************************************************************************************/
+
+kvantumantall=0
+
+as=1
+call startheader
+
+do until eof(dat)
+
+kv_nummer.as=0
+kvantum=0
+antall=readln(dat)
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+typen=readln(dat)
+type=left(typen,1)
+subtype=right(typen,1)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil_dat=readln(dat)
+profil=word(profil_dat,1)
+flukt=word(profil_dat,2)
+if flukt=1 then flukt="X"
+if flukt=0 then flukt=""
+delt=word(profil_dat,3)
+if delt="" then delt=0
+if delt=1 then visdeling="X"
+if delt=0 then visdeling=""
+seks=""
+kitt=""
+
+if exists('web-root:verksted/tmp/img_'typen'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg') then do
+tegninger=tegninger'<font size="1">'no'<img src="../tmp/img_'typen'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" align="top" border="0">'
+end
+
+call material
+
+merknad=readln(dat)
+merknad=translate(merknad, ' ','_')
+if merknad="" then merknad=" "
+nymerknad=compress(merknad)
+nymerknad=translate(nymerknad, xrange('a','z'), xrange('A','Z'))
+nymerknad="'"nymerknad"'"
+
+/*
+finn=index(nymerknad,"flukt")
+if finn>0 then do
+flukting=flukting+antall
+end
+*/
+if flukt="X" then do
+flukting=flukting+antall
+end
+
+if delt=1 then do
+deling=deling+antall
+end
+
+
+
+finn=index(nymerknad,"trekant")
+if finn>0 then do
+trekant=trekant+antall
+end
+
+
+garbage=readln(dat)
+
+ if garbage="#andre ting" then do
+  hengsler=readln(dat)
+  klips=readln(dat)
+  maling=readln(dat)
+  impreg=readln(dat)
+  jobb=readln(dat)
+ end
+
+
+if length(typen)>1 then do
+mange=right(typen,1)
+mange=mange-1
+midt=mange*antall
+xtramidt=xtramidt+midt
+end
+
+if type="H"|type="D"|type="I"|type="G" then do
+ if inndel_b>2 then do
+ mange=inndel_b-2
+ midt=mange*antall
+ xtramidt=xtramidt+midt
+ end
+end
+
+tillegg_rute=0
+if type='H2' then type='H'
+if type='B2' then type='B'
+if type='B3' then type='B'
+if type='G2' then type='G'
+if type='G3' then type='G'
+if type='D2' then type='D'
+if type='E2' then type='E'
+if type='E3' then type='E'
+
+
+if type='A' then call typea
+if type='B' then call typeB
+if type='C' then call typeC
+if type='D' then call typeD
+if type='E' then call typeE
+if type='F' then call typeF
+if type='G' then call typeG
+if type='H' then call typeH
+if type='I' then call typeI
+if type='J' then call typeJ
+if type='K' then call typeK
+if type='L' then call typeL
+if type='M' then call typeM
+if type='N' then call typeN
+if type='O' then call typeO
+if type='P' then call typeP
+
+call visjobb
+as=as+1
+no=no+1
+
+end
+
+z=1
+do until z=17
+
+if z=1 then type='A'
+if z=2 then type='B'
+if z=3 then type='C'
+if z=4 then type='D'
+if z=5 then type='E'
+if z=6 then type='F'
+if z=7 then type='G'
+if z=8 then type='H'
+if z=9 then type='I'
+if z=10 then type='J'
+if z=11 then type='K'
+if z=12 then type='L'
+if z=13 then type='M'
+if z=14 then type='N'
+if z=15 then type='O'
+if z=16 then type='P'
+
+
+
+z=z+1
+end
+
+
+
+call endheader
+say '<br>'
+call start_typeheader
+z=1
+do until z=17
+
+if z=1 then type='A'
+if z=2 then type='B'
+if z=3 then type='C'
+if z=4 then type='D'
+if z=5 then type='E'
+if z=6 then type='F'
+if z=7 then type='G'
+if z=8 then type='H'
+if z=9 then type='I'
+if z=10 then type='J'
+if z=11 then type='K'
+if z=12 then type='L'
+if z=13 then type='M'
+if z=14 then type='N'
+if z=15 then type='O'
+if z=16 then type='P'
+
+t_antall=t_antall+antall.type
+t_ruter=t_ruter+totalruter.type.0
+t_ruter=t_ruter+totalruter.type.1
+m_ruter=m_ruter+minsteruter.type.0
+m_ruter=m_ruter+minsteruter.type.1
+malepris=m_ruter+t_ruter+tillegg_rute-mal_minsteruter
+
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  minstepris.profil=minsteseks.1
+  end
+  if profil=1 then do /* kitt */
+  minstepris.profil=minstekitt.1
+  end
+ end
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  minstepris.profil=minsteseks.0
+  end
+  if profil=1 then do /* kitt */
+  minstepris.profil=minstekitt.0
+  end
+ end
+end
+
+finnes=totalruter.type.0+totalruter.type.1+minsteruter.type.0+minsteruter.type.1
+
+/* fant sprossetype, lister paa linje*/
+if finnes>0 then do
+call vistyper
+end
+
+z=z+1
+end
+
+pris_impr=0
+pris_maling=0
+pris_klips=0
+pris_hengsler=0
+pris_minstemaling=0
+if hengsler=1 THEN DO
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Hengsler<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'t_antall*4' stk<br>
+      </font></td>
+<TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(t_antall*4*hengslepris,2)' kr.<br>
+      </font></td>
+</tr> '
+
+pris_hengsler=t_antall*4*hengslepris
+
+end
+
+if klips=1 THEN DO
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Klips<br>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'t_antall*4'<br>
+      </font></td>
+
+      </font></td><TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(t_antall*4*klipspris,2)' kr.<br>
+      </font></td>
+</tr> '
+
+pris_klips=t_antall*4*klipspris
+
+end
+
+if fastpris<3 then do
+if maling=2 THEN DO
+pris_maling=malepris*m2pris
+
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Maling<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'maling'strøk<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1">
+'malepris' ruter<br>
+      </font></td>
+<TH colspan="9">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(pris_maling,2)' kr.<br>
+      </font></td>
+</tr> '
+
+/*call impregnering*/
+
+end
+end
+
+
+if maling=1 THEN DO
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Maling<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'maling'strøk<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'malepris' ruter<br>
+      </font></td>
+<TH colspan="9">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(malepris*m1pris,2)' kr.<br>
+      </font></td>
+</tr>'
+
+pris_maling=malepris*m1pris
+
+call impregnering
+end
+
+
+
+if fastpris=1 then mal_minstesprosser=0
+
+if mal_minstesprosser>0 THEN DO
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Maling minstepris<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'mal_minstesprosser' stk<br>
+      </font></td>
+<TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(mal_minstesprosser*minstepris_maling,2)' kr.<br>
+      </font></td>
+</tr>'
+
+pris_minstemaling=mal_minstesprosser*minstepris_maling
+
+end
+
+
+if impreg=1 THEN DO
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Impregnering<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'malepris' ruter<br>
+      </font></td>
+<TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(malepris*impris,2)' kr.<br>
+      </font></td>
+</tr> '
+
+pris_impr=malepris*impris
+
+end
+
+
+
+
+if flukting>0 THEN DO
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Flukting<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'flukting' stk<br>
+      </font></td><TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(flukte*flukting,2)' kr.<br>
+      </font></td>
+</tr> '
+
+pris_flukt=flukte*flukting
+
+end
+
+if deling>0 THEN DO
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Deling<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'deling' stk<br>
+      </font></td><TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(pris_del*deling,2)' kr.<br>
+      </font></td>
+</tr>'
+
+pris_deling=pris_del*deling
+
+end
+
+
+
+
+trekant_pris=0
+if trekant>0 THEN DO
+trekant_pris=trekant*100
+
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Trekant<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'trekant' stk<br>
+      </font></td><TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(trekant_pris,2)' kr.<br>
+      </font></td>
+</tr> '
+
+end
+
+
+
+
+if xtramidt>0 THEN DO
+pris_midt=xtramidt*pris_xtramidt
+
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Extra_midtstokk<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'xtramidt' stk<br>
+      </font></td><TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'trunc(pris_midt,2)' kr.<br>
+      </font></td>
+</tr> '
+end
+
+tot_kvant=0
+
+num=1
+do until num=as
+
+if fastpris=0 then kv_nummer.num=0
+
+if kv_nummer.num>0 THEN DO
+tot_kvant=tot_kvant+kv_nummer.num
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Kvantum_rabatt<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'kv_antall.num'stk<br>
+      </font></td>
+
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'kv_rab.num'%<br>
+      </font></td>
+
+<TH colspan="9">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+-'trunc(kv_nummer.num,2)'<br>
+      </font></td>
+</tr> '
+end
+
+num=num+1
+end
+
+
+sumfinale=pris_alt+pris_impr+pris_maling+pris_klips+pris_hengsler+pris_flukt+pris_deling+pris_midt-tot_kvant+pris_minstemaling+trekant_pris
+
+/*sumfinale=sumfinale-(sumfinale*rabatt/100)*/
+
+
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="2" >
+Total<br>
+      </font></td><TH colspan="11">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="2" >
+<b>'trunc(sumfinale,2)' kr.</b><br>
+      </font></td>
+</tr> '
+
+call endheader
+call close(dat)
+
+
+say '<hr width="90%" size="2" noshade="">
+<br> '
+
+if impreg=0 then impreg="Nei"
+if impreg=1 then impreg="Ja"
+
+if kundenr=002 then impreg="Ja"
+
+if maling=0 then maling="ingen"
+
+if maling=1|maling=2 then impreg="Ja"
+
+
+say '<center>'
+say '<font face="verdana,arial" size="2" color="#000000">Antall Sprosser [ <b>'t_antall'</b> ] Hengsler/Klips [ <b>'t_antall*4'</b> ] Antall strøk maling [ <b>'maling'</b> ] Levert impregnert [ <b>'impreg'</b> ]'
+say '[<b>'totcm3'</b> m3 ] [ <b>'vekt'</b> kg ]<br>'
+
+
+say '<center><table bgcolor="ffffff" cellpadding="2" cellspacing="2" border="0" width="95%" align="center">
+  <tbody>
+    <tr>
+      <td bgcolor="ffffff" align="center" width="95%"><font face="verdana,arial">
+'tegninger'<br>
+      </font></td>
+    </tr>
+  </tbody>
+</table>
+
+<br><hr width="90%" size="2" noshade="">
+<table align="top" border="0" bgcolor="#000000" cellpadding="0" cellspacing="0" width="90%">
+<td bgcolor="#ffffff"><font face="verdana,arial" size="2" color="#000000">
+Hagen Snekkerverksted<br>
+4120 Tau<br>
+</font>
+</td>
+<td bgcolor="#ffffff"><font face="verdana,arial" size="2" color="#000000">
+Telefon 51 74 66 24<br>
+Telefax 51 74 53 25<br>
+E-post post@hagen-snekkerverksted.no<br>
+Internett http://www.hagen-snekkerverksted.no
+</td>
+</tr>
+</table>'
+
+
+
+
+if ~exists(prisliste) then do
+say 'Fant ingen spesifisert prisliste, bruker standard 'kundetype' priser<br>'
+end
+/*
+editlink='<center><a href="redigere_priser.xgi?kundenr='kundenr'">Redigere/lage egen prisliste for 'kunde'</a><br></center>'
+if kundenr=002|kundenr=023 then do
+editlink='<center><a href="redigere_priser_fast.xgi?kundenr='kundenr'">Redigere/lage egen prisliste for 'kunde'</a><br></center>'
+end
+*/
+
+faktfile="web-root:verksted/datafiler_jobber/"aar"/"month"/fakt_id."id""
+
+
+if ~exists(faktfile) then do
+say '<a href="fakturert.xgi?aar='aar'&month='month'&jobbid='id'">Merk Ordren som fakturert</a><br><br>'
+end
+
+if exists(faktfile) then do
+say 'Denne ordre er fakturert<br><br>'
+end
+
+say '<a href="#" OnClick="javascript:parent.print();">Skriv ut</a>'
+
+exit
+
+
+typeA:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.a.profil=A_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.a.profil=A_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.a.profil=A_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.a.profil=A_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.a.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+
+typeB:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.b.profil=B_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.b.profil=B_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.b.profil=B_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.b.profil=B_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.b.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typeC:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.c.profil=c_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.c.profil=c_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.c.profil=c_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.c.profil=c_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.c.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+
+typed:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.d.profil=d_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.d.profil=d_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.d.profil=d_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.d.profil=d_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.d.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typeE:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.e.profil=e_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.e.profil=e_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.e.profil=e_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.e.profil=e_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.e.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+
+typef:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.f.profil=f_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.f.profil=f_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.f.profil=f_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.f.profil=f_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.f.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+
+typeG:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.g.profil=g_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.g.profil=g_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.g.profil=g_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.g.profil=g_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.g.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typeH:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.h.profil=h_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.h.profil=h_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.h.profil=h_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.h.profil=h_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.h.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+tillegg_rute=tillegg_rute+(4*inndel_b)*antall
+call regne_pris
+return
+
+
+typei:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.i.profil=i_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.i.profil=i_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.i.profil=i_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.i.profil=i_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.i.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typej:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.j.profil=j_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.j.profil=j_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.j.profil=j_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.j.profil=j_kitt.0
+  end
+ end
+end
+
+rutepris.type.profil=pris.j.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typek:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.k.profil=k_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.k.profil=k_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.k.profil=k_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.k.profil=k_kitt.0
+  end
+ end
+end
+rutepris.type.profil=pris.k.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typel:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.l.profil=l_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.l.profil=l_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.l.profil=l_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.l.profil=l_kitt.0
+  end
+ end
+end
+rutepris.type.profil=pris.l.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typem:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.m.profil=m_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.m.profil=m_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.m.profil=m_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.m.profil=m_kitt.0
+  end
+ end
+end
+rutepris.type.profil=pris.m.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typeN:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.n.profil=n_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.n.profil=n_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.n.profil=n_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.n.profil=n_kitt.0
+  end
+ end
+end
+rutepris.type.profil=pris.n.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+call regne_pris
+return
+
+typeo:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.o.profil=o_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.o.profil=o_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.o.profil=o_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.o.profil=o_kitt.0
+  end
+ end
+end
+rutepris.type.profil=pris.o.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+tillegg_rute=tillegg_rute+(4*(inndel_b-1))*antall
+call regne_pris
+return
+
+typep:
+if fastpris=1 then do
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  pris.p.profil=p_seks.1
+  end
+  if profil=1 then do /* kitt */
+  pris.p.profil=p_kitt.1
+  end
+ end
+
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  pris.p.profil=p_seks.0
+  end
+  if profil=1 then do /* kitt */
+  pris.p.profil=p_kitt.0
+  end
+ end
+end
+rutepris.type.profil=pris.p.profil
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+rute.type.profil=rute.type.profil+totruter
+tillegg_rute=tillegg_rute+(4*(inndel_b-1))+3*antall
+call regne_pris
+return
+
+
+/* ******************************************************************************************/
+regne_pris:
+sprosspris=rutepris.type.profil*ruter
+
+/*
+if antall>=10 then do
+linje=as
+kvantum=3
+kvantumantall=antall
+call kvantumpris
+end
+
+if antall>=20 then do
+linje=as
+kvantum=5
+kvantumantall=antall
+call kvantumpris
+end
+
+if antall>=40 then do
+linje=as
+kvantum=7
+kvantumantall=antall
+call kvantumpris
+end
+
+if antall>=60 then do
+linje=as
+kvantum=10
+kvantumantall=antall
+call kvantumpris
+end
+*/
+
+if fastpris=0 then do
+if maling>0 then do
+  if type=j then ruter=ruter*4
+  if maling=1 then do
+  sprossmaling=m1pris*(ruter+tillegg_rute)
+  end
+  if maling=2 then do
+  sprossmaling=m2pris*(ruter+tillegg_rute)
+  end
+  if sprossmaling>minstepris_maling then do
+  mal_ruter=mal_ruter+totruter
+  end
+
+  if sprossmaling<minstepris_maling then do
+  mal_minsteruter=mal_minsteruter+totruter
+  mal_minstesprosser=mal_minstesprosser+antall
+  end
+
+ end
+end
+antall.type=antall.type+antall
+
+if fastpris=1 then do
+
+call uldal
+ if maling>0 then do
+  if profil=0 then do /* sekskant */
+  minstepris.profil=minsteseks.1
+  end
+  if profil=1 then do /* kitt */
+  minstepris.profil=minstekitt.1
+  end
+ end
+ if maling=0 then do
+  if profil=0 then do /* sekskant */
+  minstepris.profil=minsteseks.0
+  end
+  if profil=1 then do /* kitt */
+  minstepris.profil=minstekitt.0
+  end
+end
+
+ if maling=2 then do
+  sprosspris=rutepris.type.profil*ruter
+ end
+
+if sprosspris>minstepris.profil THEN DO
+totalruter.type.profil=totalruter.type.profil+totruter
+end
+
+
+if sprosspris<minstepris.profil THEN DO
+minsteruter.type.profil=minsteruter.type.profil+totruter
+sprosse_minstepris.type.profil=sprosse_minstepris.type.profil+antall
+end
+
+if hengsler=1 THEN DO
+antallhengsler=antall*4
+hengsle_pris=antallhengsler*hengslepris
+totalhengsler=totalhengsler+antallhengsler
+end
+
+if klips=1 THEN DO
+antallklips=antall*4
+sumklips=antallklips*klipspris
+totalklips=totalklips+sumklips
+end
+
+return
+/* ******************************************************************************************/
+end
+
+
+vanlig:
+if sprosspris>minstepris.profil THEN DO
+totalruter.type.profil=totalruter.type.profil+totruter
+end
+
+if sprosspris<minstepris.profil THEN DO
+minsteruter.type.profil=minsteruter.type.profil+totruter
+sprosse_minstepris.type.profil=sprosse_minstepris.type.profil+antall
+end
+
+
+
+if hengsler=1 THEN DO
+antallhengsler=antall*4
+hengsle_pris=antallhengsler*hengslepris
+totalhengsler=totalhengsler+antallhengsler
+end
+
+if klips=1 THEN DO
+antallklips=antall*4
+sumklips=antallklips*klipspris
+totalklips=totalklips+sumklips
+end
+
+return
+
+
+startheader:
+
+say '<table cellpadding="2" cellspacing="2" border="0" width="95%" align="center">
+  <tbody>
+    <tr>
+       <td bgcolor="dddddd" valign="top" width="10"><font face="verdana,arial" size="2" >
+No<br>
+      </font></td>
+     <td bgcolor="dddddd" valign="top" width="70"><font face="verdana,arial" size="2" >
+Merk<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="verdana,arial" size="2" >
+Antall<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="150" align="center"><font face="verdana,arial" size="2" >
+Bredde<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="120" align="center"><font face="verdana,arial" size="2" >
+H&oslash;yde<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="verdana,arial" size="2" >
+Type<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="verdana,arial" size="2" >
+M&aring;lenr<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="verdana,arial" size="2" >
+Inndeling<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="verdana,arial" size="2" >
+Sekskant<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="verdana,arial" size="2" >
+Kittprofil<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="verdana,arial" size="2" >
+Flukting<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="verdana,arial" size="2" >
+Deling<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="verdana,arial" size="2" >
+Ruter<br>
+      </font></td>
+    </tr>'
+return
+
+
+start_typeheader:
+
+/*
+if maling>0 then say '<center><font size="5">Sprossene er malt 'maling' strøk<br><font size="3">'
+if maling=0 then say '<center><font size="5">Sprossene er ikke malt<br><font size="3">'
+*/
+say '<table cellpadding="2" cellspacing="2" border="0" width="95%" align="center">
+  <tbody>
+    <tr>
+      <td bgcolor="dddddd" valign="top" width="100"><font size="-1" face="verdana,arial" size="2" >
+Type<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="40" align="center"><font size="-1" face="verdana,arial" size="1" >
+Antall<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="40" align="center"><font size="-1" face="verdana,arial" size="1" >
+totalt ruter Sekskant<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="150" align="center"><font size="-1" face="verdana,arial" size="1" >
+totalt ruter Kitt<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="150" align="center"><font size="-1" face="verdana,arial" size="1" >
+Minstepris Sekskant<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="150" align="center"><font size="-1" face="verdana,arial" size="1" >
+Minstepris Kitt<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="100" align="center"><font size="-1" face="verdana,arial" size="1" >
+Antall Minstepris 6kant<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="100" align="center"><font size="-1" face="verdana,arial" size="1" >
+Antall Minstepris Kitt<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="150" align="center"><font size="-1" face="verdana,arial" size="1" >
+Pris sekskant<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="150" align="center"><font size="-1" face="verdana,arial" size="1" >
+Pris kitt<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="150" align="center"><font size="-1" face="verdana,arial" size="1" >
+minstepris sekskant<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="150" align="center"><font size="-1" face="verdana,arial" size="1" >
+minstepris kitt<br>
+      </font></td>
+      <td bgcolor="dddddd" valign="top" width="350" align="center"><font size="-1" face="verdana,arial" size="1" >
+SUM<br>
+      </font></td>
+    </tr>'
+return
+
+vistyper:
+
+totalpr=(totalruter.type.0*(pris.type.0+maletillegg))+(totalruter.type.1*pris.type.1)+(sprosse_minstepris.type.0*minstepris.0)+(sprosse_minstepris.type.1*minstepris.1)
+
+pris_alt=pris_alt+totalpr
+
+
+totalruter0color="000000"
+totalruter1color="000000"
+minsteruter0color="000000"
+minsteruter1color="000000"
+minstepris0color="000000"
+minstepris1color="000000"
+prissekscolor="000000"
+priskittcolor="000000"
+minstepris1color="000000"
+minstepris1color="000000"
+
+if totalruter.type.0=0 then totalruter0color=ffffff
+if totalruter.type.1=0 then totalruter1color=ffffff
+if minsteruter.type.0=0 then minsteruter0color=ffffff
+if minsteruter.type.1=0 then minsteruter1color=ffffff
+if sprosse_minstepris.type.0=0 then minstepris0color=ffffff
+if sprosse_minstepris.type.1=0 then minstepris1color=ffffff
+
+
+if totalruter.type.1*(pris.type.1+maletillegg)=0 then priskittcolor="ffffff"
+if totalruter.type.0*(pris.type.0+maletillegg)=0 then prissekscolor="ffffff"
+bgcolor=efefef
+
+say '    <tr>
+      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="verdana,arial" size="2" >
+'type'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font face="verdana,arial" size="2" >
+'antall.type'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font color="'totalruter0color'" face="verdana,arial" size="2" >
+'totalruter.type.0'<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'totalruter1color'" face="verdana,arial" size="2" >
+'totalruter.type.1'<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'minsteruter0color'" face="verdana,arial" size="2" >
+'minsteruter.type.0' ruter<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'minsteruter1color'" face="verdana,arial" size="2" >
+'minsteruter.type.1' ruter<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'minstepris0color'" face="verdana,arial" size="2" >
+'sprosse_minstepris.type.0' stk<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'minstepris1color'" face="verdana,arial" size="2" >
+'sprosse_minstepris.type.1' stk<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'prissekscolor'" face="verdana,arial" size="2" >
+'totalruter.type.0*(pris.type.0+maletillegg)'<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'priskittcolor'" face="verdana,arial" size="2" >
+'totalruter.type.1*(pris.type.1+maletillegg)'<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'minstepris0color'" face="verdana,arial" size="2" >
+'sprosse_minstepris.type.0*minstepris.0'<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font color="'minstepris1color'" face="verdana,arial" size="2" >
+'sprosse_minstepris.type.1*minstepris.1'<br><font color="000000">
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="right"><font face="verdana,arial" size="2" >
+'trunc(totalpr,2)' kr.
+      </font></td>
+    </tr> '
+
+return
+
+
+visjobb:
+if profil=0 then seks="X"
+if profil=1 then kitt="X"
+call color
+say '    <tr>
+      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="verdana,arial" size="1" >
+'no'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="verdana,arial" size="1" >
+'merknad'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font face="verdana,arial" size="1" >
+'antall'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="verdana,arial" size="1" >
+'bredde'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="verdana,arial" size="1" >
+'hoyde'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="30" align="center"><font face="verdana,arial" size="1" >
+'type'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="40" align="center"><font face="verdana,arial" size="1" >
+'malenr'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="60" align="center"><font face="verdana,arial" size="1" >
+'inndel_b' X 'inndel_h'<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="45" align="center"><font face="verdana,arial" size="1" >
+<b>'seks'</b><br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="57" align="center"><font face="verdana,arial" size="1" >
+<b>'kitt'</b><br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="57" align="center"><font face="verdana,arial" size="1" >
+<b>'flukt'</b><br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="57" align="center"><font face="verdana,arial" size="1" >
+<b>'visdeling'</b><br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="57" align="center"><font face="verdana,arial" size="1" >
+<b>'totruter'</b><br>
+      </font></td>
+    </tr>'
+return
+
+endheader:
+say '</tr>  </tbody></table>'
+
+return
+
+color:
+bgcolor="efefef"
+if as//2=1 then bgcolor="ffffff"
+
+return
+
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+forhandler=readln(kundeid)
+call close(kundeid)
+return
+
+
+kvantumpris:
+
+kv_nummer.as=linje
+kv_antall.as=antall
+kv_rab.as=kvantum
+
+if sprosspris>minstepris.profil then kv_pris=sprosspris 
+if sprosspris<minstepris.profil then kv_pris=minstepris.profil
+
+if kundenr=002|kundenr=023 then do
+sprosspris=(rutepris.type.profil+maletillegg)*ruter
+if sprosspris>minstepris.profil then kv_pris=sprosspris 
+if sprosspris<minstepris.profil then kv_pris=minstepris.profil
+end
+
+kv_nummer.as=(kv_pris*antall)*kvantum/100
+return
+
+
+impregnering:
+
+say '<tr>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+Impregnering<br>
+      </font></td>
+      <td bgcolor="'bgcolor'" valign="top" width="200" align="center"><font face="verdana,arial" size="1" >
+'malepris' ruter<br>
+      </font></td>
+<TH colspan="10">
+      <td bgcolor="'bgcolor'" valign="right" width="200" align="right"><font face="verdana,arial" size="1" >
+'malepris*impris' kr.<br>
+      </font></td>
+</tr> '
+pris_impr=malepris*impris
+
+return
+
+
+/* FASTPRIS AV ULDAL VINDUER */
+
+ULDAL:
+
+call open(pris,prisliste,'R')
+com=readln(pris)
+
+apris=readln(pris)
+A_seks.0=word(apris,2)
+A_seks.1=word(apris,3)
+A_kitt.0=word(apris,4)
+A_kitt.1=word(apris,5)
+
+bpris=readln(pris)
+B_seks.0=word(bpris,2)
+B_seks.1=word(bpris,3)
+B_kitt.0=word(bpris,4)
+B_kitt.1=word(bpris,5)
+
+cpris=readln(pris)
+C_seks.0=word(cpris,2)
+C_seks.1=word(cpris,3)
+C_kitt.0=word(cpris,4)
+C_kitt.1=word(cpris,5)
+
+dpris=readln(pris)
+D_seks.0=word(dpris,2)
+D_seks.1=word(dpris,3)
+D_kitt.0=word(dpris,4)
+D_kitt.1=word(dpris,5)
+
+epris=readln(pris)
+E_seks.0=word(epris,2)
+E_seks.1=word(epris,3)
+E_kitt.0=word(epris,4)
+E_kitt.1=word(epris,5)
+
+fpris=readln(pris)
+F_seks.0=word(fpris,2)
+F_seks.1=word(fpris,3)
+F_Kitt.0=word(fpris,4)
+F_kitt.1=word(fpris,5)
+
+gpris=readln(pris)
+G_seks.0=word(gpris,2)
+G_seks.1=word(gpris,3)
+G_kitt.0=word(gpris,4)
+G_kitt.1=word(gpris,5)
+
+hpris=readln(pris)
+H_seks.0=word(hpris,2)
+H_seks.1=word(hpris,3)
+H_kitt.0=word(hpris,4)
+H_kitt.1=word(hpris,5)
+
+ipris=readln(pris)
+I_seks.0=word(ipris,2)
+I_seks.1=word(ipris,3)
+I_kitt.0=word(ipris,4)
+I_kitt.1=word(ipris,5)
+
+jpris=readln(pris)
+J_seks.0=word(jpris,2)
+J_seks.1=word(jpris,3)
+J_kitt.0=word(jpris,4)
+J_kitt.1=word(jpris,5)
+
+kpris=readln(pris)
+K_seks.0=word(kpris,2)
+K_seks.1=word(kpris,3)
+K_kitt.0=word(kpris,4)
+K_kitt.1=word(kpris,5)
+
+lpris=readln(pris)
+L_seks.0=word(lpris,2)
+L_seks.1=word(lpris,3)
+L_kitt.0=word(lpris,4)
+L_kitt.1=word(lpris,5)
+
+mpris=readln(pris)
+M_seks.0=word(mpris,2)
+M_seks.1=word(mpris,3)
+M_kitt.0=word(mpris,4)
+M_kitt.1=word(mpris,5)
+
+npris=readln(pris)
+N_seks.0=word(npris,2)
+N_seks.1=word(npris,3)
+N_kitt.0=word(npris,4)
+N_kitt.1=word(npris,5)
+
+opris=readln(pris)
+O_seks.0=word(opris,2)
+O_seks.1=word(opris,3)
+O_kitt.0=word(opris,4)
+O_kitt.1=word(opris,5)
+
+ppris=readln(pris)
+P_seks.0=word(ppris,2)
+P_seks.1=word(ppris,3)
+P_kitt.0=word(ppris,4)
+P_kitt.1=word(ppris,5)
+
+com=readln(pris)
+
+m1pris=word(readln(pris),2)
+m2pris=word(readln(pris),2)
+impris=word(readln(pris),2)
+
+com=readln(pris)
+
+hengslepris=word(readln(pris),2)
+klipspris=word(readln(pris),2)
+
+com=readln(pris)
+
+flukte=word(readln(pris),2)
+minsteseks.0=word(readln(pris),2)
+minsteseks.1=word(readln(pris),2)
+minstekitt.0=word(readln(pris),2)
+minstekitt.1=word(readln(pris),2)
+
+call close(pris)
+
+return 0
+
+
+material:
+
+if type="a"|type="A"|type="C"|type="F"|type="N" then do
+
+meterprofil_b=bredde/100
+antallprofil_b=inndel_h-1
+antallprofil_b=antallprofil_b*antall
+
+meterprofil_h=hoyde/100
+antallprofil_h=inndel_b-1
+antallprofil_h=antallprofil_h*antall
+
+meterprofil_b=meterprofil_b*antallprofil_b
+meterprofil_h=meterprofil_h*antallprofil_h
+
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+
+end
+
+
+meterram_b=bredde/100
+meterram_h=hoyde/100
+
+meterram_b=meterram_b*2
+meterram_h=meterram_h*2
+meterram=meterram_b+meterram_h
+meterram=meterram*antall
+meterramme=trunc(meterramme+meterram,1)
+
+/********************************************************************************/
+if type=B|type=E|type=G|type=K|type=L|type=M|type=H then do
+
+profil_b = ((bredde - 4.4) - 3.5) / 2
+
+antall_b=(inndel_h-1)*2
+meterprofil_b=profil_b*antall_b
+
+meterprofil_b=meterprofil_b*antall
+
+meterprofil_b=meterprofil_b/100
+
+profil_h=hoyde-4.4
+antall_h=inndel_b-2
+
+meterprofil_h=antall_h*profil_h
+
+meterprofil_h=meterprofil_h*antall
+
+meterprofil_h=meterprofil_h/100
+
+m_midt=((hoyde-4.4)/100)*antall
+meter_midt=meter_midt+m_midt
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+end
+
+
+if type=D|type=I then do
+
+metermidt_b=0
+metermidt_h=0
+
+
+if inndel_h>1 then do
+ midt_b = ((bredde - 4.4) - 3.5) / 2
+ antall_midt=(inndel_h-1)*2
+ metermidt_b=midt_b*antall_midt
+ metermidt_b=metermidt_b*antall
+ metermidt_b=metermidt_b/100
+ skruer_b=(antall_midt*2)*antall
+end
+
+if inndel_b>1 then do
+ midt_h=(hoyde-4.4)/100
+ antall_h=inndel_b-1
+ metermidt_h=midt_h*antall_h
+ metermidt_h=metermidt_h*antall
+ skruer_h=(antall_h*4)*antall
+end
+
+midt=metermidt_b+metermidt_h
+meter_midt=meter_midt+midt
+
+end
+
+buevekt=0
+if type=E|type=C|type=K|type=M|type=N then do
+buevekt=(bredde/100)*antall
+buevekt=buevekt*600
+end
+
+
+kvadrat=(bredde*hoyde)/10000
+cm3=0.022*antall
+cm3=kvadrat*cm3
+totcm3=trunc(totcm3+cm3,3)
+
+
+vekt=meterprofil*130
+vekt=vekt + (meterramme*190)
+vekt=vekt + (meter_midt*430)
+vekt=vekt+buevekt
+vekt=vekt/1000
+vekt=trunc(vekt,1)
+
+return
+

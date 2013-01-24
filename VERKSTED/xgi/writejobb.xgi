@@ -1,0 +1,160 @@
+/*  */
+
+PARSE ARG 'merk=' merknad '&levuke=' leveringsuke '&bestdato=' bestdato '&hengsler=' hengsler '&klips=' klips '&maling=' maling '&impreg=' impregnering '&preview=' preview
+
+
+
+idag=date()
+
+dato=word(idag,1)
+month=word(idag,2)
+aar=word(idag,3)
+
+if month="Jan" then month="01"
+if month="Feb" then month="02"
+if month="Mar" then month="03"
+if month="Apr" then month="04"
+if month="May" then month="05"
+if month="Jun" then month="06"
+if month="Jul" then month="07"
+if month="Aug" then month="08"
+if month="Sep" then month="09"
+if month="Oct" then month="10"
+if month="Nov" then month="11"
+if month="Dec" then month="12"
+
+
+if ~exists("web-root:verksted/datafiler_jobber/"aar"") then do
+address command 'makedir web-root:verksted/datafiler_jobber/'aar''
+end
+
+if ~exists("web-root:verksted/datafiler_jobber/"aar"/"month"") then do
+address command 'makedir web-root:verksted/datafiler_jobber/'aar'/'month''
+end
+
+
+if preview="MIDLERTIDIG ORDRE" then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."
+datfile="web-root:verksted/datafiler_jobber_temp/temp_jobber.dat"
+
+end
+
+if preview="LEGG I DATABASE" then do
+datfile="web-root:verksted/datafiler_jobber/"aar"-"month".dat"
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."
+
+end
+
+
+if bestdato="" then bestdato=date(s)
+if merknad="" then merknad=" "
+
+merknad=translate(merknad, '_',' ')
+
+
+if ~open(tmp,"ram:jobb.skjema.tmp",'R') then do
+say 'Kapplisten en tom'
+call close(tmp)
+exit
+end
+
+if ~open(log,datfile,'R')
+	then do
+        jobber=1
+	call open(log,datfile,'W')
+	call writeln(log,'#jobber i år-måned av filnavn')
+	call writeln(log,jobber)
+	call close(log)
+	say 'lager ny jobb fil for 'aar'-'month
+	end
+
+
+
+call open(log,datfile,'R')
+blank=readln(log)
+jobber=readln(log)
+call close(log)
+
+
+call open(log,"ram:jobb.kunde.tmp",'R')
+kundenr=readln(log)
+call close(log)
+
+call open(dat,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+navn=readln(dat)
+addresse=readln(dat)
+sted=readln(dat)
+call close(dat)
+
+call open(jobb,jobbfile''jobber,'W')
+call writeln(jobb,'#kundeinfo')
+call writeln(jobb,dato' 'month' 'aar)
+call writeln(jobb,kundenr)
+call writeln(jobb,merknad)
+call writeln(jobb,leveringsuke)
+i=1
+call open(tmp,"ram:jobb.skjema.tmp",'R')
+garbage=readln(tmp)
+do until eof(tmp)
+antall=readln(tmp)
+if antall="" then do
+call end
+end
+bredde=readln(tmp)
+hoyde=readln(tmp)
+malenr=readln(tmp)
+type=readln(tmp)
+inndel_b=readln(tmp)
+inndel_h=readln(tmp)
+ramme=readln(tmp)
+profil=readln(tmp)
+merknad=readln(tmp)
+nylinje=readln(tmp)
+call writeln(jobb,'#nylinje')
+call writeln(jobb,antall)
+call writeln(jobb,bredde)
+call writeln(jobb,hoyde)
+call writeln(jobb,malenr)
+call writeln(jobb,type)
+call writeln(jobb,inndel_b)
+call writeln(jobb,inndel_h)
+call writeln(jobb,ramme)
+call writeln(jobb,profil)
+call writeln(jobb,merknad)
+
+i=i+1
+end
+
+end:
+call close(tmp)
+
+call writeln(jobb,'#andre ting')
+call writeln(jobb,hengsler)
+call writeln(jobb,klips)
+call writeln(jobb,maling)
+call writeln(jobb,impregnering)
+
+call close(jobb)
+
+jobber=jobber+1
+say '<br>'datfile
+call open(log,datfile,'W')
+call writeln(log,'#jobber i år-måned av filnavn')
+call writeln(log,jobber)
+call close(log)
+
+address command ('delete ram:jobb#?')
+
+address command 'run >nil: rx web-root:verksted/draw.xgi aar='aar'&month='month'&jobbid='jobber-1
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+say 'Jobben er lagt inn i databasen...'
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="1;url=../index.html" />'
+say '</body></html>'
+exit

@@ -1,0 +1,5 @@
+#exported cut n paste data
+2	37,9	x	108	3	A		1	x	2	
+8	117,9	x	128	3	A		2	x	2	
+16	88,3	x	98,6	3	A		2	x	2	
+2	74,8	x	96,7	3	A		2	x	2	

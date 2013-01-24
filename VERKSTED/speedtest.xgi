@@ -1,0 +1,75 @@
+/* */ 
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html>'
+say '<head>'
+say '<title>Arexx-kicks.ass.net - Speedometer.xgi</title>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '</head>'
+say '<body bgcolor="FFFFFF" text="000000" link="#334477" alink="#FF9900" vlink="#cc6600">'
+say '<br>'
+say '<center>'
+say '<!-- first words :) -->'
+say '<table border="0" bgcolor="#555555" cellpadding="3" cellspacing="3" width="750">'
+say '<tr>'
+say ' <td border="1" bgcolor="#a0a0a0"><font face="verdana,arial" size="-1" color="#000000">Connection Speedometer</font></td>'
+say '</tr>'
+say '  <td bgcolor="#dddddd"><font face="verdana,arial" size="-2" color="#000000">'
+say 'Measures your connection/download speed in KB/s....Sending you 200.000 bytes,please wait...'
+say '</font></td>'
+say '	</tr>'
+say '	</table>'
+say '<br>'
+say '<br>'
+/*
+say '<table cellspacing=1 cellpadding=3 border=0 bgcolor="#a0a0a0">'
+say '<tr><td class=cell colspan=3><b>test scheme</b></td></tr>'
+say '<tr><td class=cell><b>your line</b></td><td class=cell colspan=2><b>optimal</b></td></tr>'
+say '<tr><td class=cell>2 Mb/s</td><td class=cell>'4/5' sec.</td>'
+say '<td class=cell><IMG height=10 src="/img/reddot.gif" width=4 border=0></td></tr>'
+say '<tr><td class=cell>1 Mb/s</td><td class=cell>'7/5' sec.</td>'
+say '<td class=cell><IMG height=10 src="/img/reddot.gif" width=7 border=0></td></tr>'
+say '<tr><td class=cell>512 kb/s</td><td class=cell>'14/5' sec.</td>'
+say '<td class=cell><IMG height=10 src="/img/reddot.gif" width=14 border=0></td></tr>'
+say '<tr><td class=cell>256 kb/s</td><td class=cell>'27/5' sec.</td>'
+say '<td class=cell><IMG height=10 src="/img/reddot.gif" width=27 border=0></td></tr>'
+say '<tr><td class=cell>128 kb/s</td><td class=cell>'55/5' sec.</td>'
+say '<td class=cell><IMG height=10 src="/img/reddot.gif" width=55 border=0></td></tr>'
+say '<tr><td class=cell>64 kb/s</td><td class=cell>'109/5' sec. </td>'
+say '<td class=cell><IMG height=10 src="/img/reddot.gif" width=109 border=0></td></tr>'
+say '<tr><td class=cell>28.8 kb/s</td><td class=cell>'243/5' sec. </td>'
+say '<td class=cell><IMG height=10 src="/img/reddot.gif" width=243 border=0></td></tr>'
+say '</table>'
+*/
+say '<br>'
+say '<br>'
+i=0
+call open(txt,"ram:speedtest.txt",W)
+do until i=200000
+call writech(txt,"                                                                                                    ")
+i=i+1
+end
+call close(txt)
+say '<head>'
+call open(txt,"ram:speedtest.txt",R)
+call time(r)
+do until eof(txt)
+line=readln(txt)
+say line
+end
+elapsed=time(e)
+bps = 200000/elapsed
+kbps=bps%1000
+/*
+bits = kbytes * 1024 * 8
+mbit=bits % 1000
+mbit=mbit/1000
+*/
+say '	<table align=center border="0" bgcolor="#555555" cellpadding="3" cellspacing="3" width="750">'
+say '<td bgcolor="#dddddd"><font align=center face="verdana,arial" size="-2" color="#000000">'
+say '<center>Time to download 'elapsed' secs  -> 'kbps'KB/s'
+say '</font></td></tr></table>'
+
+say '</head>'
+exit

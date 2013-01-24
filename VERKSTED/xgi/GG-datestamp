@@ -1,0 +1,66 @@
+/* */
+
+dato=date(s)
+
+
+y=substr(dato,1,4)
+
+uke1=y'0101'
+
+BDate= Date('I',dato,'S')
+uke1 = Date('I',uke1,'S')
+
+
+leap=pos('.',y/4,1)
+
+if leap>0 then say 'ikke skuddår'
+
+
+say leap
+exit
+
+
+datoD=uke1
+datoS=dato-(86400*Trunc(dato/86400))
+datoDt= Date('N',datoD,'I')
+datoWd= Date('W',datoD,'I')
+datoMo= Date('M',datoD,'I')
+datoDa=Left(datoDt,2)
+datoYe=Right(datoDt,4)
+end
+
+exit
+
+
+
+WINDOW 1
+TEXT _monaco,9
+DO
+  PRINT
+  INPUT "Year?  "; year 'collect data
+  LONG IF year > 0
+    INPUT "Month? "; month
+    INPUT "Day?   "; day
+    IF year MOD 4 = 0 THEN leap = 1 ELSE leap = 0'is year a leap year?
+    a = (year + INT(year/4) - leap + 1) MOD 7     'find weekday for Jan 1 (1 = Sat, 2 = Sun)
+    m = 4 - a                                     'find date of Monday in first week
+    d = day + INT(30.56 * month) - 32 + leap      'calculate day number
+    IF month < 3 THEN d = d + 2                   'adjust for Jan and Feb
+    w = INT((d - m) / 7) + 1                      'find number of whole weeks
+    PRINT "Week no:" w
+    wd = (d - m) MOD 7 + 1                        'remainder gives weekday
+    PRINT "Weekday (1 = Mon, 2 = Tue):" wd
+  END IF
+UNTIL year = 0
+END
+
+Hans van Maanen
+
+/* LYSåR 
+The Gregorian calendar has 97 leap years every 400 years: 
+    Every year divisible by 4 is a leap year. 
+    However, every year divisible by 100 is not a leap year. 
+    However, every year divisible by 400 is a leap year after all. 
+So, 1700, 1800, 1900, 2100, and 2200 are not leap years. But 1600, 2000, and 2400 are leap years. 
+*/
+

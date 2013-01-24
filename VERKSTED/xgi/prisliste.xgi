@@ -1,0 +1,170 @@
+/* SPROSSE PRISER */
+
+PARSE ARG 'antall=' antall '&bredde=' bredde '&hoyde=' hoyde '&type=' type '&inndel_b=' inndel_b '&inndel_h=' inndel_h '&ramme=' ramme '&profil=' profil '&hengsler=' hengsler '&klips=' klips '&maling=' maling '&impreg=' impreg 
+if antall="" then exit
+
+/*
+say antall
+say bredde
+say hoyde
+say type
+say inndel_b
+say inndel_h
+say hengsler
+say maling
+say '<br>'
+*/
+
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+
+if maling=1 then call maling1
+
+if maling=2 then call maling2
+
+if impreg=1 then call impreg
+
+if type=A then call typea
+if type=B then call typeb
+if type=C then call typec
+if type=D then call typed
+if type=E then call typee
+if type=F then call typef
+if type=G then call typeg
+if type=H then call typeh
+if type=I then call typei
+if type=J then call typej
+if type=K then call typek
+if type=L then call typel
+if type=M then call typem
+if type=N then call typen
+if type=O then call typeo
+if type=P then call typep
+
+TOTPRIS:
+sprosspris=rutepris*ruter
+totpris=sprosspris*antall
+
+if maling>0 then do
+totpris=totpris+malepris
+end
+
+if impreg=1 then do
+totpris=totpris+impreg_pris
+end
+
+if hengsler=1 then do
+antallhengsler=antall*4
+hengslepris=10*antallhengsler
+totpris=totpris+hengslepris
+end
+
+if klips=1 then do
+antallklips=antall*4
+klipspris=3*antallklips
+totpris=totpris+klipspris
+end
+
+call open(log,"web-root:verksted/pris.tmp ",'W')
+call writeln(log,antall)
+call writeln(log,totruter)
+call writeln(log,rutepris)
+call writeln(log,sprosspris)
+call writeln(log,malepris)
+call writeln(log,impreg_pris)
+call writeln(log,hengslepris)
+call writeln(log,klipspris)
+call writeln(log,totpris)
+call writeln(log,'#')
+call close(log)
+
+exit
+
+TYPEA:
+if profil=0 then rutepris=22
+if profil=1 then rutepris=25.4
+call totpris
+
+TYPEB:
+if profil=0 then rutepris=26.5
+if profil=1 then rutepris=31.8
+call totpris
+
+TYPEC:
+if profil=0 then rutepris=30
+if profil=1 then rutepris=36
+call totpris
+
+TYPED:
+rutepris=66
+call totpris
+
+TYPEE:
+if profil=0 then rutepris=33
+if profil=1 then rutepris=39.6
+call totpris
+
+TYPEF:
+if profil=0 then rutepris=24.5
+if profil=1 then rutepris=29.4
+call totpris
+
+TYPEG:
+if profil=0 then rutepris=32
+if profil=1 then rutepris=38.4
+call totpris
+
+TYPEH:
+if profil=0 then rutepris=95
+if profil=1 then rutepris=114
+call totpris
+
+TYPEI:
+rutepris=66
+call totpris
+
+TYPEJ:
+rutepris=75
+call totpris
+
+TYPEK:
+if profil=0 then rutepris=30
+if profil=1 then rutepris=36
+call totpris
+
+TYPEL:
+if profil=0 then rutepris=32
+if profil=1 then rutepris=38.4
+call totpris
+
+TYPEM:
+if profil=0 then rutepris=36
+if profil=1 then rutepris=43.2
+call totpris
+
+TYPEN:
+if profil=0 then rutepris=33
+if profil=1 then rutepris=39.6
+call totpris
+
+TYPEO:
+if profil=0 then rutepris=125
+if profil=1 then rutepris=150
+call totpris
+
+TYPEP:
+if profil=0 then rutepris=135
+if profil=1 then rutepris=162
+call totpris
+
+MALING1:
+malepris=totruter*8
+return
+
+MALING2:
+malepris=totruter*9
+return
+
+IMPREG:
+impreg_pris=totruter*3
+return

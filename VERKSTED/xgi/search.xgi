@@ -1,0 +1,471 @@
+/* */ 
+
+PARSE ARG 'aar=' aar '&find=' find '&start=' start
+
+signal on halt
+signal on break_c
+signal on break_d
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF">'
+
+idag=date(s)
+year=substr(idag,1,4)
+
+
+if find="" then do
+say '<center><font face="Arial" size="10"><b>Søke etter merking eller ordrenummer</b><font size="2"><br>Skriv inn merknad i bestillingen eller ett ordrenummer (som 20030110)'
+call nosearch
+end
+
+
+if aar="" then aar=year
+
+hexfind=c2x(find)
+
+if aar=year then do
+address command 'c:delete >nil: web-root:VERKSTED/datafiler_cache/'aar'search_'hexfind'.dat'
+end
+
+call time(r)
+
+if exists('web-root:VERKSTED/datafiler_cache/'aar'search_'hexfind'.dat') then do
+  say 'søkeresultater er cachet ('hexfind')<br>'
+  call open(log,"web-root:VERKSTED/datafiler_cache/"aar"search_"hexfind".dat",'R')
+  treff=0
+   do until eof(log)
+   treff=treff+1
+   link.treff=readln(log)
+   jobbid.treff=readln(log)
+   kundefil.treff=readln(log)
+   prisfile.treff=readln(log)
+   faktfile.treff=readln(log)
+   end
+ call close(log)
+ treff=treff-1
+ call slutt
+end
+
+find=translate(find, xrange('a','z'), xrange('A','Z'))
+
+all_merk=""
+
+
+say '<font size="-1">Leter etter : 'find' ($'hexfind')<br><br>'
+
+treff=0
+
+month=1
+
+new_month:
+
+month=RIGHT('00'||month,2)
+if month=13 then call slutt
+
+
+maanedfile="web-root:verksted/datafiler_jobber/"aar"-"month".dat"
+
+if ~exists(maanedfile) then do
+month=month+1
+call new_month
+end
+
+call open(dat,maanedfile,'R')
+garbage=readln(dat)
+jobber=readln(dat)
+call close(dat)
+
+jobber=jobber-1
+
+nyjobb:
+
+if jobber=0 then call vis
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."jobber""
+
+
+
+jobbnum=right(jobber,2,00)
+
+ordrenummer=aar''month''jobbnum
+
+/* open file , and keep open until eof */
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+
+kundefil="web-root:verksted/datafiler_kunder/"kundenr
+prisfile="web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."jobber""
+faktfile="web-root:verksted/datafiler_jobber/"aar"/"month"/fakt_id."jobber""
+
+merk=readln(dat)
+if merk="" then merk=" "
+merk=translate(merk, xrange('a','z'), xrange('A','Z'))
+levuke=readln(dat)
+garbage=readln(dat)
+do until eof(dat)
+antall=readln(dat)
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+typen=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil=readln(dat)
+linjemerknad=readln(dat)
+/*linjemerknad="'"linjemerknad"'"*/
+if linjemerknad="" then linjemerknad=" "
+linjemerknad=compress(linjemerknad)
+nymerknad=translate(linjemerknad, xrange('a','z'), xrange('A','Z'))
+
+all_merk=all_merk''nymerknad
+
+garbage=readln(dat) 
+	if garbage="#andre ting" then do
+	 hengsler=readln(dat)
+	 klips=readln(dat)
+	 maling=readln(dat)
+	 impreg=readln(dat)
+	 dill=readln(dat)
+	end
+
+
+
+old_jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."jobber""
+end
+call close(dat) 
+
+tot_merk=merk''all_merk
+tot_merk="'"tot_merk"'"
+
+finn2=index(tot_merk,find)
+if finn2>0 then do
+call display_hit
+end
+
+finn2=index(ordrenummer,find)
+if finn2>0 then do
+call display_hit
+end
+
+
+
+jobber=jobber-1
+all_merk=""
+tot_merk=""
+call nyjobb
+
+exit
+
+hentkundeinfo:
+
+if exists(kundefil) then do
+call open(kun,kundefil,'R')
+kunde=readln(kun)
+addresse=readln(kun)
+sted=readln(kun)
+call close(kun)
+end
+return
+
+
+jobb_info:
+typer="?"
+ruter="?"
+
+if exists(prisfile) then do
+
+call open(data,prisfile,'R')
+	typer=readln(data)
+        antall=readln(data)
+        ruter=readln(data)
+        jobbpris=readln(data)
+        malepris=readln(data)
+	impregpris=readln(data)
+	call close(data)
+end
+
+return
+
+
+
+display_hit:
+treff=treff+1
+jobbid.treff=jobbfile
+kundefil.treff=kundefil
+prisfile.treff=prisfile
+faktfile.treff=faktfile
+
+
+link.treff='aar='aar'&month='month'&jobbid='jobber
+
+if ~exists('web-root:VERKSTED/datafiler_cache/'aar'search_'hexfind'.dat') then do
+call open(dat,"web-root:VERKSTED/datafiler_cache/"aar"search_"hexfind".dat",'W')
+call writeln(dat,link.treff)
+call writeln(dat,jobbid.treff)
+call writeln(dat,kundefil.treff)
+call writeln(dat,prisfile.treff)
+call writeln(dat,faktfile.treff)
+call close(dat)
+return
+end
+
+call open(dat,"web-root:VERKSTED/datafiler_cache/"aar"search_"hexfind".dat",'A')
+call writeln(dat,link.treff)
+call writeln(dat,jobbid.treff)
+call writeln(dat,kundefil.treff)
+call writeln(dat,prisfile.treff)
+call writeln(dat,faktfile.treff)
+call close(dat)
+
+return
+
+
+vis:
+
+month=month+1
+call new_month
+
+slutt:
+if start="" then start=10
+tot_treff=treff
+
+if tot_treff=0 then do
+say '<br>'
+say 'fant 'tot_treff' treff'
+
+say '<table border=0 cellpadding=3 cellspacing=0 align=center>
+<tr>
+<td nowrap>
+
+<form method=GET action=search.xgi?aar='aar'&find='find'&start=10>
+<font size=-1>
+<SELECT name="aar" tabindex=0 size=1>
+<option>2002</OPTION>
+<option>2003</OPTION>
+<option selected>'year'</OPTION>
+</SELECT>
+<input type=text name=find size=31 maxlength=2048 value="'find'"> 
+<input type=hidden name=start value="10">
+<input type=submit VALUE=Search>
+</font>
+</form>
+</table><br>'
+
+say '<center><table border=0 cellspacing=0 cellpadding=0>
+<tr>
+<td width=15>
+&nbsp;
+</td>
+<td id=1 bgcolor=#3333ff align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<b>Merknad</b></font></a>
+</td>
+<td width=15>&nbsp;
+</td>
+<td id=1 bgcolor=#efefef align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<a href="search_maal.xgi">
+<font size=-1>
+Mål</font></a>
+</td>
+<td width=15>&nbsp;
+</td>
+<td id=2 bgcolor=#efefef align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<a href="search_kunde.xgi">
+<font size=-1>Kunde</font></a>
+</td>
+</tr>
+<tr>
+<td colspan=12 bgcolor=#3366cc>
+<img width=1 height=1 alt="">
+</td>
+</tr>
+</table><br>'
+
+
+exit
+end
+
+elapsed=time(e)
+
+say '<center><font face="Arial" size="5"><b>Søke etter merking eller ordrenummer</b><font size="2"><br>Skriv inn merknad i bestillingen eller ett ordrenummer (som 20030110)'
+
+listend=start
+u=0
+if listend>10 then do
+u=listend-10
+end
+
+if start>tot_treff then do
+rest=start-tot_treff
+rest=10-rest
+listend=tot_treff
+u=listend-rest
+end
+
+
+if listend<10 then do
+u=0
+listend=tot_treff
+end
+
+
+say '<table width="90%" bgcolor=#3366cc nowrap>
+<td><font size=-1 color=#ffffff>
+Searched the database for <b><font color=#ffffff>'find'</font></b>.&nbsp;
+</td>
+<td bgcolor=#3366cc align=right nowrap><font size=-1 color=#ffffff>Results <b>'u+1'</b> - <b>'listend'</b> of about <b>'tot_treff'</b>.   Search took <b>'elapsed'</b> seconds.</font>
+</td>
+</table>'
+
+do until u=listend
+u=u+1
+
+jobber=jobbid.u
+prisfile=prisfile.u
+kundefil=kundefil.u
+faktfile=faktfile.u
+
+faktura="icon_fakturert.gif"
+if exists(faktfile) then do
+faktura="icon_fakturert2.gif"
+end
+
+call hentkundeinfo
+call jobb_info
+say '<center>
+<table cellpadding="2" cellspacing="2" border="0" width="500"> <tbody> <tr> <td valign="top" align="center" width="10" bgcolor="#efefef">'u'<br> </td>
+ <td valign="top" align="center" bgcolor="#ececec">'
+say kunde' <a href="../kapp.html?'link.u'""><img border="0" src="../bilder/icon_view3.gif"></a> <a href="utregn_pris.xgi?'link.u'""><img border="0" src="../bilder/'faktura'"></a><br>Sprossetyper :'typer' Antall ruter :'ruter'<br> </td> </tr>  </tbody> </table> '
+end
+
+antallsok=treff/10
+antallsok=translate(antallsok, ' ','.')
+say '<br>'
+helesok=word(antallsok,1)
+restsok=word(antallsok,2)
+if restsok='' then restsok=0
+if restsok<10 then restsok=1
+u=0
+
+
+say '<table border=0 cellpadding=0 width=1% cellspacing=0 align=center>
+<tr align=center valign=top>
+<td valign=bottom nowrap>
+<font size=-1>Result&nbsp;Page:&nbsp;
+</font>
+<td>
+<img src=img/nav_first.gif width=18 height=26 alt="">
+<br>'
+
+do until u=helesok+restsok
+u=u+1
+say'<td>
+<a href="search.xgi?aar='aar'&find='find'&start='10*u'">
+<img src=img/nav_page.gif width=16 height=26 alt="" border=0>
+<br>'u'
+</a>'
+end
+
+if start<tot_treff then do
+say '<td nowrap>'
+ if tot_treff>=10 then do
+ say '<a href="search.xgi?aar='aar'&find='find'&start='start+10'">
+ <img src=img/nav_next.gif width=100 height=26 alt="" border=0>
+ <br>
+ <span class=b>Next
+ </span>
+ </a>'
+ end
+end
+if start>=tot_treff then do
+say '<td nowrap>'
+if tot_treff>=10 then do
+say '<img src=img/nav_last.gif height=26 alt="" border=0>
+<br>
+<span class=b>
+</span>
+'
+end
+
+
+end
+
+if tot_treff<10 then do
+say '<a href="search.xgi?aar='aar'&find='find'&start='start+10'">
+<img src=img/nav_last.gif width=46 height=26 alt="" border=0>
+<br>
+<span class=b>
+</span>
+</a>'
+end
+
+
+
+
+say '</table>
+</div>'
+
+nosearch:
+say year
+
+if aar="" then aar=year
+
+say'
+<center>
+<br clear=all>
+<br>
+<table border=0 cellpadding=3 cellspacing=0 align=center>
+<tr>
+<td nowrap>
+<form method=GET action=search.xgi?aar='aar'&find='find'&start=10>
+<font size=-1>
+<SELECT name="aar" tabindex=0 size=1>
+<option>2003</OPTION>
+<option>2004</OPTION>
+<option>2005</OPTION>
+<option>'year'</OPTION>
+<option selected>'aar'</OPTION>
+</SELECT>
+<input type=text name=find size=31 maxlength=2048 value="'find'"> 
+<input type=hidden name=start value="10">
+<input type=submit VALUE=Search>
+</font>
+</form>
+</table><br>'
+
+say '<table border=0 cellspacing=0 cellpadding=0>
+<tr>
+<td width=15>
+&nbsp;
+</td>
+<td id=1 bgcolor=#3333ff align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<b>Merknad</b></font></a>
+</td>
+<td width=15>&nbsp;
+</td>
+<td id=1 bgcolor=#efefef align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<a href="search_maal.xgi">
+<font size=-1>
+Mål</font></a>
+</td>
+<td width=15>&nbsp;
+</td>
+<td id=2 bgcolor=#efefef align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<a href="search_kunde.xgi">
+<font size=-1>Kunde</font></a>
+</td>
+</tr>
+</table><br>'
+
+exit
+

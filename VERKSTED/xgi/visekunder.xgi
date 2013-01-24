@@ -1,0 +1,34 @@
+/*    */
+call open(dat,"web-root:verksted/datafiler_kunder/nokunder.dat",'R')
+kunder=readln(dat)
+call close(dat)
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Hagen Snekkerverksted, redigere kunde </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF">'
+
+say '<center><table border="0" cellspacing="0" cellpadding="0" width="60%"><tr>'
+do until kunder=0
+datafil=right('000'||kunder,3)
+
+
+if exists("web-root:verksted/datafiler_kunder/"datafil) then do
+call open(dat,"web-root:verksted/datafiler_kunder/"datafil,'R')
+navn=readln(dat)
+call close(dat)
+
+say 'kundenr ['datafil'] <a href="vise_kunder.xgi?id='datafil'">'navn'</a>'
+say '<br>'
+
+end
+kunder=kunder-1
+end
+say '</td></tr></table><br><br></center>'
+say '</body></html>'
+
+exit

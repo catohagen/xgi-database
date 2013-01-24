@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>XGI database</title>
+
+</head>
+<?rx execute('web-root:VERKSTED/navbar.xgi')?>
+
+<body bgcolor="#ffffff" text="#000000" link="#000000" vlink="#586272">
+
+
+<table cellspacing="0" cellpadding="0" border="0" width="100%" align="center">
+<tr>
+<td>
+
+<table border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff">
+<tr>
+<td>
+
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td><center><a href="http://www.hagen-snekkerverksted.no/index.html" target="_top"><IMG SRC="cnc/firmalogo.gif" border="0"></a><img src="cnc/sprossepynt.jpg"></td>
+
+</tr>
+</table>
+
+</td>
+</tr>
+
+<tr>
+<td bgcolor="#FFFFFF">
+
+<TABLE BORDER="0" ALIGN="center" width="100%" bgcolor="#FFFFFF">
+<TR>
+<TD ALIGN="left" bgcolor="#FFFFFF">
+<?rx execute('web-root:verksted/xgi/uke.xgi')?>
+</TD>
+</TR>
+</TABLE>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<center>
+
+
+<table CELLSPACING="2" cellpadding="2" BORDER="1" BGCOLOR="#ffffff">
+<tr>
+<td>
+<table BORDER="1">
+<?rx execute('web-root:VERKSTED/calender.xgi') ?>
+</td>
+
+<td>
+<table>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<A HREF="backup.xgi">backup </A>
+</td>
+</tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<A HREF="nykunde.html">ny kunde </A>
+</td>
+</tr>
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<A HREF="xgi/viseansatte.xgi">Redigere ansatt </A>
+</td>
+
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<A HREF="cncbuer.html">Manuell cnc kode </A>
+</td>
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<A HREF="xgi/print_stats.xgi">Statistikk</A>
+</td>
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<A HREF="admin.html">Redigere kunde</A>
+</td>
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<A HREF="xgi/vise_jobb_tilbud.xgi">Midlertidige Jobber</A>
+</td>
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+
+</td>
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<a href="xgi/vise_jobblinker_sort.xgi?sort=1">Vise jobber</A>
+</td>
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<a href="nyjobb.html">Ny jobb</A>
+</td>
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<a href="xgi/v_lager.xgi">Varelager</A>
+</td>
+</tr>
+
+<tr>
+<td id=1 bgcolor=#eeeeee align=center width=95 nowrap onClick="" style=cursor:pointer;cursor:hand;>
+<font size=-1 color="ffffff">
+<a href="xgi/cnc_preset.xgi">CNC preset</A>
+</td>
+</tr>
+
+
+</table>
+</td>
+</tr>
+</table>
+
+<center>
+Hurtig linker til ferdige jobber :<br>
+<?rx execute('web-root:VERKSTED/last_month.xgi') ?>
+<?rx execute('web-root:VERKSTED/search.xgi') ?>
+
+</center>
+</body>
+</html>

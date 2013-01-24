@@ -1,0 +1,76 @@
+#kundeinfo
+10 09 2003
+001
+Line,Svein,Else
+37/38
+#nylinje
+1
+50.1
+130.2
+5
+C
+2
+4
+1
+0
+ Line
+#nylinje
+1
+80.8
+120.3
+6
+C
+2
+3
+0
+0
+ Svein
+#nylinje
+1
+103.4
+79.8
+5
+C
+3
+2
+1
+0
+ Svein
+#nylinje
+1
+83.8
+33.7
+6
+A
+3
+2
+0
+0
+ Else
+#nylinje
+1
+66.8
+96.3
+5
+A
+2
+3
+1
+0
+ 
+#nylinje
+2
+93.9
+41.4
+6
+A
+3
+2
+0
+0
+ 
+#andre ting
+0
+0
+0
+0

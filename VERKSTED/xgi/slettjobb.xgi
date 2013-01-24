@@ -1,0 +1,199 @@
+/* */ 
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id '&confirm=' confirm
+
+
+if confirm="" then do
+confirm=0
+say 'Er du sikker ?? <a href="slettjobb.xgi?aar='aar'&month='month'&jobbid='id'&confirm='confirm'">slett jobb</a>'
+exit
+end
+
+if confirm=0 then do
+confirm=1
+say 'Er du HELT sikker ?? <a href="slettjobb.xgi?aar='aar'&month='month'&jobbid='id'&confirm='confirm'">slett jobb</a>'
+exit
+end
+
+
+month=RIGHT('00'||month,2)
+
+maanedfile="web-root:verksted/datafiler_jobber/"aar"-"month".dat"
+
+say maanedfile'<br>'
+
+if exists(maanedfile) then do
+call open(dat,maanedfile,'R')
+garbage=readln(dat)
+jobber=readln(dat)
+call close(dat)
+jobber=jobber-1
+end
+
+if exists(maanedfile) then do
+call open(dat,maanedfile,'W')
+call writeln(dat,garbage)
+call writeln(dat,jobber)
+call close(dat)
+end
+
+
+
+say 'dette virker ikke helt ennaa<br>'
+
+exit
+
+
+slettfil=id
+say jobber'<br>'
+
+i=1
+
+do until i=jobber+1
+jobbfile.i="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."i""
+makefile.i="web-root:verksted/datafiler_jobber/"aar"/"month"/make_id."i""
+prisfile.i="web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."i""
+faxfile.i="web-root:verksted/datafiler_jobber/"aar"/"month"/fax_id."i""
+faktfile.i="web-root:verksted/datafiler_jobber/"aar"/"month"/fakt_id."i""
+i=i+1
+end
+
+
+say jobbfile.slettfil'<br>'
+
+say 'Sletter jobb nr.'slettfil'<br>'
+address command ('delete 'jobbfile.slettfil'')
+address command ('delete 'prisfile.slettfil'')
+address command ('delete 'makefile.slettfil'')
+address command ('delete 'faxfile.slettfil'')
+address command ('delete 'faktfile.slettfil'')
+
+i=1
+n=1
+
+say 'renaming...<br>'
+call startheader
+
+do until n=jobber+1
+if n=slettfil then do
+n=n+1
+slettfil=0
+end
+call action
+n=n+1
+i=i+1
+end
+
+i=1
+n=1
+slettfil=id
+do until n=jobber+1
+if n=slettfil then do
+n=n+1
+slettfil=0
+end
+call actionpris
+n=n+1
+i=i+1
+end
+
+i=1
+n=1
+slettfil=id
+do until n=jobber+1
+if n=slettfil then do
+n=n+1
+slettfil=0
+end
+call actionmake
+n=n+1
+i=i+1
+end
+
+i=1
+n=1
+slettfil=id
+do until n=jobber+1
+if n=slettfil then do
+n=n+1
+slettfil=0
+end
+call actionfax
+n=n+1
+i=i+1
+end
+
+i=1
+n=1
+slettfil=id
+do until n=jobber+1
+if n=slettfil then do
+n=n+1
+slettfil=0
+end
+call actionfakt
+n=n+1
+i=i+1
+end
+
+
+say '<br><br><a href="../index.html">Tilbake til hovedside</a>'
+
+exit
+
+startheader:
+say '<table cellpadding="2" cellspacing="2" border="0" width="1000" align="center">  <tbody>    <tr>      <td bgcolor="dddddd" valign="top" width="70"><font face="Helvetica, Arial, sans-serif">Action<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Source<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="150" align="center"><font face="Helvetica, Arial, sans-serif">Destination<br>      </font></td>    </tr>'
+
+return
+
+
+action:
+call color
+say '    <tr>      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="Helvetica, Arial, sans-serif">'rename'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font face="Helvetica, Arial, sans-serif">'jobbfile.n'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'jobbfile.i'<br>      </font></td>    </tr>'
+if exists(jobbfile.n) then do
+address command ("rename "jobbfile.n" "jobbfile.i"")
+end
+
+return
+
+actionmake:
+call color
+say '    <tr>      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="Helvetica, Arial, sans-serif">'rename'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font face="Helvetica, Arial, sans-serif">'makefile.n'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'makefile.i'<br>      </font></td>    </tr>'
+if exists(makefile.n) then do
+address command ("rename "makefile.n" "makefile.i"")
+end
+
+return
+
+actionpris:
+call color
+say '    <tr>      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="Helvetica, Arial, sans-serif">'rename'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font face="Helvetica, Arial, sans-serif">'prisfile.n'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'prisfile.i'<br>      </font></td>    </tr>'
+if exists(prisfile.n) then do
+address command ("rename "prisfile.n" "prisfile.i"")
+end
+
+return
+
+actionfax:
+call color
+say '    <tr>      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="Helvetica, Arial, sans-serif">'rename'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font face="Helvetica, Arial, sans-serif">'faxfile.n'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'faxfile.i'<br>      </font></td>    </tr>'
+if exists(faxfile.n) then do
+address command ("rename "faxfile.n" "faxfile.i"")
+end
+
+return
+
+actionfakt:
+call color
+say '    <tr>      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="Helvetica, Arial, sans-serif">'rename'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font face="Helvetica, Arial, sans-serif">'faktfile.n'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'faktfile.i'<br>      </font></td>    </tr>'
+if exists(faktfile.n) then do
+address command ("rename "faktfile.n" "faktfile.i"")
+end
+
+return
+
+
+color:
+bgcolor="ffffff"
+if i//2=0 then bgcolor="efefef"
+return

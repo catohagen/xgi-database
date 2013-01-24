@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Kappliste.xgi</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF">
+<br>
+<center>
+<br>
+<br>
+	<table border="0" bgcolor="cccccc" width="80%" align="center" cellpadding="3" cellspacing="3">
+
+	<td bgcolor="dddddd" align="center">
+
+<form method="get" action="xgi/kappliste_liten.xgi" style="margin: 0px">
+<br><br>
+...antall <input size="50" name="antall" hidden="888" accesskey="s" class="searchbox" id="antall" /><br>
+...bredde <input size="50" name="bredde" hidden="888" accesskey="s" class="searchbox" id="bredde" /><br>
+....høyde <input size="50" name="hoyde" hidden="888" accesskey="s" class="searchbox" id="hoyde" /><br>
+.....type <input size="50" name="typen" hidden="888" accesskey="s" class="searchbox" id="typen" /><br>
+inndel br <input size="50" name="inndel_b" hidden="888" accesskey="s" class="searchbox" id="inndel_b" /><br>
+inndel hø <input size="50" name="inndel_h" hidden="888" accesskey="s" class="searchbox" id="inndel_h" /><br>
+...målenr <input size="50" name="malenr" hidden="888" accesskey="s" class="searchbox" id="malenr" /><br>
+
+<br><br><center>
+<input type=radio name=ramme value=0 checked>22mm
+<input type=radio name=ramme value=1>18mm
+<input type=radio name=profil value=0 checked>sekskant
+<input type=radio name=profil value=1>kitt
+<br>
+<br>
+<center><input type="submit" value="Regn ut kappmål" class="button" /><br><b>
+</form>
+<center>
+<br>
+
+	</td></tr>
+
+	</table>
+
+</body>
+</html>
+

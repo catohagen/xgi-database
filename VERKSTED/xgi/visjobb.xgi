@@ -1,0 +1,237 @@
+/*  */
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id
+/* id=compress(id)*/
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Hagen Snekkerverksted Database</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body  bgcolor="ffffff" text="000000" link="#FF9900" alink="#FF9900" vlink="#cc6600"></html>'
+
+
+totantall=0
+totruter=0
+
+if aar="" then do
+jobbfile="ram:jobb.skjema.tmp"
+
+
+if ~exists(jobbfile) then do
+say 'Lista er tom'
+exit
+end
+
+
+call opentemp
+end
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+
+if aar='tilbud' then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."month""
+end
+
+
+say jobbfile
+
+call opendatabase
+
+/* lese fra ram:jobb.skjema.tmp */
+opentemp:
+say 'leser fra ram:'
+i=1
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+call startheader
+do until eof(dat)
+antall=readln(dat)
+if antall="" then do
+call endheader
+end
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+type=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil_dat=readln(dat)
+profil=word(profil_dat,1)
+flukte=word(profil_dat,2)
+deling=word(profil_dat,3)
+if flukte=1 then flukte="X"
+if flukte=0 then flukte=""
+if deling=1 then deling="X"
+if deling=0 then deling=""
+merk=readln(dat)
+merk=translate(merk, ' ','_')
+if merk="" then merk="-"
+garbage=readln(dat)
+
+seks=""
+kitt=""
+call jobbtot
+call visjobb
+if antall="" then do
+call endheader
+
+end
+i=i+1
+end
+
+
+
+/* lese fra database */
+opendatabase:
+i=1
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merknad=readln(dat)
+if merknad="" then merknad=" "
+levuke=readln(dat)
+garbage=readln(dat)
+call hentkundeinfo
+
+
+
+say '<table align="top" border="0" bgcolor="#000000" cellpadding="3" cellspacing="3" width="300">
+	<td bgcolor="#dddddd"><font face="verdana,arial" size="2" color="#000000">'
+
+say '<br>'
+say dato
+say '<br>'
+say kunde
+say '<br>'
+say addresse
+say '<br>'
+say sted
+say '<br>'
+say '<br>'
+say 'Merk: 'merknad
+say '<br>'
+
+say '	</font></td></tr>
+	</table><br> '
+
+
+call startheader
+do until eof(dat)
+antall=readln(dat)
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+type=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil_dat=readln(dat)
+profil=word(profil_dat,1)
+flukte=word(profil_dat,2)
+deling=word(profil_dat,3)
+if flukte=1 then flukte="X"
+if flukte=0 then flukte=""
+if deling=1 then deling="X"
+if deling=0 then deling=""
+merk=readln(dat)
+if merknad="" then merknad=" "
+garbage=readln(dat)
+
+seks=""
+kitt=""
+call jobbtot
+call visjobb
+if extra="#andre ting" then do
+hengsler=readln(dat)
+klips=readln(dat)
+maling=readln(dat)
+impreg=readln(dat)
+call tilbehor
+call gipris
+call endheader
+end
+i=i+1
+end
+
+gipris:
+say '<br>'
+say '<br>'
+say '<center><a href="utregn_pris.xgi?aar='aar'&month='month'&jobbid='id'">Pris for jobben</a></center>'
+say '<br>'
+say '<br>'
+return
+
+
+
+tilbehor:
+say '</table>'
+say '<br>'
+say '<br>'
+say '<br>'
+if hengsler=1 then hengsler="ja"
+if hengsler=0 then hengsler="nei"
+if klips=1 then klips="ja"
+if klips=0 then klips="nei"
+if impreg=1 then impreg="ja"
+if impreg=0 then impreg="nei"
+say '<table width=600 align=center bgcolor="eeeeee">'
+say '<br><center>'
+say 'Hengsler [ <b>'hengsler'</b> ] Klips [ <b>'klips'</b> ] strøk maling [ <b>'maling'</b> ] impregnering [ <b>'impreg'</b> ]'
+
+return
+
+visjobb:
+if profil=0 then seks="X"
+if profil=1 then kitt="X"
+call color
+say '    <tr>      <td bgcolor="'bgcolor'" valign="top" width="52" align="center"><font face="Helvetica, Arial, sans-serif">'merk'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="35" align="center"><font face="Helvetica, Arial, sans-serif">'antall'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'bredde'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="115" align="center"><font face="Helvetica, Arial, sans-serif">'hoyde'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="30" align="center"><font face="Helvetica, Arial, sans-serif">'type'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">'malenr'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="60" align="center"><font face="Helvetica, Arial, sans-serif">'inndel_b' X 'inndel_h'<br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="45" align="center"><font face="Helvetica, Arial, sans-serif"><b>'seks'</b><br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="57" align="center"><font face="Helvetica, Arial, sans-serif"><b>'kitt'</b><br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="57" align="center"><font face="Helvetica, Arial, sans-serif"><b>'flukte'</b><br>      </font></td>      <td bgcolor="'bgcolor'" valign="top" width="57" align="center"><font face="Helvetica, Arial, sans-serif"><b>'deling'</b><br>      </font></td>    </tr>'
+return
+
+
+
+startheader:
+say '<table cellpadding="2" cellspacing="2" border="0" width="1000" align="center">  <tbody>    <tr>      <td bgcolor="dddddd" valign="top" width="70"><font face="Helvetica, Arial, sans-serif">Merk<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Antall<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="150" align="center"><font face="Helvetica, Arial, sans-serif">Bredde<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="120" align="center"><font face="Helvetica, Arial, sans-serif">H&oslash;yde<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Type<br>      </font></td>
+      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">M&aring;lenr<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="40" align="center"><font face="Helvetica, Arial, sans-serif">Inndeling<br>      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Sekskant<br>      </font></td>
+      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Kittprofil<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Flukte<br>      </font></td>      <td bgcolor="dddddd" valign="top" width="10" align="center"><font face="Helvetica, Arial, sans-serif">Deling<br>      </font></td>    </tr>'
+return
+
+
+jobbtot:
+if antall="" then return
+totantall=totantall+antall
+ruter=(inndel_b*inndel_h)*antall
+totruter=totruter+ruter
+return
+
+
+endheader:
+say '</tr>  </tbody></table>'
+
+
+say 'antall sprosser = 'totantall
+say '<br>'
+say 'sum ruter = 'totruter
+say '<br>'
+say '<br>'
+say 'closing database entry.. 'jobbfile
+
+call close(dat)
+exit
+
+color:
+if right(i,1)=0|right(i,1)=2|right(i,1)=4|right(i,1)=6|right(i,1)=8 then bgcolor="efefef"
+if right(i,1)=1|right(i,1)=3|right(i,1)=5|right(i,1)=7|right(i,1)=9 then bgcolor="ffffff"
+return
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+call close(kundeid)
+return

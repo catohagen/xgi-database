@@ -1,0 +1,1210 @@
+/* */ 
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id
+
+address command 'rx web-root:verksted/draw.xgi aar='aar'&month='month'&jobbid='id
+
+if aar="" then do
+PARSE ARG aar month id
+id=compress(id)
+end
+
+pos=1
+tegninger=""
+
+plast=0
+
+
+blaafarge="#9999cc"
+
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+
+if aar='tilbud' then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."month""
+end
+
+
+totcm3=0
+meterprofil=0
+meterramme=0
+skruer=0
+
+vekt=0
+
+meter_midt=0
+
+
+totalantall=0
+
+
+
+subtype=0
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+if merk="" then merk=" "
+levuke=readln(dat)
+garbage=readln(dat)
+antall=readln(dat)
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+call close(dat)
+
+call open(dat,jobbfile,'R')
+do until garbage="#andre ting"
+garbage=readln(dat)
+end
+
+  hengsler=readln(dat)
+  klips=readln(dat)
+  maling=readln(dat)
+  impreg=readln(dat)
+  jobb=readln(dat)
+
+call close(dat)
+
+
+totruter=0
+/* open file , and keep open until eof */
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+if merk="" then merk=" "
+levuke=readln(dat)
+garbage=readln(dat)
+
+dato=date()
+tid=time()
+
+ansattid="blank"
+makefile="web-root:verksted/datafiler_jobber/"aar"/"month"/make_id."id""
+ if exists(makefile) then do
+ call open(data,makefile,'R')
+ com=readln(data)
+ ansattid=readln(data)
+ jobbstatus=readln(data)
+ call close(data) 
+end
+
+call hentkundeinfo
+
+if malenr=30 then do
+call kappliste_header_plast
+plast=1
+end
+
+if malenr~=30 then do
+call kappliste_header
+end
+
+n=1
+
+do until eof(dat)
+
+antall=readln(dat)
+
+totalantall=totalantall+antall
+
+bredde=readln(dat)
+hoyde=readln(dat)
+
+
+malenr=readln(dat)
+
+typen=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+
+
+truter=inndel_b*inndel_h*antall
+totruter=totruter+truter
+
+ramme=readln(dat)
+profil_dat=readln(dat)
+profil=word(profil_dat,1)
+flukte=word(profil_dat,2)
+deling=word(profil_dat,3)
+if flukte=1 then flukte="X"
+if flukte=0 then flukte=""
+if deling=1 then deling="X"
+if deling=0 then deling=""
+
+merknad=readln(dat)
+if merknad="" then merknad=" "
+garbage=readln(dat) 
+
+if exists('web-root:verksted/tmp/img_'typen'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg') then do
+tegninger=tegninger''n'<img src="../tmp/img_'typen'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" align="top" border="0">'
+n=n+1
+end
+
+call calc_list
+call material
+call make_kapplist
+pos=pos+1
+
+if garbage="#andre ting" then do
+hengsler=readln(dat)
+klips=readln(dat)
+maling=readln(dat)
+impreg=readln(dat)
+
+call end_kappliste
+
+end
+end
+
+calc_list:
+
+bredde=translate(bredde, '.',',')
+hoyde=translate(hoyde, '.',',')
+
+type=left(typen,1)
+subtype=right(typen,1)
+if subtype=type then subtype=1
+
+ram22=""
+ram18=""
+ramcolor="ffffff"
+if ramme=0 then do
+ramme=2.2
+ram22="X"
+end
+if ramme=1 then do
+ramme=1.6
+ram18="X"
+ramcolor="555555"
+end
+
+
+kitt=""
+kittcolor="ffffff"
+seks=""
+
+if profil=0 then do
+seks="X"
+end
+
+if profil=1 then do
+kitt="X"
+kittcolor="555555"
+end
+
+
+y_pinne="&nbsp;"
+m_pinne="&nbsp;"
+midtstokker="&nbsp;"
+kapp_midtpinne="&nbsp;"
+kapp_ytterpinne="&nbsp;"
+midtpinne_inndel="&nbsp;"
+b_pinne="&nbsp;"
+h_pinne="&nbsp;"
+
+profil_.0=0.8
+profil_.1=2.4
+midt=5.0
+midt_plast=5.3
+midtnese=3.5
+
+
+if malenr=3 then do
+maalenr_b=2.0
+maalenr_h=1.3
+end
+
+if malenr=30 then do
+maalenr_b=4.2
+maalenr_h=4.4
+end
+
+
+if malenr=1 then do
+maalenr_b=2.8
+maalenr_h=2.1
+end
+
+if malenr=10 then do
+maalenr_b=5.0
+maalenr_h=5.2
+end
+
+if malenr=2 then do
+maalenr_b=3.2
+maalenr_h=3.3
+ramme=1.6
+ram18="X"
+ramcolor="555555"
+end
+
+if malenr=5 then do
+maalenr_b=0
+maalenr_h=0
+ramme=1.6
+ram18="X"
+ramcolor="555555"
+end
+
+if malenr=6 then do
+maalenr_b=0
+maalenr_h=0
+end
+
+if malenr=8 then do
+maalenr_b=22
+maalenr_h=22
+end
+
+if malenr=9 then do
+maalenr_b=2.5
+maalenr_h=1.8
+end
+
+if malenr=4 then do
+maalenr_b=1.7
+maalenr_h=0.6
+end
+
+
+if type=A then call A
+if type=C then call A
+if type=F then call A
+if type='N' then call A
+if type=J then call A    /* LAGT TIL 15 AUG 2002 */
+
+
+if type=B then call B
+if type=E then call B
+if type=L then call B
+if type=G then call B
+if type=K then call B
+if type=D then call B
+if type=I then call B
+if type=M then call B
+if type=H then call B
+if type=O then call B
+
+return
+
+A:
+
+antall_ramme=antall*2
+
+if type=C then antall_ramme=antall
+if type=N then antall_ramme=antall
+
+
+antall_ramme_hoyde=antall*2
+
+if plast=1 then do
+
+kapphoyde = (hoyde - 2.6)
+
+kappmal_bredde=bredde - maalenr_b
+kappmal_hoyde=hoyde - maalenr_h
+kappmal_hoyde=kappmal_hoyde"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"kapphoyde
+
+inndeling_bredde = (bredde - 2.4) - ((inndel_b-1) * 0.9)
+inndeling_bredde = inndeling_bredde / inndel_b
+inndeling_bredde=trunc(inndeling_bredde,2)
+
+inndeling_hoyde = (hoyde - 2.6) - ((inndel_h-1) * 0.9)
+inndeling_hoyde = inndeling_hoyde / inndel_h
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+
+b_pinne=inndel_b*(inndel_h-1)
+b_pinne=b_pinne*antall
+h_pinne=inndel_b-1
+h_pinne=h_pinne*antall
+
+
+
+end
+
+if plast=0 then do
+
+kappmal_bredde = bredde + maalenr_b
+kappmal_hoyde = hoyde + maalenr_h
+
+
+
+/* skjekke inndelingen om mer enn 3 ruter (+.8 eller ei) */
+    if inndel_b>2 then do
+        inndeling_bredde = (kappmal_bredde - (ramme*2) + profil_.profil) / inndel_b
+    end
+    else do
+        inndeling_bredde = (kappmal_bredde - (ramme*2)) / inndel_b
+    end
+
+
+
+/* skjekke inndelingen om mer enn 3 ruter (+.8 eller ei) */
+    if inndel_h>2 then do
+        inndeling_hoyde = (kappmal_hoyde - (ramme*2) + profil_.profil) / inndel_h
+    end
+    else do
+        inndeling_hoyde =  (kappmal_hoyde - (ramme*2)) / inndel_h
+    end
+
+
+
+inndeling_bredde=trunc(inndeling_bredde,2)
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+b_pinne=inndel_h-1
+b_pinne=b_pinne*antall
+h_pinne=inndel_b-1
+h_pinne=h_pinne*antall
+
+if h_pinne=0 then h_pinne=" "
+if inndel_b=1 then inndeling_bredde=" "
+end
+
+
+return
+
+B:
+
+antall_ramme=antall*2
+
+antall_ramme_hoyde=antall*2
+
+if type=E then antall_ramme=antall
+
+if type=M then antall_ramme=antall
+if type=K then antall_ramme=antall
+
+if plast=1 then do
+
+midtstokk=5.3
+
+kapphoyde = (hoyde - 2.6) /* kappmal paa midtstokk eller profil*/
+
+kappmal_bredde=bredde - maalenr_b
+kappmal_hoyde=hoyde - maalenr_h
+
+kappmal_hoyde=kappmal_hoyde"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"kapphoyde
+
+inndeling_bredde = (bredde - 2.4) - ((inndel_b-2) * 0.9) - midtstokk
+inndeling_bredde = inndeling_bredde  / inndel_b
+inndeling_bredde = trunc(inndeling_bredde,2)
+
+inndeling_hoyde = (kapphoyde + 0.9)
+inndeling_hoyde = inndeling_hoyde / inndel_h
+inndeling_hoyde = trunc(inndeling_hoyde,2)
+
+b_pinne=inndel_b*(inndel_h-1)
+b_pinne=b_pinne*antall
+h_pinne=inndel_b-2
+h_pinne=h_pinne*antall
+
+/*
+if type=H then do
+ inndeling_hoyde=(kapphoyde-5.3)/3
+ end
+*/
+
+end
+
+if plast=0 then do
+
+kappmal_bredde = bredde + maalenr_b
+kappmal_hoyde = hoyde + maalenr_h
+
+
+if inndel_b/2 > 2 then do
+inndeling_bredde = (((kappmal_bredde - (ramme*2) - midtnese) / 2 ) -0.8 + profil_.profil ) / (inndel_b/2)
+end
+else do
+inndeling_bredde = (((kappmal_bredde - (ramme*2) - midtnese) / 2 ) -0.8 ) / (inndel_b/2)
+end
+
+
+/* skjekke HOYDE inndelingen om mer enn 3 ruter (+.8 eller ei) */
+    if inndel_h>2 then do
+        inndeling_hoyde = (kappmal_hoyde - (ramme*2) + profil_.profil) / inndel_h
+    end
+    else do
+        inndeling_hoyde =  (kappmal_hoyde - (ramme*2)) / inndel_h
+    end
+
+
+
+kapp_ytterpinne = (kappmal_bredde - (ramme*2) - midtnese) / 2
+
+
+/*inndeling_hoyde = (kappmal_hoyde - (ramme*2) + profil_.profil) / inndel_h*/
+
+
+inndeling_bredde=trunc(inndeling_bredde,2)
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+ruter_felt=inndel_b/2
+h_pinne=ruter_felt*antall
+b_pinne=(inndel_h-1)*2
+b_pinne=b_pinne*antall
+midtstokker=1*antall*subtype
+
+if type=G then do
+h_pinne="&nbsp;"
+inndeling_bredde="&nbsp;"
+midtstokker=1*antall*subtype
+end
+
+/* TYPE D *****************************************************************/
+
+if type=D then do
+
+y_pinne=b_pinne
+
+if inndel_b=1 then do
+  y_pinne=b_pinne/2
+  kapp_ytterpinne=" "
+  h_pinne=" "
+  midtstokker=0
+  end
+
+if inndel_h=1 then kapp_ytterpinne=0
+
+
+inndeling_bredde="&nbsp;"
+inndeling_hoyde= ((kappmal_hoyde - (ramme*2) - (midt*2))) / 3
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+b_pinne=0
+
+end
+
+/**************************************************************************/
+
+if type=H then do
+
+if inndel_b=1 then do
+ruter_felt=inndel_b
+h_pinne=ruter_felt*antall
+b_pinne=inndel_h-1
+b_pinne=b_pinne*antall
+midtstokker=0
+end
+
+/*
+if type=H then do
+ inndeling_hoyde=(kapphoyde-5.3)/3
+ end
+ return
+end
+*/
+inndeling_bredde = (((kappmal_bredde - (ramme*2) - midtnese) / 2 ) -0.8 ) / 2
+inndeling_hoyde= (((kappmal_hoyde - (ramme*2) - (midt*2))) / 3 ) + 0.8
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+h_pinne=2*antall
+midtstokker=1*antall*subtype
+y_pinne=2*antall
+
+if inndel_b=1 then do
+
+inndeling_bredde = (kappmal_bredde - (ramme*2) + profil_.profil) / 3
+inndeling_bredde=trunc(inndeling_bredde,2)
+
+y_pinne=0
+kapp_ytterpinne=0
+
+
+b_pinne=antall
+h_pinne=2*antall
+midtstokker=0
+end
+
+if midtstokker=0 then midtstokker=""
+if y_pinne=0 then y_pinne=""
+if kapp_ytterpinne=0 then kapp_ytterpinne=""
+
+end
+
+
+end
+
+
+/* TYPE I *****************************************************************/
+
+if type=I then do
+
+ if inndel_b=1 then do
+ y_pinne=b_pinne/2
+ kapp_ytterpinne=" "
+ h_pinne=" "
+ midtstokker=0
+ end
+
+if inndel_h=1 then kapp_ytterpinne=0
+
+inndeling_bredde="&nbsp;"
+sum_midt = midt * (inndel_h - 1)
+inndeling_hoyde= ((kappmal_hoyde - (ramme*2) - (sum_midt))) / inndel_h
+inndeling_hoyde=trunc(inndeling_hoyde,2)
+
+if inndel_b>1 then y_pinne=b_pinne
+
+b_pinne=0
+
+end
+
+/***************************************************************************/
+
+
+
+
+ruter_felt=inndel_b/2
+
+h_pinne=0
+
+if inndel_b>1 then do
+h_pinne=(ruter_felt-1)*2
+end
+h_pinne=h_pinne*antall
+
+if h_pinne=0 then h_pinne=" "
+if b_pinne=0 then b_pinne=" "
+if y_pinne=0 then y_pinne=" "
+if kapp_ytterpinne=0 then kapp_ytterpinne=" "
+
+/* 2 midtstokker*/
+
+if right(typen,1)=2 then do
+    ruter_felt=inndel_b/3
+    midtstokker=2
+    kapp_ytterpinne = ((kappmal_bredde - (ramme*2) - (midt*2)))
+    kapp_ytterpinne=(kapp_ytterpinne/3)+0.8
+    kapp_ytterpinne=trunc(kapp_ytterpinne,2)
+    kapp_midtpinne=kapp_ytterpinne+0.8
+
+    if ruter_felt=2 then do
+     midtpinne_inndel= kapp_midtpinne  / 2
+     ytterpinne_inndel= (kapp_ytterpinne - 0.8) / 2
+     inndeling_bredde=ytterpinne_inndel
+    end
+
+    if ruter_felt>=3 then do
+     midtpinne_inndel= kapp_midtpinne / ruter_felt
+/*   midtpinne_inndel= ((kapp_midtpinne - 1.6)+ profil_.profil) / ruter_felt*/
+     ytterpinne_inndel= ((kapp_ytterpinne - 0.8)+ profil_.profil) / ruter_felt
+    inndeling_bredde=ytterpinne_inndel
+    end
+
+    if ruter_felt=1 then do
+    inndeling_bredde=0
+        midtpinne_inndel=0
+    end
+
+b_pinne="&nbsp;"
+m_pinne=inndel_h-1
+y_pinne=m_pinne*2
+h_pinne=((inndel_b/3)-1)*3
+
+m_pinne=m_pinne*antall
+y_pinne=y_pinne*antall
+h_pinne=h_pinne*antall
+
+
+
+end
+
+/* 3 midtstokker*/
+
+if right(typen,1)=3 then do
+
+ ruter_felt=inndel_b/4
+ midtstokker=3
+ kapp_ytterpinne = ((kappmal_bredde - (ramme*2) - (midt*3)))
+ kapp_ytterpinne=(kapp_ytterpinne/4)+0.8
+ kapp_ytterpinne=trunc(kapp_ytterpinne,2)
+ kapp_midtpinne=kapp_ytterpinne+0.8
+
+ m_pinne=(inndel_h-1)*2
+ y_pinne=m_pinne
+ h_pinne=inndel_b/2
+
+    if ruter_felt=2 then do
+     midtpinne_inndel= kapp_midtpinne  / 2
+     ytterpinne_inndel= (kapp_ytterpinne - 0.8) / 2
+     inndeling_bredde=ytterpinne_inndel
+    end
+
+    if ruter_felt>=3 then do
+     midtpinne_inndel= ((kapp_midtpinne - 1.6)+ profil_.profil) / ruter_felt
+     ytterpinne_inndel= ((kapp_ytterpinne - 0.8)+ profil_.profil) / ruter_felt
+    inndeling_bredde=ytterpinne_inndel
+    end
+
+    if ruter_felt=1 then do
+    inndeling_bredde=0
+        midtpinne_inndel=0
+    h_pinne=""
+    end
+
+b_pinne="&nbsp;"
+
+end
+
+midtstokker=1*antall*subtype
+
+if midtstokker=0 then midtstokker=" "
+
+return
+
+
+kappliste_header:
+say '
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>a</title>
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Cache-Control" CONTENT="Public">
+</head>'
+
+
+say '<BODY>'
+
+
+say '<table cellpadding="2" cellspacing="0" border="1" width="1400">
+   <tbody>
+     <tr>
+       <td valign="top" width="10" align="center" bgcolor="#cccccc">no<br>
+       </td>
+       <td valign="top" width="40" align="center" bgcolor="#cccccc">merknad<br>
+       </td>
+
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">antall<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">bredde<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">hoyde<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">m.nr<br>
+       </td>
+
+       <td valign="top" width="20" align="center" bgcolor="'blaafarge'">type<br>
+       </td>
+
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">rut_b<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">rut_h<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#ffffff">flukte<br>
+       </td>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#ffffff">Deles<br>
+       </td>
+
+
+       <td valign="top" width="20" align="center" bgcolor="'blaafarge'">16mm<br>
+       </td>
+       <td valign="top" width="20" align="center" bgcolor="#66cccc">antall<br>
+       </td>
+       <td valign="top" width="150" align="center" bgcolor="'blaafarge'"><b><font
+ face="Helvetica, Arial, sans-serif">kappm&aring;l<br>
+      </font></b>       </td>
+
+       <td valign="top" width="20" align="center" bgcolor="'blaafarge'">kitt<br>
+       </td>
+
+       <td valign="top" width="20" align="center" bgcolor="'blaafarge'">profiler<br>
+       </td>
+       <td valign="top" width="20" align="center" bgcolor="'blaafarge'">ant.midt<br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'">kapp.midt<br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'">ind.midt<br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'">ant.ytter<br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'">kapp.ytter<br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'">ytter.ind<br>
+       </td>
+       <td valign="top" align="center" bgcolor="#66cccc" width="30">antall<br>
+       </td>
+       <td valign="top" width="150" align="center" bgcolor="'blaafarge'"><b><font
+ face="Helvetica, Arial, sans-serif">kappm&aring;l<br>
+      </font></b>       </td>
+       <td valign="top" align="center" bgcolor="'blaafarge'" width="20">profiler<br>
+       </td>
+       <td valign="top" align="center" bgcolor="'blaafarge'" width="20">midtstokk<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="'blaafarge'">inndeling<br>
+       </td>
+
+
+
+
+     </tr> '
+
+return
+
+make_kapplist:
+say ' <tr>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif" size="-3">'pos'<br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif" size="-3">'merknad'<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#ffffff"><font size="-3">'antall'<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#ffffff"><font size="-3">'bredde'<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#ffffff"><font size="-3">'hoyde'<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#ffffff"><font size="-3">'malenr'<br>
+      </td>
+
+      <td valign="top" align="center"><B><font face="Helvetica, Arial, sans-serif size="1">'typen'<br>
+      </td>
+
+      <td valign="top" align="center" bgcolor="#D5D5D5"><B><font face="Helvetica, Arial, sans-serif size="1">'inndel_b'<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#D5D5D5"><B><font face="Helvetica, Arial, sans-serif size="1">'inndel_h'<br>
+      </td>
+      <td valign="top" align="center" bgcolor="#ffffff"><B><font face="Helvetica, Arial, sans-serif size="1">'flukte'<br>
+      </td>
+      </td>
+      <td valign="top" align="center" bgcolor="#ffffff"><B><font face="Helvetica, Arial, sans-serif size="1">'deling'<br>
+      </td>
+
+      <td valign="top" align="center" bgcolor="'ramcolor'"><b><font color="ffffff" face="Helvetica, Arial, sans-serif">'ram18'<br>
+      </font></b></td>
+
+
+
+      <td valign="top" align="center" bgcolor="#555555"><b><font color="ffffff" face="Helvetica, Arial, sans-serif">'antall_ramme'<br>
+      </font></b></td>
+      <td valign="top" align="center"><b><font face="Helvetica, Arial, sans-serif">'kappmal_bredde'<br>
+      </font></b></td>
+
+      <td valign="top" align="center" bgcolor="'kittcolor'"><b><font color="ffffff" face="Helvetica, Arial, sans-serif">'kitt'<br>
+      </font></b></td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'b_pinne'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'m_pinne'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'kapp_midtpinne'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'midtpinne_inndel'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'y_pinne'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'kapp_ytterpinne'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'inndeling_bredde'</b><br>
+      </td>
+      <td valign="top" align="center" bgcolor="#555555"><b><font color="ffffff" face="Helvetica, Arial, sans-serif">'antall_ramme_hoyde'<br>
+      </font></b></td>
+      <td valign="top" align="center"><b><font face="Helvetica, Arial, sans-serif">'kappmal_hoyde'<br>
+      </font></b></td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'h_pinne'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'midtstokker'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'inndeling_hoyde'</b><br>
+      </td>
+    </tr> '
+
+return
+
+end_kappliste:
+/*say ' <tr>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif" size="-3">antall<br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'totalantall'</b><br>
+      </td>
+      <td valign="top" align="center"><font face="Helvetica, Arial, sans-serif"><b>'totruter'</b><br>
+      </td>
+</tr>
+*/
+say '</tbody> 
+</table>
+  '
+say '       antall sprosser :'totalantall' total ruter 'totruter
+if hengsler=1 then sumhengsler=totalantall*4
+if hengsler=0 then sumhengsler="Nei"
+if klips=1 then sumklips=totalantall*4
+if klips=0 then sumklips="Nei"
+if impreg=1 then impreg="Ja"
+if impreg=0 then impreg="Nei"
+
+if maling>0 then impreg="Ja"
+
+borres="? se bak"
+
+if kundenr=002 then borres="ja"
+
+if hengsler=1 then borres="Ja"
+
+hengslepris=0
+
+if borres="Ja" then do
+hengslepris = totalantall * 4.2
+end
+
+
+call jobb_info
+
+if impreg="Ja" then do
+impregpris=ruter*0.5
+end
+
+
+say '<center><hr width="1000" size="1" noshade="">'
+say 'Borres Henglser [ <b>'borres'</b> ] Hengsler [ <b>'sumhengsler'</b> ] Klips [ <b>'sumklips'</b> ] strøk maling [ <b>'maling'</b> ] impregnering [ <b>'impreg'</b> ]'
+say '<br>'
+say '<center><small>[ <b>'meterprofil'</b> m profil ] [<b>'meterramme'</b> m ramme ] [<b>'meter_midt'</b> m midtstokk ] [<b>'skruer'</b> stk skruer ] [<b>'totcm3'</b> m3 ] [ <b>'vekt'</b> kg ]</small>'
+say '<hr width="1000" size="2" noshade=""><br>
+Pris  [ <b>'jobbpris'</b> kr ] '
+
+if maling>0 then do
+say 'For maling [ <b> 'malepris' </b> kr ]'
+end
+
+if impregpris>0 then do
+say 'For impregnering [ <b> 'impregpris' </b> kr ] '
+end
+
+if borres="Ja" then do
+say 'Montering Hengsler [ <b> 'hengslepris' </b> kr ] '
+end
+
+say '<br>'tegninger
+
+if maling=1 then say '<img src="images/paintbrush1.gif">'
+if maling=2 then say '<img src="images/paintbrush2.gif">'
+
+say '</body>
+</html> '
+
+
+call close(dat)
+exit
+return
+
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+call close(kundeid)
+
+
+
+jobbid=right(id,2,00)
+ordrenummer=aar' 'month' 'jobbid
+
+
+say '
+
+<table align="top" border="0" cellpadding="0" cellspacing="1" width="500" bgcolor="#000000">
+
+<tr><td>
+
+
+
+<table align="center" border="0" cellpadding="4" cellspacing="0" width="100%">
+
+<tr>
+
+<td align="left" valign="middle" bgcolor="efefef"><font color="000000"><b><font face="Helvetica, Arial, sans-serif" size=5>'ordrenummer'<font size=1> </b></font></td>
+<td align="right" valign="middle" bgcolor="efefef"><font color="#FFFFFF"></font></td>
+
+</tr><tr>
+
+    
+
+    <td align="left" valign="middle" bgcolor="#FFFFFF" width="80%">
+        'kunde'<br>
+        'addresse'<br>
+        'sted'<br>
+        'merk'<br>
+
+    </td>
+
+    <td align="left" valign="top" bgcolor="#FFFFFF" width="20%"><img src="datafiler_ansatte/'ansattid'.jpg" border="1" height="70"></td>
+
+    </tr>
+
+    <tr>
+
+    <td colspan="2" width="100%" bgcolor="#EEEEEE">
+
+    
+
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#EEEEEE">
+
+    <tr>
+
+    <td align="left" valign="top" bgcolor="#EEEEEE">Leverings uke 'levuke'</td>
+
+    <td align="right" valign="top" bgcolor="#EEEEEE"><img src="images/arrow.gif">'dato' - 'tid'<a href="dill.html">_</a> </td>
+
+    </tr>
+
+    </table>
+
+    
+
+    </td>
+
+    </tr>
+
+    </table>
+
+    
+
+    </td>
+
+    </tr>
+
+    </table><br>'
+
+
+return
+
+
+material:
+
+if type="a"|type="A"|type="C"|type="F"|type="N" then do
+
+meterprofil_b=bredde/100
+antallprofil_b=inndel_h-1
+antallprofil_b=antallprofil_b*antall
+
+meterprofil_h=hoyde/100
+antallprofil_h=inndel_b-1
+antallprofil_h=antallprofil_h*antall
+
+meterprofil_b=meterprofil_b*antallprofil_b
+meterprofil_h=meterprofil_h*antallprofil_h
+
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+skruer_b=(inndel_h-1) * 2
+skruer_h=(inndel_b-1) * 2
+skrue=(skruer_b+skruer_h) * antall
+skruer=skruer+skrue
+
+end
+
+
+meterram_b=bredde/100
+meterram_h=hoyde/100
+
+meterram_b=meterram_b*2
+meterram_h=meterram_h*2
+meterram=meterram_b+meterram_h
+meterram=meterram*antall
+meterramme=trunc(meterramme+meterram,1)
+
+/********************************************************************************/
+if type=B|type=E|type=G|type=K|type=L|type=M|type=H then do
+
+profil_b = ((bredde - 4.4) - 3.5) / 2
+
+antall_b=(inndel_h-1)*2
+meterprofil_b=profil_b*antall_b
+
+meterprofil_b=meterprofil_b*antall
+
+meterprofil_b=meterprofil_b/100
+
+profil_h=hoyde-4.4
+antall_h=inndel_b-2
+
+meterprofil_h=antall_h*profil_h
+
+meterprofil_h=meterprofil_h*antall
+
+meterprofil_h=meterprofil_h/100
+
+m_midt=((hoyde-4.4)/100)*antall
+meter_midt=meter_midt+m_midt
+meterprofil=trunc(meterprofil+(meterprofil_b+meterprofil_h),1)
+
+skruer_b=antall_b
+say skruer_b
+skruer_h=((inndel_b/2)-0) * 2
+say skruer_h
+skruer_midt=4   /* var 2 */
+
+skrue=(skruer_b+skruer_h+skruer_midt) * antall
+skruer=skruer+skrue
+
+end
+
+
+if type=D|type=I then do
+
+metermidt_b=0
+metermidt_h=0
+
+skruer_b=0
+skruer_h=0
+
+if inndel_h>1 then do
+ midt_b = ((bredde - 4.4) - 3.5) / 2
+ antall_midt=(inndel_h-1)*2
+ metermidt_b=midt_b*antall_midt
+ metermidt_b=metermidt_b*antall
+ metermidt_b=metermidt_b/100
+ skruer_b=(antall_midt*2)*antall
+end
+
+if inndel_b>1 then do
+ midt_h=(hoyde-4.4)/100
+ antall_h=inndel_b-1
+ metermidt_h=midt_h*antall_h
+ metermidt_h=metermidt_h*antall
+ skruer_h=(antall_h*4)*antall
+end
+
+midt=metermidt_b+metermidt_h
+meter_midt=meter_midt+midt
+
+skrue=skruer_b+skruer_h
+skruer=skruer+skrue
+
+end
+
+buevekt=0
+if type=E|type=C|type=K|type=M|type=N then do
+buevekt=(bredde/100)*antall
+buevekt=buevekt*600
+end
+
+
+kvadrat=(bredde*hoyde)/10000
+cm3=0.022*antall
+cm3=kvadrat*cm3
+totcm3=trunc(totcm3+cm3,3)
+
+
+vekt=meterprofil*130
+vekt=vekt + (meterramme*190)
+vekt=vekt + (meter_midt*430)
+vekt=vekt+buevekt
+vekt=vekt/1000
+vekt=trunc(vekt,1)
+
+return
+
+jobb_info:
+prisfile="web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."id""
+
+if aar='tilbud' then do
+prisfile="web-root:verksted/datafiler_jobber_temp/pris_id."month""
+end
+
+typer="?"
+antall="?"
+ruter="?"
+jobbpris="?"
+antall="?"
+malepris="?"
+impregpris="?"
+if exists(prisfile) then do
+
+call open(data,prisfile,'R')
+    typer=readln(data)
+        antall=readln(data)
+        ruter=readln(data)
+        jobbpris=readln(data)
+    malepris=readln(data)
+    impregpris=readln(data)
+    call close(data)
+end
+return
+
+
+
+kappliste_header_plast:
+say '
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>KAPPLISTE FOR PLASTSPROSSER</title>
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Cache-Control" CONTENT="Public">
+</head>'
+say '<BODY>'
+say '<center><font size="25">PLASTSPROSSER</font></center>'
+say '<table cellpadding="2" cellspacing="0" border="1" width="1400">
+   <tbody>
+     <tr>
+       <td valign="top" width="10" align="center" bgcolor="#cccccc">no<br>
+       </td>
+       <td valign="top" width="40" align="center" bgcolor="#cccccc">merknad<br>
+       </td>
+
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">antall<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">bredde<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">hoyde<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">m.nr<br>
+       </td>
+       <td valign="top" width="20" align="center" bgcolor="'blaafarge'">type<br>
+       </td>
+
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">rut_b<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc">rut_h<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc"> <br>
+       </td>
+
+
+       <td valign="top" width="20" align="center" bgcolor="#66cccc">antall<br>
+       </td>
+       <td valign="top" width="150" align="center" bgcolor="'blaafarge'"><b><font
+ face="Helvetica, Arial, sans-serif">kappm&aring;l<br>
+      </font></b>       </td>
+       <td valign="top" align="center" width="30" bgcolor="#cccccc"> <br>
+       </td>
+
+
+       <td valign="top" width="20" align="center" bgcolor="'blaafarge'">profiler<br>
+       </td>
+       <td valign="top" width="20" align="center" bgcolor="'blaafarge'"> <br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'"> <br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'"> <br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'"> <br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'"> <br>
+       </td>
+       <td valign="top" width="30" align="center" bgcolor="'blaafarge'">kapp <br>
+       </td>
+       <td valign="top" align="center" bgcolor="#66cccc" width="30">antall<br>
+       </td>
+       <td valign="top" width="150" align="center" bgcolor="'blaafarge'"><b><font
+ face="Helvetica, Arial, sans-serif">kappm&aring;l<br>
+      </font></b>       </td>
+       <td valign="top" align="center" bgcolor="'blaafarge'" width="20">profiler<br>
+       </td>
+       <td valign="top" align="center" bgcolor="'blaafarge'" width="20">midtstokk<br>
+       </td>
+       <td valign="top" align="center" width="30" bgcolor="'blaafarge'">inndeling<br>
+       </td>
+
+     </tr> '
+
+return
+
+
+

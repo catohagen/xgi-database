@@ -1,0 +1,373 @@
+/* SPROSSE PRISER */
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id
+
+if id=0 then exit
+typer=''
+typeer=''
+totalpris=0
+totalruter=0
+totalhengsler=0
+totalklips=0
+totalantall=0
+buer1=0
+buer2=0
+temp=0
+
+
+mistepris=0
+
+tillegg=0
+
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+prisfile="web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."id""
+
+
+if aar='tilbud' then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."month""
+prisfile="web-root:verksted/datafiler_jobber_temp/pris_id."month""
+end
+
+
+
+
+if ~exists(prisfile) then do
+
+read_database:
+
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+levuke=readln(dat)
+garbage=readln(dat)
+
+data_lese:
+antall=readln(dat)
+if antall=""|antall=0 then do
+call close(dat)
+
+if rute.A="RUTE.A" then rute.A=0
+if rute.B="RUTE.B" then rute.B=0
+if rute.B2="RUTE.B2" then rute.B2=0
+if rute.C="RUTE.C" then rute.C=0
+if rute.D="RUTE.D" then rute.D=0
+if rute.E="RUTE.E" then rute.E=0
+
+if rute.E2="RUTE.E2" then rute.E2=0
+if rute.E3="RUTE.E3" then rute.E3=0
+
+
+if rute.F="RUTE.F" then rute.F=0
+if rute.G="RUTE.G" then rute.G=0
+if rute.G2="RUTE.G2" then rute.G2=0
+
+if rute.H="RUTE.H" then rute.H=0
+if rute.H2="RUTE.H2" then rute.H2=0
+
+if rute.I="RUTE.I" then rute.I=0
+if rute.J="RUTE.J" then rute.J=0
+if rute.K="RUTE.K" then rute.K=0
+if rute.L="RUTE.L" then rute.L=0
+if rute.M="RUTE.M" then rute.M=0
+if rute.N="RUTE.N" then rute.N=0
+if rute.O="RUTE.O" then rute.O=0
+if rute.P="RUTE.P" then rute.P=0
+
+if index(typer,A)>0 then typeer=typeer''"A"
+if index(typer,B)>0 then typeer=typeer''"B"
+if index(typer,C)>0 then typeer=typeer''"C"
+if index(typer,D)>0 then typeer=typeer''"D"
+if index(typer,E)>0 then typeer=typeer''"E"
+if index(typer,F)>0 then typeer=typeer''"F"
+if index(typer,G)>0 then typeer=typeer''"G"
+if index(typer,H)>0 then typeer=typeer''"H"
+if index(typer,I)>0 then typeer=typeer''"I"
+if index(typer,J)>0 then typeer=typeer''"J"
+if index(typer,K)>0 then typeer=typeer''"K"
+if index(typer,L)>0 then typeer=typeer''"L"
+if index(typer,M)>0 then typeer=typeer''"M"
+if index(typer,N)>0 then typeer=typeer''"N"
+if index(typer,O)>0 then typeer=typeer''"O"
+if index(typer,P)>0 then typeer=typeer''"P"
+pris_buer1=buer1*12
+pris_buer2=buer2*14
+totalpris= totalpris + pris_buer1 + pris_buer2
+
+if profil=1 then do
+tillegg=(totalruter*25)/100
+totalpris=totalpris+tillegg
+end
+
+
+call open(pris,prisfile,'W')
+call writeln(pris,typeer)
+call writeln(pris,totalantall)
+call writeln(pris,totalruter)
+
+call writeln(pris,totalpris)
+
+call writeln(pris,malingsum)
+
+call writeln(pris,impregsum)
+
+call close(pris)
+
+call close(log)
+exit
+end
+
+
+bredde=readln(dat)
+hoyde=readln(dat)
+malenr=readln(dat)
+type=readln(dat)
+typer=typer''type
+pris.type=0
+
+
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+ramme=readln(dat)
+profil_dat=readln(dat)
+profil=word(profil_dat,1)
+flukte=word(profil_dat,2)
+deling=word(profil_dat,3)
+merknad=readln(dat)
+garbage=readln(dat)
+
+malingsum=0
+impregsum=0
+
+ if garbage="#andre ting" then do
+  hengsler=readln(dat)
+  klips=readln(dat)
+  maling=readln(dat)
+  impreg=readln(dat)
+ end
+
+call start_utregning
+
+exit
+
+start_utregning:
+
+ruter=inndel_b*inndel_h
+totruter=ruter*antall
+totalruter=totalruter+totruter
+
+mistepris=0
+
+if type=A then do
+ if ruter <= 4 then do
+ mistepris=antall*0
+ end
+end
+
+totalantall=totalantall+antall
+
+if maling=1 then call maling1
+
+if maling=2 then call maling2
+
+if maling>0 then call impreg
+
+
+if type=A then call typea
+if type=B then call typeb
+if type=B2 then call typeb
+if type=C then call typec
+if type=D then call typed
+if type=E|type=E2|type=E3 then call typee
+if type=F then call typef
+if type=G then call typeg
+
+if type=G2 then call typeg
+
+if type=H|type=H2 then call typeh
+if type=I then call typei
+if type=J then call typej
+if type=K then call typek
+if type=L then call typel
+if type=M then call typem
+if type=N then call typen
+if type=O then call typeo
+if type=P then call typep
+
+TOTPRIS:
+sprosspris=rutepris*ruter
+
+linjepris=sprosspris*antall
+
+totalpris=totalpris+linjepris
+
+totalpris=totalpris+mistepris
+
+if hengsler=1 then do
+antallhengsler=totalantall*4
+hengslepris=10*antallhengsler
+/*totpris=totpris+hengslepris*/
+totalhengsler=totalhengsler+hengslepris
+end
+
+if klips=1 then do
+antallklips=antall*4
+klipspris=3*antallklips
+/*totpris=totpris+klipspris*/
+totalklips=totalklips+klipspris
+end
+
+
+
+/* hoppe tilbake og raportere pris */
+
+if temp=1 then call temp_lese
+if temp=0 then call data_lese
+
+TYPEA:
+if profil=0 then rutepris=4
+if profil=1 then rutepris=4.8
+if rute.type="RUTE.A" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEB:
+if profil=0 then rutepris=4
+if profil=1 then rutepris=4.8
+if rute.type="RUTE.B" then rute.type=0
+if rute.type="RUTE.B2" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEC:
+if profil=0 then rutepris=6
+if profil=1 then rutepris=6
+if rute.type="RUTE.C" then rute.type=0
+rute.type=rute.type+totruter
+buer1=buer1+antall
+call totpris
+
+TYPED:
+rutepris=9.5
+if rute.type="RUTE.D" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEE:
+if profil=0 then rutepris=6.5
+if profil=1 then rutepris=6.5
+
+if rute.type="RUTE.E" then rute.type=0
+if rute.type="RUTE.E2" then rute.type=0
+if rute.type="RUTE.E3" then rute.type=0
+
+rute.type=rute.type+totruter
+
+
+buer2=buer2+antall
+call totpris
+
+TYPEF:
+if profil=0 then rutepris=4
+if profil=1 then rutepris=4.8
+if rute.type="RUTE.F" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEG:
+if profil=0 then rutepris=5.5
+if profil=1 then rutepris=6.6
+if rute.type="RUTE.G" then rute.type=0
+if rute.type="RUTE.G2" then rute.type=0
+
+rute.type=rute.type+totruter
+call totpris
+
+TYPEH:
+if profil=0 then rutepris=15
+if profil=1 then rutepris=15
+if rute.type="RUTE.H" then rute.type=0
+if rute.type="RUTE.H2" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEI:
+rutepris=9.5
+if rute.type="RUTE.I" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEJ:
+rutepris=75
+if rute.type="RUTE.J" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEK:
+if profil=0 then rutepris=7.5
+if profil=1 then rutepris=7.5
+if rute.type="RUTE.K" then rute.type=0
+rute.type=rute.type+totruter
+buer2=buer2+antall
+call totpris
+
+TYPEL:
+if profil=0 then rutepris=4.5
+if profil=1 then rutepris=5.4
+if rute.type="RUTE.L" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEM:
+if profil=0 then rutepris=6.5
+if profil=1 then rutepris=6.5
+if rute.type="RUTE.M" then rute.type=0
+rute.type=rute.type+totruter
+buer1=buer1+antall
+call totpris
+
+TYPEN:
+if profil=0 then rutepris=6
+if profil=1 then rutepris=7.2
+if rute.type="RUTE.N" then rute.type=0
+rute.type=rute.type+totruter
+buer2=buer2+antall
+call totpris
+
+TYPEO:
+if profil=0 then rutepris=17
+if profil=1 then rutepris=17
+if rute.type="RUTE.O" then rute.type=0
+rute.type=rute.type+totruter
+call totpris
+
+TYPEP:
+if profil=0 then rutepris=17
+if profil=1 then rutepris=17
+if rute.type="RUTE.P" then rute.type=0
+rute.type=rute.type+totruter
+buer2=buer2+antall
+call totpris
+
+MALING1:
+m_pris=1
+malepris=totalruter*m_pris
+malingsum=malingsum+malepris
+return
+
+MALING2:
+m_pris=2
+malepris=totalruter*m_pris
+malingsum=malingsum+malepris
+return
+
+IMPREG:
+impreg_pris=totalruter*0.5
+impregsum=impregsum+impreg_pris
+return
+
+end
+
+exit

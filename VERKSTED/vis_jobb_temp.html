@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>AREXX WEBSERVER - NYTT KONTOR SYSTEM !!!!!!!!!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF" background="img/bg.gif" text="000000" link="#334477" alink="#FF9900" vlink="#cc6600">
+	<table border="0" bgcolor="#e0e0e0" cellpadding="3" cellspacing="3" width="200">
+	<tr>
+ 	<td border="1" bgcolor="#eeeeee"><font face="verdana,arial" size="-1" color="#000000">
+	<?rx execute('web-root:VERKSTED/xgi/hente_kundeinfo.xgi') ?>
+	</font></td>
+	</tr>
+	</table>
+<br>
+<?rx execute('web-root:VERKSTED/xgi/visjobb.xgi') ?>
+<br>
+<form method="get" action="xgi/write_tempjobb.xgi" style="margin: 0px">
+<br><br>
+ordremerk........:<input size="15" name="merk" hidden="888" accesskey="s" class="searchbox" id="merk" />
+<br>
+Leverings uke....:<input size="4" name="levuke" hidden="888" accesskey="s" class="searchbox" id="levuke" />
+<br>
+bestillings dato.:<input size="10" name="bestdato" hidden="888" accesskey="s" class="searchbox" id="bestdato" /> (yyyymmdd - blank = idag)
+<br>
+<br>
+hengsler
+<br>
+<input type=radio name=hengsler value=0 checked>nei
+<input type=radio name=hengsler value=1 >ja
+<br>
+<br>
+klips
+<br>
+<input type=radio name=klips value=0 checked>nei
+<input type=radio name=klips value=1>ja
+<br>
+<br>
+hvitmalt
+<br>
+<input type=radio name=maling value=0 checked>ingen maling<br>
+<input type=radio name=maling value=1>1 strøk maling (impregnering er med i prisen)<br>
+<input type=radio name=maling value=2>2 strøk maling (impregnering er med i prisen)
+<br>
+<br>
+bare impregnering
+<br>
+<input type=radio name=impreg value=0 checked>nei
+<input type=radio name=impreg value=1>ja
+<br>
+<center>
+<input type="submit" value="Legg jobben inn i tilbud" class="button" />
+</form>
+</body>
+</html>
+

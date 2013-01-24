@@ -1,0 +1,444 @@
+/* */
+
+PARSE ARG 'sort=' sort '&month=' month '&aar=' aar 
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Jobber 'aar'/'month'</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body  bgcolor="FFFFFF" text="000000" link="#000000" alink="#000000" vlink="#000000">
+<center>'
+
+if month="" then do
+idag=date(s)
+year=substr(idag,1,4)
+month=substr(idag,5,2)
+day=substr(idag,7,2)
+end
+
+if aar="" then aar=year
+
+if ~exists("web-root:verksted/datafiler_jobber/"aar"-"month".dat") then do
+say '<br>'
+say '<br>'
+say '<br>'
+say '<br>'
+say '<br>'
+say 'Ingen jobber registrert denne måneden...<br>'
+say '<br>'
+say '<br>'
+say '<br>'
+say '<br>'
+say '<br>'
+call end_listing
+exit
+end
+
+
+say '<br>'
+say '<br><center>'
+say 'Jobber fra måned : 'month' / 'aar
+say '<br></center>'
+say '<br>'
+
+jobb=0
+call open(log,"web-root:verksted/datafiler_jobber/"aar"-"month".dat",'R')
+blank=readln(log)
+jobber=readln(log)
+call close(log)
+
+jobb=jobber-1
+
+i=0
+do until jobb=0
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."jobb""
+call time(r)
+if ~exists(jobbfile) then do
+say '<br>'jobbfile' er slettet...<br><br>'
+jobb=jobb-1
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."jobb""
+end
+
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+levuke=readln(dat)
+call close(dat)
+levuke=right('00'||levuke,2)
+call jobbstatus
+
+farge.i=farge
+ansattid=""
+if sort=5 then do
+makefile="web-root:verksted/datafiler_jobber/"aar"/"month"/make_id."jobb""
+if exists(makefile) then do
+call open(dataf,makefile,'R')
+com=readln(dataf)
+ansattid=readln(dataf)
+jobbstatus=readln(dataf)
+call close(dataf)
+end
+end
+
+
+if sort="" then sort=1
+if sort=1 then jobber_sort.i=levuke' 'jobb' 'kundenr' 'statusimg' 'merk' 'notis' 'farge
+if sort=2 then jobber_sort.i=jobb' 'kundenr' 'statusimg' 'levuke' 'merk' 'notis' 'farge
+if sort=3 then jobber_sort.i=kundenr' 'statusimg' 'levuke' 'jobb' 'merk' 'notis' 'farge
+if sort=4 then jobber_sort.i=kundenr' 'jobb' 'levuke' 'statusimg' 'merk' 'notis' 'farge
+if sort=5 then jobber_sort.i=levuke' 'jobb' 'kundenr' 'statusimg' 'merk' 'notis' 'farge' 'ansattid
+
+
+jobb=jobb-1
+i=i+1
+end
+
+
+call bubblesort
+exit
+
+hentkundeinfo:
+call open(kundeid,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(kundeid)
+addresse=readln(kundeid)
+sted=readln(kundeid)
+call close(kundeid)
+return
+
+
+bubblesort:
+numlen=i-1  /* number of elements to sort */
+
+
+/* create a stem of 10 random-ordered numbers */
+t=0
+do until t=i
+nums.t=jobber_sort.t
+t=t+1
+end
+
+
+do a=0 to numlen /* outer loop: do one sort per element in nums */
+  do currentnum=0 to numlen-a /* inner loop */
+    nextnum=currentnum+1
+    if nums.nextnum < nums.currentnum then do /* the next number in the stem should be bigger than the current */
+      temp=nums.currentnum          /* switch */
+      nums.currentnum=nums.nextnum  /* places */
+      nums.nextnum=temp             /* of the numbers */
+    end
+  end
+end
+
+/* print the sorted stem */
+
+
+do t=0 to i-1
+
+/*  say t'.'nums.t*/
+
+if sort="1" then do
+  levuke=word(nums.t,1)
+  jobbid=word(nums.t,2)
+  kundenr=word(nums.t,3)
+  statusimg=word(nums.t,4)
+  merk=word(nums.t,5)
+  notis=word(nums.t,6)
+  farge=word(nums.t,7)
+  call hentkundeinfo
+  ordre=right('00000'||jobbid,5)
+  call jobb_info
+  call display
+end
+
+if sort="2" then do
+  levuke=word(nums.t,4)
+  jobbid=word(nums.t,1)
+  kundenr=word(nums.t,2)
+  statusimg=word(nums.t,3)
+  merk=word(nums.t,5)
+  notis=word(nums.t,6)
+  call hentkundeinfo
+  ordre=right('00000'||jobbid,5)
+  call jobb_info
+  call display
+end
+
+
+if sort="3" then do
+  levuke=word(nums.t,3)
+  jobbid=word(nums.t,4)
+  kundenr=word(nums.t,1)
+  statusimg=word(nums.t,2)
+  merk=word(nums.t,5)
+  notis=word(nums.t,6)
+  call hentkundeinfo
+  ordre=right('00000'||jobbid,5)
+  call jobb_info
+  call display
+end
+
+if sort="4" then do
+  kundenr=word(nums.t,1)
+  jobbid=word(nums.t,2)
+  levuke=word(nums.t,3)
+  statusimg=word(nums.t,4)
+  merk=word(nums.t,5)
+  notis=word(nums.t,6)
+  call hentkundeinfo
+  ordre=right('00000'||jobbid,5)
+  call jobb_info
+/*  if notis="ferdig" then call sort4_display*/
+call display
+
+end
+
+
+if sort="5" then do
+  levuke=word(nums.t,1)
+  jobbid=word(nums.t,2)
+  kundenr=word(nums.t,3)
+  statusimg=word(nums.t,4)
+  merk=word(nums.t,5)
+  notis=word(nums.t,6)
+  farge=word(nums.t,7)
+  ansattid=word(nums.t,8)
+  call hentkundeinfo
+  ordre=right('00000'||jobbid,5)
+  call jobb_info
+
+  if ansattid=id then call sort5_display
+end
+end
+
+end_listing:
+nestemonth=right('00'||month+1,2)
+forrigemonth=right('00'||month-1,2)
+say '<center><a href="vise_jobblinker_sort.xgi?sort=1&month='nestemonth'&aar='aar'"> [ se jobber neste måned ] </a> '
+say '<a href="vise_jobblinker_sort.xgi?sort=1&month='forrigemonth'&aar='aar'"> [ se jobber forrige måned ] </a><br><br><br>'
+say '<A HREF="vise_jobblinker_sort.xgi?sort=1&month='month'&aar='aar'">[ Vis sortert leverings uke ]</A> 
+<A HREF="vise_jobblinker_sort.xgi?sort=2&month='month'&aar='aar'">[ Vis sortert Ordre nummer ]</A> 
+<A HREF="vise_jobblinker_sort.xgi?sort=3&month='month'&aar='aar'">[ Vis sortert Kunde nr ]</A>'
+say '<br><br><A HREF="vise_jobblinker_sort.xgi?sort=4&month='month'&aar='aar'">[ Vis ferdige jobber ]</A>'
+elapsed=time(e)
+say '<br><br>'
+say 'Sortering av jobbene tok 'elapsed' sekunder'
+exit
+
+jobbstatus:
+notis="ny"
+farge="ff9900"
+makefile="web-root:verksted/datafiler_jobber/"aar"/"month"/make_id."jobb""
+if exists(makefile) then do
+	call open(data,makefile,'R')
+	comment=readln(data)
+	ansatt=readln(data)
+        status=readln(data)
+	call close(data)
+
+ if status=1 then do
+	farge="ff0000"
+	notis=ansatt
+	end
+ if status=2 then do
+	statusimg="icon_pakket.gif"
+	farge="00ff00"
+	notis="ferdig"
+	end
+end
+
+return
+
+
+display:
+
+if sort=1 then do
+ if notis="ferdig" then return
+end
+
+if sort=4 then do
+ if notis="ny"|notis="ansatt" then return
+end
+
+
+jobbid_o=right(jobbid,2,00)
+
+say '
+<TABLE BGCOLOR="#'farge'" CELLSPACING="5" CELLPADDING="0" WIDTH="80%" BORDER="0">
+<TR>
+<TD BGCOLOR="#efefef">
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" WIDTH="100%">
+<TR>
+<TD>
+<FONT COLOR="black" CLASS="boxtitle">
+['aar' 'month' 'jobbid_o'] <B>
+'kunde'
+</B></FONT>
+</TD>
+<TD ALIGN="right">
+<FONT COLOR="white" CLASS="boxtitle">
+dg
+</FONT>
+</TD>
+</TR>
+</TABLE>
+<TABLE CELLSPACING="1" CELLPADDING="2" BORDER="0" WIDTH="100%">
+<TR>
+<TD BGCOLOR="ececec" VALIGN="top">
+<FONT SIZE="1">
+Antall:<b>'antall'</b> &nbsp;&nbsp;  Type:<b>'typer'</b> &nbsp;&nbsp;   Ruter:<b>'ruter'</b> &nbsp;&nbsp; Sum: <b>'jobbpris'</b> kr.</nobr></small>
+</FONT>
+</TD>
+<TD BGCOLOR="#efefef" VALIGN="top" ROWSPAN="2" WIDTH="25%"><FONT SIZE="2">
+<img align="left" src="../datafiler_kunder/'logo'" border="0">
+<a href="utregn_pris.xgi?aar='aar'&month='month'&jobbid='jobbid'">Se_bestillingen</a><br>
+<a href="../draw2.xgi?aar='aar'&month='month'&jobbid='jobbid'">Tegne sprosser</a><br>
+<a href="../kapp.html?aar='aar'&month='month'&jobbid='jobbid'" target="_blank">Kappliste</a><br>
+<a href="redigerejobb.xgi?aar='aar'&month='month'&jobbid='jobbid'" target="_blank">Redigere</a><br>
+<a href="ordre_bekreft.xgi?aar='aar'&month='month'&jobbid='jobbid'">Ordrebekreftelse</a><br>
+<a href="generate.xgi?aar='aar'&month='month'&jobbid='jobbid'">Overføre CNC Kode</a>
+
+</FONT>
+</TD>
+</TR>
+<TR>
+<TD BGCOLOR="#efefef" VALIGN="top">
+<b>Leveres Uke : </b> 'levuke'&nbsp;&nbsp;
+<b>Merk :</b> 'merk'
+<P> '
+
+if farge='ff9900' then do
+say '<a valign="right" href="ansatt_tajobb.xgi?aar='aar'&month='month'&jobbid='jobbid'">Start på jobb</a><br>'
+end
+
+if farge='ff0000' then do
+say '<a align="right" href="ferdig_jobb_write.xgi?aar='aar'&month='month'&jobbid='jobbid'">Merk som ferdig</a>'
+end
+
+faktfile="web-root:verksted/datafiler_jobber/"aar"/"month"/fakt_id."jobbid""
+
+if exists(faktfile) then do
+say '<font face="Arial" size="4"><b>Ferdig Fakturert</b></font>'
+end
+
+/*<img src="../datafiler_ansatte/'notis'.jpg" width="40">*/
+
+say '
+</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+</TABLE>
+
+<br>'
+return
+
+
+
+sort4_display:
+
+say '<center>
+	<table bgcolor="'farge'" border="0" cellpadding="0" cellspacing="2" width="90%">
+
+	<td bgcolor="eeeeee" align="left" width="60%">
+
+<font face="verdana,arial" size="4">Kunde : 'kunde' [<img src="../datafiler_ansatte/'notis'.jpg" width="40">]
+<br>
+<font face="Helvetica, Arial, sans-serif" size="-1">Antall:<b>'antall'</b> &nbsp;&nbsp;  Type:<b>'typer'</b> &nbsp;&nbsp;   Ruter:<b>'ruter'</b> &nbsp;&nbsp; Sum: <b>'jobbpris'</b> kr.</nobr></small>'
+
+if ~exists("web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."jobbid"") then do
+say '<a href="utregn_info_pris.xgi?aar='aar'&month='month'&jobbid='jobbid'"></font><img src="../bilder/icon_pris.gif" border="0" alt="Trykk her for å kalkulere og vise pris for arbeid for denne bestillingen"></a>'
+end
+say '
+<br>
+<b>Leveres Uke : </b> 'levuke'
+<br>
+<b>Merk :</b> 'merk'<br>
+	</td>
+<td bgcolor="dedede" align="right" width="30%">
+
+<img align="left" src="../datafiler_kunder/'logo'" border="0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b><a href="utregn_pris.xgi?aar='aar'&month='month'&jobbid='jobbid'" target="_blank">Se_bestillingen</a><br>
+<a href="../draw2.xgi?aar='aar'&month='month'&jobbid='jobbid'">Tegne sprosser</a><br>
+<a href="../kapp.html?aar='aar'&month='month'&jobbid='jobbid'" target="_blank">Kappliste</a><br>
+<a href="redigerejobb.xgi?aar='aar'&month='month'&jobbid='jobbid'" target="_blank">Redigere</a><br>
+<a href="ordre_bekreft.xgi?aar='aar'&month='month'&jobbid='jobbid'" target="_blank">Ordrebekreftelse</a><br>
+<a href="generate.xgi?aar='aar'&month='month'&jobbid='jobbid'">Overføre CNC Kode</a> '
+/*
+<img src="../bilder/icon_maling.gif" width="30" border="0" alt="Jobben skal males">
+&nbsp;&nbsp;<img src="../bilder/icon_fakturert.gif" width="30" border="0" alt="Jobben er fakturert"></b>
+*/
+
+say' <br>
+<small>id:'jobbid'</small>
+</td>
+</tr>
+	</table>
+
+</td>
+</tr>
+	</table>
+<br>'
+return
+
+
+
+
+
+sort5_display:
+notis=id
+say '
+<table bgcolor="e4e4e4" border="0" cellpadding="0" cellspacing="5" width="90%">
+<td bgcolor="eeeeee" align="left" width="60%">
+<font face="verdana,arial" size="4">
+Kunde : 'kunde' <img src="../datafiler_ansatte/'notis'.jpg" width="40">
+<img align="right" src="../datafiler_kunder/'logo'" border="0">
+<br>
+<font face="Helvetica, Arial, sans-serif" size="-1">Antall:<b>'antall'</b> &nbsp;&nbsp;  Type:<b>'typer'</b> &nbsp;&nbsp;   Ruter:<b>'ruter'</b> &nbsp;&nbsp; Sum: <b>'jobbpris'</b> kr.</nobr></small><a href="utregn_info_pris.xgi?aar='aar'&month='month'&jobbid='jobbid'"></font><img src="../bilder/icon_pris.gif" border="0" alt="Trykk her for å kalkulere og vise pris for arbeid for denne bestillingen"></a>
+<br>
+<b>Leveres Uke : </b> 'levuke'
+<br>
+<b>Merk :</b> 'merk'
+<br>
+<a href="visjobb.xgi?aar='aar'&month='month'&jobbid='jobbid'" target="_blank">Se_bestillingen</a><br>
+<small>id:'jobbid'</small>
+<br>
+</td>
+</table>
+'
+return
+
+
+jobb_info:
+prisfile="web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."jobbid""
+typer="?"
+ruter="0"
+jobbpris="?"
+antall="?"
+
+if ~exists(prisfile) then do
+address command 'rx web-root:verksted/xgi/utregn_info_pris.xgi aar='aar'&month='month'&jobbid='jobbid
+end
+
+call open(data,prisfile,'R')
+	typer=readln(data)
+        antall=readln(data)
+        ruter=readln(data)
+        jobbpris=readln(data)
+        malepris=readln(data)
+	impregpris=readln(data)
+	call close(data)
+jobbpris=jobbpris+malepris+impregpris
+
+/* sjekke kundelogo*/
+
+logo="blank.gif"
+
+if exists('web-root:verksted/datafiler_kunder/'kundenr'.gif') then do
+logo=kundenr'.gif'
+end
+return

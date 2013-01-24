@@ -1,0 +1,120 @@
+/*  */
+
+OPort = openport('SKJEMA')
+
+
+/* Loop until a Cmd changes the value of [Status] */
+
+  do forever
+      call waitpkt('SKJEMA')
+      Packet = getpkt('SKJEMA')
+      if packet = '0000 0000'x then Iterate
+         Cmd = getarg(Packet)
+         interpret 'call' cmd
+         call reply(Packet,0)
+   end
+
+EXIT
+
+
+OPEN_DATA:
+if ~exists('ram:jobb.skjema.tmp') then do
+    call open(temp,"ram:jobb.skjema.tmp",'W')
+    call writeln(temp,'#start av sprosse data')
+    call close(temp)
+end
+return
+
+ADD_DATA:
+parse arg antall bredde hoyde malenr type inndel_b inndel_h ramme merknad flukte profil
+
+say faen
+
+call open(data,"ram:jobb.skjema.tmp",'A')
+call writeln(data,antall''flukte)
+call writeln(data,bredde)
+call writeln(data,hoyde)
+call writeln(data,malenr)
+call writeln(data,type)
+call writeln(data,inndel_b)
+call writeln(data,inndel_h)
+call writeln(data,ramme)
+call writeln(data,profil)
+call writeln(data,merknad)
+call writeln(data,'#')
+call close(data)
+return
+
+ADD_KUNDE:
+parse arg kundenr
+call open(kundeid,"ram:jobb.kunde.tmp",'W')
+call writeln(kundeid,kundenr)
+call close(kundeid)
+return
+
+CLOSE_DATA:
+call close(data)
+return
+
+
+SHUTDOWN:
+exit
+return
+
+
+
+
+PARSE ARG 'antall=' antall '&bredde=' bredde '&hoyde=' hoyde '&malenr=' malenr '&type=' type '&inndel_b=' inndel_b '&inndel_h=' inndel_h '&merknad=' merknad '&ramme=' ramme '&profil=' profil '&flukte=' flukte 
+
+call open(log,"ram:jobb.tmp.kunde",'R')
+kundenr=readln(log)
+call close(log)
+kunde=right('000'||kundenr,3)
+
+call open(log,"web-root:verksted/datafiler_kunder/"kunde,'R')
+kunde=readln(log)
+addresse=readln(log)
+sted=readln(log)
+call close(log)
+
+
+if antall="" then do
+exit
+end
+
+if ~open(log,"ram:jobb.tmp",'R') then do
+    call open(log,"ram:jobb.tmp",'W')
+    call writeln(log,'#start')
+    call close(log)
+end
+
+
+
+call open(dat,"ram:jobb.tmp",'A')
+call writeln(dat,antall' 'fluktee)
+call writeln(dat,bredde)
+call writeln(dat,hoyde)
+call writeln(dat,malenr)
+call writeln(dat,type)
+call writeln(dat,inndel_b)
+call writeln(dat,inndel_h)
+call writeln(dat,ramme)
+call writeln(dat,profil)
+call writeln(dat,merknad)
+call writeln(dat,'#')
+call close(dat)
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+say 'vent...'
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="5;url=../input_jobb_data.html" />'
+say '</body></html>'
+
+
+exit
+

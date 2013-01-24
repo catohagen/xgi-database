@@ -1,0 +1,29 @@
+/* */ 
+
+PARSE ARG 'file=' file '&path=' path
+
+options results
+
+address 'SONGPLAYER.1'
+
+TIME_TYPE 3
+
+OPEN '"'path''file'"'
+PLAY
+
+
+GET_TITLE
+name=result
+
+GET_TITLE
+title=result
+
+GET_TOTAL
+duration=result
+
+GET_ARTIST
+mus=result
+
+say '<br>'
+say mus' - 'name' ('duration')'
+exit

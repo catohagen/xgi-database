@@ -1,0 +1,46 @@
+/*  */
+
+PARSE ARG 'id=' id
+
+datafil=right('000'||id,3)
+
+if datafil=""|datafil>kunder then do
+say 'helvete, finner ikke kunde informasjon for id 'id
+exit
+end
+
+call open(dat,"web-root:verksted/datafiler_kunder/"datafil,'R')
+navn=readln(dat)
+addresse=readln(dat)
+sted=readln(dat)
+type=readln(dat)
+call close(dat)
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<body bgcolor="FFFFFF">'
+
+say '<center><table border="0" cellspacing="0" cellpadding="0" width="100%"><tr>
+<td bgcolor="eeeeee" width="100%">'
+
+say '<form method="get" action="redigerekunde.xgi" style="margin: 0px">
+<h4>Redigere kunde data</h4>
+<br>'
+say 'Navn........:<input size="40" name="navn" hidden-="888" accesskey="s" value="'navn'" class="searchbox" id="navn" />
+<br><br>
+Adresse.....:<input size="40" name="addresse" hidden-="888" accesskey="s" value="'addresse'" class="searchbox" id="addresse" />
+<br><br>
+Sted........:<input size="40" name="sted" hidden-="888" accesskey="s" value="'sted'" class="searchbox" id="sted" />
+<br><br>
+Type........:<input size="40" name="type" hidden-="888" accesskey="s" value="'type'" class="searchbox" id="type" /> 0=forhandler 1=privat
+<br><br>
+<input type=hidden- name=id value='id'>'
+say '<br><br>
+<input type="submit" value="Ferdig" class="button" />
+</form>
+</td></tr></table><br><br></center>
+<a href="redigere_priser.xgi?kundenr='id'"> [ Redigere Forhandler prisliste for 'navn' ] </a><br>'
+say '</body></html>'
+exit

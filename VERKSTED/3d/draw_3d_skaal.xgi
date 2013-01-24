@@ -1,0 +1,213 @@
+/* */
+
+
+PARSE ARG 'startx=' startx '&starty=' starty '&bredde=' bredde '&hoyde=' hoyde '&step=' steg '&start=' start_topp '&dybde=' plate_tykkelse '&tykkelse=' tykkelse
+
+
+staalradius=10
+
+opp_bredde=bredde+(tykkelse*2)+(staalradius*2)
+
+inputbredde=bredde
+
+
+
+startx=startx-(tykkelse*2)
+starty=starty-(tykkelse*2)
+
+
+
+omgang=bredde/2
+
+
+
+slutt_bunn=start_topp+hoyde
+
+/* finne radius i Z aksen */
+a=bredde/2
+b=hoyde
+sum=(a*a) + (b*b)
+radius= sum / (b*2)
+
+
+Call Open(file,"web-root:verksted/3d/data/cnc_skaal_"inputbredde"x"hoyde"_hull.cnc",'W')
+
+
+call writeln(file,"G0")
+call writeln(file,"F5000")
+call writeln(file,"X-"startx" Y-"starty"")
+call writeln(file,"G92 X0Y0")
+call writeln(file,"M60")
+call writeln(file,"M23")
+call writeln(file,"G0 Z-50")
+
+
+
+/* Lage sirkel */
+
+sirkel=bredde
+orgsirkel=sirkel
+XA=0
+
+/*say (sirkel/2)/steg*/
+
+
+do until xa>omgang
+
+XAA=orgsirkel-xa
+
+sradius=(sirkel)/2
+
+call writeln(file,'G1 X'XA' Y'orgsirkel/2)
+call finn_Z
+call writeln(file,'G1 Z-'start_topp+z)
+
+call writeln(file,'G3 X'orgsirkel/2' Y'XA' R-'sradius)
+call writeln(file,'G3 X'XAA' Y'orgsirkel/2' R-'sradius)
+call writeln(file,'G3 X'orgsirkel/2' Y'XAA' R-'sradius)
+call writeln(file,'G3 X'XA' Y'orgsirkel/2' R-'sradius)
+
+
+sirkel=sirkel-(steg*2)
+
+XA=XA+steg
+
+end
+call endprog
+call close(file)
+
+
+
+
+bredde=opp_bredde
+
+
+
+slutt_bunn=start_topp+plate_tykkelse-tykkelse
+
+
+/* finne radius i Z aksen */
+a=bredde/2
+b=hoyde
+sum=(a*a) + (b*b)
+radius= sum / (b*2)
+
+
+startx=startx+staalradius*2
+starty=starty+staalradius*2
+
+
+Call Open(file,"web-root:verksted/3d/data/cnc_skaal_"inputbredde"x"hoyde"_bunn.cnc",'W')
+
+call writeln(file,"G0")
+call writeln(file,"F5000")
+call writeln(file,"X-"startx" Y-"starty"")
+call writeln(file,"G92 X0Y0")
+call writeln(file,"M60")
+call writeln(file,"M23")
+call writeln(file,"G0 Z-50")
+
+
+/* Lage sirkel */
+
+sirkel=bredde
+orgsirkel=sirkel
+XA=0
+sradius=sirkel/2
+XAA=orgsirkel-xa
+
+
+ned=start_topp
+
+do until ned>slutt_bunn-5
+call writeln(file,'G1 X'XA' Y'orgsirkel/2)
+call writeln(file,'G3 X'orgsirkel/2' Y'XA' R-'sradius)
+call writeln(file,'G3 X'XAA' Y'orgsirkel/2' R-'sradius)
+call writeln(file,'G3 X'orgsirkel/2' Y'XAA' R-'sradius)
+call writeln(file,'G3 X'XA' Y'orgsirkel/2' R-'sradius)
+call writeln(file,'G1 Z-'ned)
+ned=ned+5
+end
+
+do until xa>omgang
+
+XAA=orgsirkel-xa
+
+sradius=sirkel/2
+
+call writeln(file,'G1 X'XA' Y'orgsirkel/2)
+call writeln(file,'G3 X'orgsirkel/2' Y'XA' R-'sradius)
+call writeln(file,'G3 X'XAA' Y'orgsirkel/2' R-'sradius)
+call writeln(file,'G3 X'orgsirkel/2' Y'XAA' R-'sradius)
+call writeln(file,'G3 X'XA' Y'orgsirkel/2' R-'sradius)
+
+call finn_Z
+call writeln(file,'G1 Z-'slutt_bunn-z)
+
+sirkel=sirkel-(steg*2)
+XA=XA+steg
+end
+
+
+call endprog
+call close(file)
+
+
+say '<a href="data/cnc_skaal_'inputbredde'x'hoyde'_hull.cnc">hull</a><br>'
+say '<a href="data/cnc_skaal_'inputbredde'x'hoyde'_bunn.cnc">bunn</a>'
+
+
+exit
+
+
+finn_Z:
+
+y=bredde/2
+
+
+radius=trunc(radius,3)
+
+
+number=(radius*radius) - (y*y)
+
+
+guess=2
+t1=number/guess
+t2=guess+t1
+root=(guess+t1)/2
+
+n=1
+do until n=15
+t1=number/root
+
+t2=t1+root
+
+root=(t1+root)/2
+
+n=n+1
+
+end
+
+
+
+temp=radius-b
+
+z=root-temp
+
+
+z=trunc(z,3)
+
+
+
+bredde=bredde-(2*steg)
+return
+
+
+
+endprog:
+call writeln(file,"G92")
+call writeln(file,"G0 Z-10.000")
+call writeln(file,"M2")
+
+return
+

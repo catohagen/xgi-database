@@ -1,0 +1,132 @@
+/* */ 
+
+
+idag=date(s)
+aar=substr(idag,1,4)
+
+validyear=1
+call startheader
+
+do until aar=2001
+
+year="web-root:verksted/datafiler_jobber/"aar""
+
+if ~exists(year) then do
+address command 'makedir 'year''
+end
+
+if exists(year) then validyear=1
+if ~exists(year) then validyear=0
+
+startmonth=1
+
+
+do until startmonth=13
+month=RIGHT('00'||startmonth,2)
+maanedfile="web-root:verksted/datafiler_jobber/"aar"-"month".dat"
+
+if exists(maanedfile) then do
+call open(dat,maanedfile,'R')
+garbage=readln(dat)
+jobber=readln(dat)
+call close(dat)
+jobber=jobber-1
+
+month.startmonth='<A href="xgi/vise_jobblinker_sort.xgi?sort=4&month='month'&aar='aar'">'jobber'</A>'
+end
+
+if ~exists(maanedfile) then do
+month.startmonth=""
+end
+
+startmonth=startmonth+1
+
+end
+
+
+say '
+<tr>
+<td nowrap><font size="-1">'aar'</font></td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+<a href="2032">'month.1'</a>
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.2'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.3'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.4'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.5'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.6'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.7'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.8'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.9'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.10'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.11'
+</font>
+</td>
+<td nowrap bgcolor="EEEEEE" ><font size="-1">&nbsp;
+'month.12'
+</font>
+</td>
+</tr> '
+
+aar=aar-1
+
+end
+
+say '</table>'
+
+exit
+
+
+
+startheader:
+say '
+<table width="1%" vspace=0 hspace=0 cellpadding=3 cellspacing=1 border=0>
+<tr>
+<td><font size="-1"></font></td>
+<td nowrap><font size="-1">&nbsp;Jan</font></td>
+<td nowrap><font size="-1">&nbsp;Feb</font></td>
+<td nowrap><font size="-1">&nbsp;Mar</font></td>
+<td nowrap><font size="-1">&nbsp;Apr</font></td>
+<td nowrap><font size="-1">&nbsp;May</font></td>
+<td nowrap><font size="-1">&nbsp;Jun</font></td>
+<td nowrap><font size="-1">&nbsp;Jul</font></td>
+<td nowrap><font size="-1">&nbsp;Aug</font></td>
+<td nowrap><font size="-1">&nbsp;Sep</font></td>
+<td nowrap><font size="-1">&nbsp;Oct</font></td>
+<td nowrap><font size="-1">&nbsp;Nov</font></td>
+<td nowrap><font size="-1">&nbsp;Dec</font></td>
+</tr> '
+
+return
+
+
+

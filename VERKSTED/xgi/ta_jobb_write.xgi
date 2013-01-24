@@ -1,0 +1,40 @@
+/*  */
+
+PARSE ARG 'userid=' id
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<meta http-equiv="Refresh" content="0;url=vise_jobblinker_sort.xgi" />
+</head>
+<body bgcolor="FFFFFF">'
+say '<br>'
+say 'ditt id nr :'id
+say '<br>'
+
+call open(tmp,"ram:jobb.ansatt.tmp",'R')
+aar=readln(tmp)
+moned=readln(tmp)
+jobbid=readln(tmp)
+call close(tmp)
+say 'jobb 'aar' 'moned' id: 'jobbid
+
+makefile="web-root:verksted/datafiler_jobber/"aar"/"moned"/make_id."jobbid""
+if ~exists(makefile) then do
+	call open(data,makefile,'W')
+        call writeln(data,'#')
+        call writeln(data,id)
+        call writeln(data,1)
+	call close(data)
+	address command('run >nil: delete ram:jobb.ansatt.tmp')
+	say '<br>'
+	say 'Du har begynt på jobb 'aar' 'moned' id 'jobbid
+	say '<br>'
+	say '<br>'
+	say jobbid' er merket som begynt på, Hopper til hovedside om 5 secs'
+	say '</body></html>'
+exit
+end

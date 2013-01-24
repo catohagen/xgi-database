@@ -1,0 +1,23 @@
+/* */
+
+call open(log,"ram:jobb.kunde.tmp",'R')
+kundenr=readln(log)
+call close(log)
+
+call open(log,"web-root:verksted/datafiler_kunder/"kundenr,'R')
+kunde=readln(log)
+addresse=readln(log)
+sted=readln(log)
+type=readln(log)
+call close(log)
+
+say kundenr
+say '<br>'
+say kunde
+say '<br>'
+say addresse
+say '<br>'
+say sted
+say '<br>'
+
+exit

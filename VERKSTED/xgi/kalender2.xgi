@@ -1,0 +1,130 @@
+/* */
+
+PARSE ARG 'month=' month
+
+idag=date(s)
+
+if month="" then do
+month=substr(idag,5,2)
+end
+
+if month>12 then month=01
+
+if month<0 then month=01
+
+
+if month=01 then days=31
+if month=02 then days=28
+if month=03 then days=31
+if month=04 then days=30
+if month=05 then days=31
+if month=06 then days=30
+if month=07 then days=31
+if month=08 then days=31
+if month=09 then days=30
+if month=10 then days=31
+if month=11 then days=30
+if month=12 then days=31
+
+
+year=substr(idag,1,4)
+day=01
+
+    isleap=year//4
+    if isleap=0 then leap=1
+    if isleap>0 then leap=0
+    a = (year +  (year % 4) - leap + 1) // 7     /*find weekday for Jan 1 (1 = Sat, 2 = Sun)*/
+    m = 4 - a                                     /*find date of Monday in first week*/
+    int=30.56*month
+    d = day + (int % 1) - 32      /*calculate day number*/
+    if month < 3 then d = d + 2                   /*adjust for Jan and Feb*/
+    week=d-m
+    uke =  ((week % 1) / 7 + 1  ) % 1                   /*find number of whole weeks*/
+    dag = ((d - m) // 7) + 1                        /*'remainder gives weekday*/
+
+if month=02 then do
+ if leap=1 then days=days+1
+end
+
+dag.1=""
+dag.2=""
+dag.3=""
+dag.4=""
+dag.5=""
+dag.6=""
+dag.7=""
+i=1
+week=1
+
+do until dag=8
+dag.dag=i
+dag=dag+1
+i=i+1
+end
+call header
+call make_week
+
+uke=uke+1
+dag=1
+ do until dag=8
+ dag.dag=i
+ dag=dag+1
+ i=i+1
+ end
+
+call make_week
+
+uke=uke+1
+dag=1
+do until dag=8
+dag.dag=i
+dag=dag+1
+i=i+1
+end
+call make_week
+
+uke=uke+1
+dag=1
+do until dag=8
+dag.dag=i
+dag=dag+1
+i=i+1
+end
+call make_week
+
+uke=uke+1
+dag=1
+do until dag=8
+if i=days+1 then do
+ do until dag=8
+ dag.dag=""
+ dag=dag+1
+ end
+call make_week
+call end
+end
+dag.dag=i
+dag=dag+1
+i=i+1
+end
+call make_week
+say dag
+
+call end
+
+null:
+do until dag=8
+dag.i=" "
+i=i+1
+end
+call end
+
+make_week:
+say dag
+
+week=week+1
+return
+
+end:
+
+exit

@@ -1,0 +1,959 @@
+/* */ 
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' id '&scale=' scale
+
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html>'
+say '<head>'
+say '<title>Ordrebekreftelse.xgi</title>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="1">'
+say '</head>'
+say '<body bgcolor="FFFFFF" text="000000" link="#334477" alink="#FF9900" vlink="#cc6600">'
+say '<br>'
+say '<center>'
+say '<!-- first words :) -->'
+say '
+<center><center><font face="Arial" size="7"><b>Kontroll Ordre</b><font size="2">
+<img height="40" src="cnc/firmalogo.gif"><img height="40" src="cnc/sprossepynt.jpg">
+<br>'
+
+
+call header
+
+filebase="sys:_webside"
+Options results
+/*
+address command 'c:protect c:reboot RWED' 
+say 'reboot<br>'
+call delay(100)
+address command 'c:reboot force'
+exit
+*/
+
+checkport:
+if ~show(ports, "AMIFIG.0") then do
+ address command 'run >nil: run sys:gfx/AmiFIG3.1/AmiFIG'
+ call delay(250)
+end
+address("AMIFIG.0")
+
+Clear "test.fig"
+SetLineWidth 1
+SetJoinStyle 1
+SetCapStyle 1
+SetDepth 10
+/*SetUnfilled*/
+SetPenColor 0
+
+SetBaseSystem metric
+
+jobbfile="web-root:verksted/datafiler_jobber/"aar"/"month"/jobb_id."id""
+
+if aar='tilbud' then do
+jobbfile="web-root:verksted/datafiler_jobber_temp/jobb_id."month""
+end
+
+
+call open(dat,jobbfile,'R')
+garbage=readln(dat)
+dato=readln(dat)
+kundenr=readln(dat)
+merk=readln(dat)
+if merk="" then merk=" "
+levuke=readln(dat)
+garbage=readln(dat)
+
+
+do until eof(dat)
+antall=readln(dat)
+d_bredde=readln(dat)
+d_hoyde=readln(dat)
+malenr=readln(dat)
+type=readln(dat)
+inndel_b=readln(dat)
+inndel_h=readln(dat)
+truter=inndel_b*inndel_h*antall
+ramme=readln(dat)
+profil=readln(dat)
+merknad=readln(dat)
+if merknad="" then merknad=" "
+garbage=readln(dat) 
+	if garbage="#andre ting" then do
+	 hengsler=readln(dat)
+	 klips=readln(dat)
+	 maling=readln(dat)
+	 impreg=readln(dat)
+	 dill=readln(dat)
+	end
+
+
+
+if profil=0 then do
+SetLineWidth 1
+end
+
+if profil=1 then do
+SetLineWidth 1
+end
+
+
+
+if scale="" then scale=50
+
+/*
+if d_bredde<20 then scale=10
+if d_hoyde<20 then scale=10
+*/
+
+bredde=d_bredde/scale
+hoyde=d_hoyde/scale
+
+
+
+buehoyde=10/scale
+if d_hoyde<20 then buehoyde=6/scale 
+if d_bredde<20 then buehoyde=6/scale 
+
+buetopp=5/scale
+
+if d_hoyde<20 then buetopp=2/scale 
+if d_bredde<20 then buetopp=2/scale 
+
+
+Clear "test.fig"
+
+
+if ~exists(filebase'/tmp/img_'type'_'d_bredde'x'd_hoyde'_'inndel_b'x'inndel_h'.jpg') then do
+
+if type=A then call draw_a
+if type=B then call draw_b
+if type=C then call draw_c
+if type=D then call draw_d
+if type=E then call draw_e
+if type=G then call draw_g
+if type=K then call draw_k
+if type=I then call draw_i
+if type=J then call draw_j
+if type=N then call draw_n
+if type=M then call draw_m
+if type=H then call draw_h
+if type=O then call draw_o
+
+
+if type=L then do
+ if inndel_b<3 then call draw_g
+ if inndel_b>3 then call draw_b
+end
+
+if type=F then call draw_a	 
+
+ExportFile filebase'/tmp/img_'type'_'d_bredde'x'd_hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'d_bredde'x'd_hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'d_bredde'x'd_hoyde'_'inndel_b'x'inndel_h'.jpg'
+address command 'run >nil: delete 'filebase'/tmp/img_'type'_'d_bredde'x'd_hoyde'_'inndel_b'x'inndel_h'.iff'
+end
+
+
+say '<center>
+	<table bgcolor="ffffff" border="0" cellpadding="1" cellspacing="1" width="80%">
+
+
+<font size="-1">
+
+
+<td bgcolor="efefef" align="left" width="80%"> <font face="verdana,arial" size="-1">
+
+<table bgcolor="ffffff" cellpadding="1" cellspacing="0" border="1" width="100%"
+ align="center">
+
+</table>
+<table cellpadding="0" cellspacing="0" border="0" width="100%" align="center">  <tbody>    <tr>      <td valign="top" align="center" width="10%" bgcolor="efefef">'antall'<br>      </td>      <td valign="top" align="center" width="20%">'d_bredde'<br>      </td>      <td valign="top" align="center" width="20%">'d_hoyde'<br>      </td>      <td valign="top" align="center" width="10%" bgcolor="efefef">'malenr'<br>      </td>      <td valign="top" align="center" width="10%" bgcolor="efefef">'type'<br>      </td>      <td valign="top" align="center" width="10%" bgcolor="efefef">'inndel_b'<br>      </td>      <td valign="top" align="center" width="10%" bgcolor="efefef">'inndel_h'<br>      </td>    </tr>  </tbody></table></b><br>
+</td>
+
+<td bgcolor="ffffff" align="center" width="30%">
+<img src="../tmp/img_'type'_'d_bredde'x'd_hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter" border="1">'
+
+say'
+</td>
+</tr>
+	</table>
+
+</td>
+</tr>
+	</table>
+<br>
+'
+
+end
+call close(dat)
+
+exit
+
+
+
+
+draw_a:
+ruter=inndel_h-1
+if inndel_h=1 then ruter=inndel_h
+DrawRectBox 0 0 bredde hoyde
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+ruter=inndel_b-1
+if inndel_b=1 then ruter=inndel_b
+
+do until ruter=0
+StartPolyline bredde/inndel_b*ruter 0
+EndLine bredde/inndel_b*ruter hoyde
+ruter=ruter-1
+end
+
+return
+
+
+
+draw_n:
+ruter=inndel_h-1
+buer=inndel_b
+if inndel_h=1 then ruter=inndel_h
+DrawRectBox 0 0 bredde hoyde
+
+
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+ruter=inndel_b-1
+if inndel_b=1 then ruter=inndel_b
+
+do until ruter=0
+StartPolyline bredde/inndel_b*ruter buehoyde
+EndLine bredde/inndel_b*ruter hoyde
+ruter=ruter-1
+end
+
+
+mellom=(bredde/inndel_b)
+
+bue_slutt=0
+
+midtbue=mellom/2
+
+do until buer=0
+bue_start=bue_slutt
+bue_slutt=(bue_start+mellom)
+
+DrawArc bue_start buehoyde bue_slutt-midtbue buetopp bue_slutt buehoyde
+
+
+buer=buer-1
+end
+
+return
+
+
+draw_j:
+DrawRectBox 0 0 bredde hoyde
+
+if inndel_b>1 then call liggende
+if inndel_h>1 then call staaende
+
+ruuter=inndel_b+inndel_h
+
+if ruuter=2 then call singel
+
+return
+
+
+singel:
+ruter=inndel_b
+inndeling=bredde/ruter
+
+startpk=0
+endpk=inndeling
+
+ StartPolyline startpk 0
+ EndLine       endpk hoyde
+
+ StartPolyline startpk hoyde
+ EndLine       endpk 0
+
+return
+
+
+liggende:
+say "b "bredde
+ruter=inndel_b
+inndeling=bredde/ruter
+
+startpk=0
+endpk=inndeling
+
+do until ruter=1
+ StartPolyline startpk 0
+ EndLine       endpk hoyde
+
+ StartPolyline startpk hoyde
+ EndLine       endpk 0
+
+ruter=ruter-1
+startpk=endpk
+endpk=endpk+inndeling
+
+ StartPolyline startpk 0
+ EndLine       endpk hoyde
+
+ StartPolyline startpk hoyde
+ EndLine       endpk 0
+
+end
+return
+
+staaende:
+say "h "bredde
+ruter=inndel_h
+inndeling=hoyde/ruter
+
+
+startpk=0
+endpk=inndeling
+
+bb=bredde
+
+
+do until ruter=1
+ StartPolyline 0 startpk
+ EndLine       bb endpk
+
+ StartPolyline 0 endpk
+ EndLine       bb startpk
+
+ruter=ruter-1
+startpk=endpk
+endpk=endpk+inndeling
+
+ StartPolyline 0 startpk
+ EndLine       bb endpk
+
+ StartPolyline 0 endpk
+ EndLine       bb startpk
+
+end
+return
+
+
+
+draw_d:
+DrawRectBox 0 0 bredde hoyde
+ruter=inndel_h-1
+midtstokk=5/scale
+
+if inndel_b>2 then call d3rut
+if inndel_b=2|inndel_b=1 then call dvanlig
+
+return
+
+dvanlig:
+midtstokk=5/scale
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+
+
+if inndel_b>1 then do
+/*midtstokk*/
+StartPolyline p1 0
+EndLine p1 hoyde
+StartPolyline p2 0
+EndLine p2 hoyde
+end
+
+if inndel_b=1 then do
+p1=(bredde-0)/2
+p2=p1
+end
+
+if inndel_h>1 then do
+/*breddepinner*/
+StartPolyline 0 (hoyde-midtstokk)/3
+EndLine p1 (hoyde-midtstokk)/3
+StartPolyline p2 (hoyde-midtstokk)/3
+EndLine bredde (hoyde-midtstokk)/3
+
+StartPolyline 0 ((hoyde-midtstokk)/3)+midtstokk
+EndLine p1 ((hoyde-midtstokk)/3)+midtstokk
+StartPolyline p2 ((hoyde-midtstokk)/3)+midtstokk
+EndLine bredde ((hoyde-midtstokk)/3)+midtstokk
+end
+return
+
+d3rut:
+ant_pinner=inndel_b-1
+mellom=(bredde-(midtstokk*ant_pinner)) / inndel_b
+p1=0
+p2=0
+h1=0
+h2=0
+
+ant_pinner=inndel_h-1
+mellom_h=(hoyde-(midtstokk*ant_pinner)) / 3
+
+/*********************HOYDE PINNER*************************/
+ruter=inndel_b
+
+do until ruter=0
+p1=p2+mellom
+p2=p1+midtstokk
+
+ StartPolyline p1 0
+ EndLine p1 hoyde
+ StartPolyline p2 0
+ EndLine p2 hoyde
+ruter=ruter-1
+
+ruter_h=inndel_h-1
+
+if inndel_h>1 then do
+ do until ruter_h=0
+ ps=p1-mellom
+
+ h1=h2+mellom_h
+ h2=h1+midtstokk
+
+ StartPolyline ps h1
+ EndLine p1 h1
+ StartPolyline ps h2
+ EndLine p1 h2
+
+ ruter_h=ruter_h-1
+ end
+end
+ h1=0
+ h2=0
+
+end
+return
+
+
+
+
+
+
+
+
+
+draw_h:
+DrawRectBox 0 0 bredde hoyde
+ruter=inndel_h-1
+
+midtstokk=5/scale
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+
+
+/*midtstokk*/
+StartPolyline p1 0
+EndLine p1 hoyde
+StartPolyline p2 0
+EndLine p2 hoyde
+
+if inndel_h>1 then do
+/*breddepinner*/
+StartPolyline 0 (hoyde-midtstokk)/3
+EndLine p1 (hoyde-midtstokk)/3
+StartPolyline p2 (hoyde-midtstokk)/3
+EndLine bredde (hoyde-midtstokk)/3
+
+StartPolyline 0 ((hoyde-midtstokk)/3)+midtstokk
+EndLine p1 ((hoyde-midtstokk)/3)+midtstokk
+StartPolyline p2 ((hoyde-midtstokk)/3)+midtstokk
+EndLine bredde ((hoyde-midtstokk)/3)+midtstokk
+end
+
+StartPolyline p1/2 0 
+EndLine p1/2 (hoyde-midtstokk)/3
+
+StartPolyline bredde-(p1/2) 0 
+EndLine bredde-(p1/2) (hoyde-midtstokk)/3
+
+StartPolyline 0 ((hoyde-midtstokk)/3)/2
+EndLine p1 ((hoyde-midtstokk)/3)/2
+
+StartPolyline p2 ((hoyde-midtstokk)/3)/2
+EndLine bredde ((hoyde-midtstokk)/3)/2
+
+return
+
+
+draw_o:
+
+DrawRectBox 0 0 bredde hoyde
+ruter=inndel_h-1
+midtstokk=5/scale
+
+ant_pinner=inndel_b-1
+mellom=(bredde-(midtstokk*ant_pinner)) / inndel_b
+p1=0
+p2=0
+h1=0
+h2=0
+
+ant_pinner=inndel_h-1
+mellom_h=(hoyde-(midtstokk*ant_pinner)) / 3
+
+/*********************HOYDE PINNER*************************/
+ruter=inndel_b
+
+do until ruter=0
+p1=p2+mellom
+p2=p1+midtstokk
+
+ StartPolyline p1 0
+ EndLine p1 hoyde
+ StartPolyline p2 0
+ EndLine p2 hoyde
+ruter=ruter-1
+
+end
+
+p1=0
+p2=mellom_h
+p3=mellom
+
+StartPolyline p1 p2
+EndLine p3 p2
+StartPolyline p1 p2+midtstokk
+EndLine p3 p2+midtstokk
+
+
+DrawArc p3+midtstokk p2 mellom+midtstokk+(mellom/2) mellom_h-(12/50) mellom+midtstokk+mellom p2
+DrawArc p3+midtstokk p2+midtstokk+(2/50) mellom+midtstokk+(mellom/2) mellom_h-(12/50)+midtstokk mellom+midtstokk+mellom p2+midtstokk+(2/50)
+
+
+StartPolyline (p3+midtstokk)*2 p2
+EndLine bredde p2
+StartPolyline (p3+midtstokk)*2 p2+midtstokk
+EndLine bredde p2+midtstokk
+
+
+StartPolyline 0 mellom_h/2
+EndLine mellom mellom_h/2
+
+
+StartPolyline mellom/2 0
+EndLine mellom/2 mellom_h
+
+
+StartPolyline (mellom*2)+(midtstokk*2) mellom_h/2
+EndLine (mellom*3)+(midtstokk*2) mellom_h/2
+
+
+StartPolyline (mellom*3)+(midtstokk*2)-(mellom/2) 0
+EndLine (mellom*3)+(midtstokk*2)-(mellom/2) mellom_h
+
+
+return
+
+
+
+draw_p:
+DrawRectBox 0 0 bredde hoyde
+
+SetTextAdjustment 0
+SetRigidTextFlag 1
+SetSpecialTextFlag 1
+SetFontSize 15
+DrawText  0.1 0.5 tegn.
+DrawText  0.1 0.9 ikke.
+DrawText  0.1 1.3 tilgj.
+
+return
+
+
+draw_i:
+DrawRectBox 0 0 bredde hoyde
+ant_pinner=inndel_b-1
+midtstokk=5/scale
+mellom=(bredde-(midtstokk*ant_pinner)) / inndel_b
+
+
+
+p1=0
+p2=0
+h1=0
+h2=0
+
+ant_pinner=inndel_h-1
+mellom_h=(hoyde-(midtstokk*ant_pinner)) / inndel_h
+
+/*********************HOYDE PINNER*************************/
+ruter=inndel_b
+
+do until ruter=0
+p1=p2+mellom
+p2=p1+midtstokk
+
+ StartPolyline p1 0
+ EndLine p1 hoyde
+ StartPolyline p2 0
+ EndLine p2 hoyde
+ruter=ruter-1
+
+ruter_h=inndel_h-1
+
+if inndel_h>1 then do
+ do until ruter_h=0
+ ps=p1-mellom
+
+ h1=h2+mellom_h
+ h2=h1+midtstokk
+
+ StartPolyline ps h1
+ EndLine p1 h1
+ StartPolyline ps h2
+ EndLine p1 h2
+
+ ruter_h=ruter_h-1
+ end
+end
+ h1=0
+ h2=0
+
+end
+return
+
+
+draw_b:
+
+ruter=inndel_h-1
+
+if inndel_h=1 then ruter=1
+
+DrawRectBox 0 0 bredde hoyde
+
+midtstokk=5/scale
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+/*midtstokk*/
+StartPolyline p1 0
+EndLine p1 hoyde
+StartPolyline p2 0
+EndLine p2 hoyde
+
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine p1 hoyde/inndel_h*ruter
+StartPolyline p2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+ruter=inndel_b/2
+inndel=inndel_b/2
+startpk_base=((bredde-midtstokk)/2)/inndel
+startpk=startpk_base
+/*hoydepinner side1*/
+do until ruter=1
+StartPolyline startpk 0
+EndLine startpk hoyde
+ruter=ruter-1
+startpk=startpk+startpk_base
+end
+
+ruter=inndel_b/2
+startpk_base=((bredde-midtstokk)/2)/inndel
+startpk=bredde-startpk_base
+
+/*hoydepinner side2*/
+do until ruter=1
+StartPolyline startpk 0
+EndLine startpk hoyde
+ruter=ruter-1
+startpk=startpk-startpk_base
+end
+
+return
+
+
+draw_g:
+
+
+DrawRectBox 0 0 bredde hoyde
+ant_pinner=inndel_b-1
+midtstokk=5/scale
+mellom=(bredde-(midtstokk*ant_pinner)) / inndel_b
+
+
+
+p1=0
+p2=0
+h1=0
+h2=0
+
+ant_pinner=inndel_h-1
+mellom_h=(hoyde-(midtstokk*ant_pinner)) / inndel_h
+
+mellom_h=hoyde / inndel_h
+
+/*********************HOYDE PINNER*************************/
+ruter=inndel_b
+
+do until ruter=0
+p1=p2+mellom
+p2=p1+midtstokk
+
+ StartPolyline p1 0
+ EndLine p1 hoyde
+ StartPolyline p2 0
+ EndLine p2 hoyde
+ruter=ruter-1
+
+ruter_h=inndel_h-1
+
+if inndel_h>1 then do
+ do until ruter_h=0
+ ps=p1-mellom
+
+ h1=h2+mellom_h
+ h2=h1+0
+
+ StartPolyline ps h1
+ EndLine p1 h1
+/*
+ StartPolyline ps h2
+ EndLine p1 h2
+*/
+ ruter_h=ruter_h-1
+ end
+end
+ h1=0
+ h2=0
+
+end
+return
+
+
+
+
+
+/*
+ruter=inndel_h-1
+DrawRectBox 0 0 bredde hoyde
+
+midtstokk=5/scale
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+
+
+/*midtstokk*/
+StartPolyline p1 0
+EndLine p1 hoyde
+StartPolyline p2 0
+EndLine p2 hoyde
+
+if inndel_h=1 then return
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine p1 hoyde/inndel_h*ruter
+StartPolyline p2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+return
+*/
+
+
+
+
+
+draw_m:
+ruter=inndel_h-1
+DrawRectBox 0 0 bredde hoyde
+
+midtstokk=5/scale
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine p1 hoyde/inndel_h*ruter
+StartPolyline p2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+/*midtstokk*/
+StartPolyline p1 0
+EndLine p1 hoyde
+StartPolyline p2 0
+EndLine p2 hoyde
+
+DrawArc 0 buehoyde bredde/2 buetopp bredde buehoyde
+
+return
+
+
+
+
+draw_k:
+ruter=inndel_h-1
+
+if inndel_h=1 then ruter=1
+
+
+DrawRectBox 0 0 bredde hoyde
+
+midtstokk=5/scale
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+
+
+if inndel_b>2 then return
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine p1 hoyde/inndel_h*ruter
+StartPolyline p2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+/*midtstokk*/
+StartPolyline p1 buehoyde
+EndLine p1 hoyde
+StartPolyline p2 buehoyde
+EndLine p2 hoyde
+
+DrawArc 0 buehoyde bredde/4 buetopp p1 buehoyde
+DrawArc p2 buehoyde (bredde/4)*3 buetopp bredde buehoyde
+
+return
+
+
+
+
+
+draw_c:
+ruter=inndel_h-1
+
+if inndel_h=1 then ruter=1
+
+DrawRectBox 0 0 bredde hoyde
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+if inndel_b>1 then ruter=inndel_b-1
+if inndel_b=1 then ruter=inndel_b
+
+
+do until ruter=0
+StartPolyline bredde/inndel_b*ruter buetopp
+EndLine bredde/inndel_b*ruter hoyde
+ruter=ruter-1
+end
+
+DrawArc 0 buehoyde bredde/2 buetopp bredde buehoyde
+say '<br>'
+return
+
+
+
+draw_e:
+ruter=inndel_h-1
+
+if inndel_h=1 then ruter=1
+
+DrawRectBox 0 0 bredde hoyde
+
+midtstokk=5/scale
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine p1 hoyde/inndel_h*ruter
+StartPolyline p2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+/*midtstokk*/
+StartPolyline p1 buehoyde
+EndLine p1 hoyde
+StartPolyline p2 buehoyde
+EndLine p2 hoyde
+
+ruter=inndel_b/2
+inndel=inndel_b/2
+startpk_base=((bredde-midtstokk)/2)/inndel
+startpk=startpk_base
+/*hoydepinner side1*/
+do until ruter=1
+StartPolyline startpk 0.1
+EndLine startpk hoyde
+ruter=ruter-1
+startpk=startpk+startpk_base
+end
+
+ruter=inndel_b/2
+startpk_base=((bredde-midtstokk)/2)/inndel
+startpk=bredde-startpk_base
+
+/*hoydepinner side2*/
+do until ruter=1
+StartPolyline startpk 0.1
+EndLine startpk hoyde
+ruter=ruter-1
+startpk=startpk-startpk_base
+end
+
+DrawArc 0 buehoyde bredde/4 buetopp p1 buehoyde
+DrawArc p2 buehoyde (bredde/4)*3 buetopp bredde buehoyde
+
+return
+
+
+error:
+say "ikke godtatt<br>"
+exit
+
+
+header:
+say '
+	<table bgcolor="'ffffff'" border="0" cellpadding="1" cellspacing="4" width="80%">
+  <tbody>
+    <tr>
+      <td valign="top" align="center" width="5%" bgcolor="efefef"><font size="-1">antall
+      </td>
+      <td valign="top" align="center" width="20%" bgcolor="efefef"><font size="-1">bredde
+      </td>
+      <td valign="top" align="center" width="20%" bgcolor="efefef"><font size="-1">h&oslash;yde
+      </td>
+      <td valign="top" align="center" width="5%" bgcolor="efefef"><font size="-1">m&aring;lenr
+      </td>
+      <td valign="top" align="center" width="5%" bgcolor="efefef"><font size="-1">type
+      </td>
+      <td valign="top" align="center" width="5%" bgcolor="efefef"><font size="-1">inndeling bredde
+      </td>
+      <td valign="top" align="center" width="5%" bgcolor="efefef"><font size="-1">inndeling høyde
+      </td>      <td valign="top" align="center" width="20%" bgcolor="efefef"><font size="-1">illustrasjon
+      </td>    </tr>  </tbody>
+</table> '
+
+return

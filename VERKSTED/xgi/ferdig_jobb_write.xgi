@@ -1,0 +1,63 @@
+/*  */
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' jobbid
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<meta http-equiv="Refresh" content="5;url=../index.html" />
+</head>
+<body bgcolor="FFFFFF">'
+
+status=2
+
+makefile="web-root:verksted/datafiler_jobber/"aar"/"month"/make_id."jobbid""
+
+if ~exists(makefile) then do
+say 'Du kan ikke merke jobber ferdige uten de er merket som begynt på...'
+exit
+end
+
+
+if exists(makefile) then do
+	call open(data,makefile,'R')
+	com=readln(data)
+        id=readln(data)
+	call close(data)
+
+	call open(data,makefile,'W')
+	call writeln(data,com)
+        call writeln(data,id)
+        call writeln(data,status)
+	call close(data)
+end
+
+prisfile="web-root:verksted/datafiler_jobber/"aar"/"month"/pris_id."jobbid""
+
+
+link="http://192.168.0.133/verksted/xgi/utregn_pris.xgi?aar="aar"&month="month"&jobbid="jobbid""
+
+say link'<br>'
+
+call open(data,"ram:prislink",'W')
+	call writeln(data,link)
+	call close(data)
+
+subject='Ferdig med Ordrenummer : 'aar' 'month' 'jobbid
+
+;say subject
+;address command 'run c:anubis >nil: -h smtp.hesbynett.no -F XGI@kapplis.te -S "'subject'" -T hagen@hesbynett.no --body-file RAM:prislink'
+
+
+address command 'rx web-root:VERKSTED/xgi/varer_jobb.xgi aar='aar'&month='month'&jobbid='jobbid
+
+
+	say '<br>'
+	say '<br>'
+	say 'jobben er merket som ferdig, Hopper til hovedside om 5 secs'
+	say '</body></html>'
+exit
+end

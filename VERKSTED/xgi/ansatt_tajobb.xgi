@@ -1,0 +1,47 @@
+/*  */
+
+PARSE ARG 'aar=' aar '&month=' month '&jobbid=' jobbid
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+</head>
+<body bgcolor="FFFFFF">'
+
+call open(tmp,"ram:jobb.ansatt.tmp",'W')
+call writeln(tmp,aar)
+call writeln(tmp,month)
+call writeln(tmp,jobbid)
+call close(tmp)
+
+
+makefile="web-root:verksted/datafiler_jobber/"aar"/"month"/make_id."jobbid""
+if ~exists(makefile) then do
+
+say '<br><center>'
+
+say '<br><a href="ta_jobb_write.xgi?userid=1" border="0"> <img src="../datafiler_ansatte/1.jpg" width="40"></a><br>'
+say '<a href="ta_jobb_write.xgi?userid=2" border="0"> <img src="../datafiler_ansatte/2.jpg" width="40"></a><br>'
+say '<a href="ta_jobb_write.xgi?userid=3" border="0"> <img src="../datafiler_ansatte/3.jpg" width="40"></a><br>'
+
+say '</body></html>'
+exit
+end
+
+jobben_er_tatt:
+	call open(data,makefile,'R')
+	com=readln(data)
+        id=readln(data)
+	call close(data)
+
+say '<br>'
+say 'Denne jobben er allerede tatt av ansatt #'id
+say '<br>'
+say '<br>'
+say '</body></html>'
+address command('run >nil: delete ram:jobb.ansatt.tmp')
+exit
+end

@@ -1,0 +1,592 @@
+/* */ 
+
+PARSE ARG 'type=' type '&bredde=' bredde '&hoyde=' hoyde '&inndel_b=' inndel_b '&inndel_h=' inndel_h
+
+bredde=bredde/10
+hoyde=hoyde/10
+
+scale=10
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html>'
+say '<head>'
+say '<title>Arexx-kicks.ass.net - Speedometer.xgi</title>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '</head>'
+say '<body bgcolor="FFFFFF" text="000000" link="#334477" alink="#FF9900" vlink="#cc6600">'
+say '<br>'
+say '<center>'
+say '<!-- first words :) -->'
+say '<table border="0" bgcolor="#555555" cellpadding="3" cellspacing="3" width="750">'
+say '<tr>'
+say ' <td border="1" bgcolor="#a0a0a0"><font face="verdana,arial" size="-1" color="#000000">Dill dall</font></td>'
+say '</tr>'
+say '  <td bgcolor="#dddddd"><font face="verdana,arial" size="-2" color="#000000">'
+say 'Drawing,please wait...'
+say '</font></td>'
+say '	</tr>'
+say '	</table>'
+say '<br>'
+say '<br>'
+
+
+filebase="sys:_webside"
+Options results
+/*
+address command 'c:protect c:reboot RWED' 
+say 'reboot<br>'
+call delay(100)
+address command 'c:reboot force'
+exit
+*/
+
+checkport:
+if ~show(ports, "AMIFIG.0") then do
+ address command 'run >nil: run sys:applications/amifig/AmiFIG3.1'
+ call delay(100)
+end
+address("AMIFIG.0")
+
+Clear "test.fig"
+
+SetLineWidth 1
+SetJoinStyle 1
+SetCapStyle 1
+SetDepth 10
+/*SetUnfilled*/
+SetPenColor 0
+
+SetBaseSystem metric
+SetLineWidth 4
+
+buehoyde=10/10
+
+if type=A then call draw_a
+if type=B then call draw_b
+if type=C then call draw_c
+if type=D then call draw_d
+if type=E then call draw_e
+if type=G then call draw_g
+if type=K then call draw_k
+if type=I then call draw_i
+if type=J then call draw_j
+if type=N then call draw_n
+if type=M then call draw_m
+exit
+
+
+
+draw_a:
+ruter=inndel_h-1
+if inndel_h=1 then ruter=inndel_h
+DrawRectBox 0.1 0.1 bredde hoyde
+do until ruter=0
+StartPolyline 0.1 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+ruter=inndel_b-1
+if inndel_b=1 then ruter=inndel_b
+
+do until ruter=0
+StartPolyline bredde/inndel_b*ruter 0.1
+EndLine bredde/inndel_b*ruter hoyde
+ruter=ruter-1
+end
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+
+
+draw_n:
+ruter=inndel_h-1
+buer=inndel_b
+if inndel_h=1 then ruter=inndel_h
+DrawRectBox 0.1 0.1 bredde hoyde
+
+
+mellom=bredde/inndel_b
+bue=0
+bue_slutt=0
+
+midtbue=mellom/2
+
+do until buer=0
+bue_start=bue_slutt
+bue_slutt=bue_start+mellom
+
+DrawArc bue_start buehoyde bue_slutt-midtbue 0.3 bue_slutt buehoyde
+buer=buer-1
+end
+
+
+do until ruter=0
+StartPolyline 0.1 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+ruter=inndel_b-1
+if inndel_b=1 then ruter=inndel_b
+
+do until ruter=0
+StartPolyline bredde/inndel_b*ruter buehoyde
+EndLine bredde/inndel_b*ruter hoyde
+ruter=ruter-1
+end
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+
+return
+
+
+
+
+
+
+
+
+draw_j:
+DrawRectBox 0 0 bredde hoyde
+if inndel_b>1 then call liggende
+if inndel_h>1 then call staaende
+
+
+liggende:
+say "b "bredde
+ruter=inndel_b
+inndeling=bredde/ruter
+
+startpk=0
+endpk=inndeling
+
+do until ruter=1
+ StartPolyline startpk 0
+ EndLine       endpk hoyde
+
+ StartPolyline startpk hoyde
+ EndLine       endpk 0
+
+ruter=ruter-1
+startpk=endpk
+endpk=endpk+inndeling
+
+ StartPolyline startpk 0
+ EndLine       endpk hoyde
+
+ StartPolyline startpk hoyde
+ EndLine       endpk 0
+end
+
+return
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+
+
+return
+
+staaende:
+say "h "bredde
+ruter=inndel_h
+inndeling=hoyde/ruter
+
+startpk=0
+endpk=inndeling
+
+bb=bredde
+
+
+/*do until ruter=1*/
+ StartPolyline 0 startpk
+ EndLine       endpk bb
+
+ StartPolyline 0 endpk
+ EndLine       bb startpk
+
+ruter=ruter-1
+startpk=endpk
+endpk=endpk+inndeling
+
+
+/*end*/
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+
+return
+
+
+
+draw_d:
+DrawRectBox 0.1 0.1 bredde hoyde
+ruter=inndel_h-1
+
+/*midtstokk*/
+StartPolyline (bredde/2)-0.2 0.1
+EndLine (bredde/2)-0.2 hoyde
+StartPolyline (bredde/2)+0.2 0.1
+EndLine (bredde/2)+0.2 hoyde
+
+if inndel_h>1 then do
+/*breddepinner*/
+StartPolyline 0.1 (hoyde-0.5)/3
+EndLine (bredde/2)-0.2 (hoyde-0.5)/3
+StartPolyline (bredde/2)+0.2 (hoyde-0.5)/3
+EndLine bredde (hoyde-0.5)/3
+
+StartPolyline 0.1 ((hoyde-0.5)/3)+0.4
+EndLine (bredde/2)-0.2 ((hoyde-0.5)/3)+0.4
+StartPolyline (bredde/2)+0.2 ((hoyde-0.5)/3)+0.4
+EndLine bredde ((hoyde-0.5)/3)+0.4
+end
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+
+
+draw_i:
+DrawRectBox 0 0 bredde hoyde
+
+say inndel_b
+
+ant_pinner=inndel_b-1
+midtstokk=5/10
+mellom=(bredde-(midtstokk*ant_pinner)) / inndel_b
+
+i=1
+
+p1=0
+p2=0
+h1=0
+h2=0
+
+ant_pinner=inndel_h-1
+mellom_h=(hoyde-(midtstokk*ant_pinner)) / inndel_h
+
+/*********************HOYDE PINNER*************************/
+ruter=inndel_b
+
+do until ruter=0
+p1=p2+mellom
+p2=p1+midtstokk
+
+ StartPolyline p1 0
+ EndLine p1 hoyde
+ StartPolyline p2 0
+ EndLine p2 hoyde
+ruter=ruter-1
+
+ruter_h=inndel_h-1
+
+ do until ruter_h=0
+ ps=p1-mellom
+
+ h1=h2+mellom_h
+ h2=h1+midtstokk
+ say h1
+ say h2'<br>'
+
+ StartPolyline ps h1
+ EndLine p1 h1
+ StartPolyline ps h2
+ EndLine p1 h2
+
+ ruter_h=ruter_h-1
+ end
+h1=0
+h2=0
+
+end
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+
+
+
+draw_b:
+ruter=inndel_h-1
+DrawRectBox 0.1 0.1 bredde hoyde
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0.1 hoyde/inndel_h*ruter
+EndLine (bredde/2)-0.2 hoyde/inndel_h*ruter
+StartPolyline (bredde/2)+0.2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+/*midtstokk*/
+StartPolyline (bredde/2)-0.2 0.1
+EndLine (bredde/2)-0.2 hoyde
+StartPolyline (bredde/2)+0.2 0.1
+EndLine (bredde/2)+0.2 hoyde
+
+ruter=inndel_b/2
+inndel=inndel_b/2
+startpk_base=((bredde-0.2)/2)/inndel
+startpk=startpk_base
+/*hoydepinner side1*/
+do until ruter=1
+StartPolyline startpk 0.1
+EndLine startpk hoyde
+ruter=ruter-1
+startpk=startpk+startpk_base
+end
+
+ruter=inndel_b/2
+startpk_base=((bredde-0.2)/2)/inndel
+startpk=bredde-startpk_base
+
+/*hoydepinner side2*/
+do until ruter=1
+StartPolyline startpk 0.1
+EndLine startpk hoyde
+ruter=ruter-1
+startpk=startpk-startpk_base
+end
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+draw_g:
+ruter=inndel_h-1
+DrawRectBox 0.1 0.1 bredde hoyde
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0.1 hoyde/inndel_h*ruter
+EndLine (bredde/2)-0.2 hoyde/inndel_h*ruter
+StartPolyline (bredde/2)+0.2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+/*midtstokk*/
+StartPolyline (bredde/2)-0.2 0.1
+EndLine (bredde/2)-0.2 hoyde
+StartPolyline (bredde/2)+0.2 0.1
+EndLine (bredde/2)+0.2 hoyde
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+
+
+
+draw_k:
+ruter=inndel_h-1
+DrawRectBox 0.1 0.1 bredde hoyde
+
+midtstokk=5/10
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+
+
+if inndel_b>2 then call draw_k3
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0.1 hoyde/inndel_h*ruter
+EndLine p1 hoyde/inndel_h*ruter
+StartPolyline p2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+/*midtstokk*/
+StartPolyline p1 buehoyde
+EndLine p1 hoyde
+StartPolyline p2 buehoyde
+EndLine p2 hoyde
+
+DrawArc 0.1 buehoyde bredde/4 buetopp p1 buehoyde
+DrawArc p2 buehoyde (bredde/4)*3 buetopp bredde buehoyde
+
+/*3 eller mer buer*/
+
+draw_k3:
+say '3 ruter'
+
+fratrekk=midtstokk*(inndel_b-1)
+say fratrekk
+
+ruter=inndel_b-1
+
+do until ruter=0
+ruter=ruter-1
+/*breddepinner*/
+StartPolyline 0.1 hoyde/inndel_h*ruter
+EndLine (bredde/2)-0.2 hoyde/inndel_h*ruter
+StartPolyline (bredde/2)+0.2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+
+StartPolyline 0.1 (hoyde/inndel_h*ruter)+0.4
+EndLine (bredde/2)-0.2 (hoyde/inndel_h*ruter)+0.4
+StartPolyline (bredde/2)+0.2 (hoyde/inndel_h*ruter)+0.4
+EndLine bredde (hoyde/inndel_h*ruter)+0.4
+ruter=ruter-1
+end
+
+/*
+DrawArc 0.1 buehoyde bredde/4 0.3 (bredde/2)-0.2 buehoyde
+DrawArc (bredde/2)+0.2 buehoyde (bredde/4)*3 0.3 bredde buehoyde
+*/
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+
+draw_m:
+ruter=inndel_h-1
+DrawRectBox 0 0 bredde hoyde
+
+midtstokk=5/scale
+p1=(bredde-midtstokk)/2
+p2=p1+midtstokk
+
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0 hoyde/inndel_h*ruter
+EndLine p1 hoyde/inndel_h*ruter
+StartPolyline p2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+/*midtstokk*/
+StartPolyline p1 0
+EndLine p1 hoyde
+StartPolyline p2 0
+EndLine p2 hoyde
+
+DrawArc 0 buehoyde bredde/2 buetopp bredde buehoyde
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+
+
+
+
+draw_c:
+ruter=inndel_h-1
+DrawRectBox 0.1 0.1 bredde hoyde
+do until ruter=0
+StartPolyline 0.1 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+ruter=inndel_b-1
+
+
+mellom=bredde/inndel_b
+
+/* finne radius*/
+a=bredde/2
+b=buehoyde
+sum=(a*a) + (b*b)
+radius= sum / (b*2)
+say radius'<br>'
+a=0
+
+do until ruter=0
+StartPolyline bredde/inndel_b*ruter 0.1
+EndLine bredde/inndel_b*ruter hoyde
+ruter=ruter-1
+end
+DrawArc 0.1 buehoyde bredde/2 0.3 bredde buehoyde
+say '<br>'
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+
+draw_e:
+ruter=inndel_h-1
+DrawRectBox 0.1 0.1 bredde hoyde
+
+/*breddepinner*/
+do until ruter=0
+StartPolyline 0.1 hoyde/inndel_h*ruter
+EndLine (bredde/2)-0.2 hoyde/inndel_h*ruter
+StartPolyline (bredde/2)+0.2 hoyde/inndel_h*ruter
+EndLine bredde hoyde/inndel_h*ruter
+ruter=ruter-1
+end
+
+/*midtstokk*/
+StartPolyline (bredde/2)-0.2 0.1
+EndLine (bredde/2)-0.2 hoyde
+StartPolyline (bredde/2)+0.2 0.1
+EndLine (bredde/2)+0.2 hoyde
+
+ruter=inndel_b/2
+inndel=inndel_b/2
+startpk_base=((bredde-0.2)/2)/inndel
+startpk=startpk_base
+/*hoydepinner side1*/
+do until ruter=1
+StartPolyline startpk 0.1
+EndLine startpk hoyde
+ruter=ruter-1
+startpk=startpk+startpk_base
+end
+
+ruter=inndel_b/2
+startpk_base=((bredde-0.2)/2)/inndel
+startpk=bredde-startpk_base
+
+/*hoydepinner side2*/
+do until ruter=1
+StartPolyline startpk 0.1
+EndLine startpk hoyde
+ruter=ruter-1
+startpk=startpk-startpk_base
+end
+
+DrawArc 0.1 buehoyde bredde/4 0.3 (bredde/2)-0.2 buehoyde
+DrawArc (bredde/2)+0.2 buehoyde (bredde/4)*3 0.3 bredde buehoyde
+
+ExportFile filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff' iff left top (bredde*32)+2 (hoyde*32)+2
+address command 'c:jpegtool force quiet 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.iff 'filebase'/tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg'
+say '<img src="../tmp/img_'type'_'bredde'x'hoyde'_'inndel_b'x'inndel_h'.jpg" border="0" alt="sprosse_'inndel_b'x'inndel_h'_ruter">'
+return
+
+
+error:
+say "ikke godtatt<br>"
+exit

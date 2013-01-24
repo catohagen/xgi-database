@@ -1,0 +1,53 @@
+/* */ 
+
+filebase="backup:"
+filename="mp3/"
+  say "<html><head><title>"filename"</title></head><body>"
+  say "<h1>Directory Listing for "filename"</h1>"
+  say "<table border=0 width=100%>"
+  say "<tr><td><b>Name</b></td><td><b>Size</b></td></tr>"
+
+call list_dir(filebase||filename)
+
+
+  say "</table>"
+  say "<hr>"w3s.version
+  say "</body></html>"
+
+exit
+
+
+list_dir: procedure
+  parse arg path
+  
+  dirs=showdir(path,dir,":")||":"
+  tokenpos=pos(":",dirs); bpos=1;
+  if length(dirs)>1 then do until tokenpos=lastpos(":",dirs)
+    fn=compress(substr(dirs,bpos,tokenpos-bpos),":")
+    say '<tr><td><a href="'replace(fn," ","%20")'/">'fn'</td><td>Dir</td></tr>'
+    bpos=tokenpos
+    tokenpos=pos(":",dirs,bpos+1)
+  end
+
+  files=showdir(path,file,":")||":"
+  tokenpos=pos(":",files); bpos=1;
+  if length(files)>1 then do until tokenpos=lastpos(":",files)
+    fn=compress(substr(files,bpos,tokenpos-bpos),":")    
+    say '<tr><td><a href="play.xgi?file='replace(fn," ","%20")'&path='path'">'fn'</td><td>'subword(statef(path||fn),2,1)' bytes</td></tr>'
+    bpos=tokenpos
+    tokenpos=pos(":",files,bpos+1)
+  end
+return 1;
+
+
+replace: procedure
+  parse arg haystack, needle, repl
+  do until index(haystack,needle)=0
+    npos=pos(needle,haystack)
+    if npos>0 then do
+      s_a=left(haystack,npos-1)
+      s_b=substr(haystack,npos+length(needle))
+      haystack=s_a||repl||s_b
+    end
+  end
+return haystack;

@@ -1,0 +1,484 @@
+/*  */
+
+
+ZAXE="-215.281"
+ZAXE="Z"ZAXE
+
+PC1=""
+PC2=""
+PC3=""
+PC4="(DFS,P "prognr","progname".M,RWED)"
+
+NC1="G0"
+NC2="X-33.246 Y-847.889"
+NC3="F5000"
+NC4="G92 X0 Y0"
+NC5="M60"
+NC6="M23"
+NC7="G4 F5"
+
+/* SKRIVE TIL FIL */
+Call Open(pfile,"ram:cnc",'W')
+call writech(pfile,PC1)
+call writeln(pfile,"")
+call writech(pfile,PC2)
+call writech(pfile,PC3)
+call writeln(pfile,"")
+call writeln(pfile,PC4)
+call writeln(pfile,NC1)
+call writeln(pfile,NC2)
+call writeln(pfile,NC3)
+call writeln(pfile,NC4)
+call writeln(pfile,NC5)
+call writeln(pfile,NC6)
+call writeln(pfile,NC7)
+
+kappb=bredde
+
+if type=0 then call typec
+if type=1 then call typee
+if type=2 then call typee3
+if type=3 then call typee4
+if type=4 then call typen2
+if type=5 then call typen3
+if type=6 then call typen4
+
+
+TYPEC:
+/* 1 BUE TYPE C OG M */
+AVTREKK=RAM+20+14
+KAPP=(KAPPB-AVTREKK) / 2
+X=KAPP*2
+x=x*-1
+x= "X"|| x
+RR= (KAPP*KAPP) + (BUEH0YDE*BUEH0YDE)
+R= RR / (BUEH0YDE*2)
+R=R*-1
+R= trunc(R, 3)
+R= "R"r
+
+cnc.delay="G4 F3"
+cnc.pause="G0 X-245 Y-326"
+cnc.frese="G0 'ZAXE'"
+cnc.fresopp="G0 Z-10"
+cnc.g92="G92"
+cnc.g91="G91"
+
+cnc.info="("type" "KAPPB" "antall" stk)"
+
+/* GCODE TYPE C OG M*/
+WRITEC:
+call writeln(pfile,cnc.info)
+call writeln(pfile,'G0 'ZAXE'')
+call writeln(pfile,G91)
+call writeln(pfile,'G1 X-24')
+call writeln(pfile,"G3" x r)
+call writeln(pfile,'G1 X-26')
+call writeln(pfile,G92)
+call writeln(pfile,"G0 Z-10")
+call writeln(pfile,"G0 X-245 Y-326")
+call writeln(pfile,"G4 F3")
+call writeln(pfile,"X-33.246 Y-847.889")
+call writeln(pfile,"G92 X0 Y0")
+
+antall=antall-1
+
+if antall=0 then do
+call closefile
+end
+else call writec
+
+TYPEE:
+/* 2 BUER */
+AVTREKK=RAM+20+55+14+14
+
+MIDTSTOKK="X-69" /*55 MM + RADIUS STÅL*2 =14MM */
+
+KAPP=(KAPPB-AVTREKK) / 2
+
+kapp=kapp/2
+A2= (KAPP*KAPP) + (BUEH0YDE*BUEH0YDE)
+R=A2 / (BUEH0YDE*2)
+r=trunc(r, 3)
+R=R*-1
+R= "R"r
+
+X=KAPP*2
+x=x*-1
+x= "X"|| x
+if RAM=44 then ramme="22mm"
+if RAM=36 then ramme="18mm"
+
+/* GCODE TYPE E */
+WRITEE:
+call writeln(pfile,"(E BUE "KAPPB" "antall" STK)")
+call writeln(pfile,"G0" ZAXE)
+call writeln(pfile,G91)
+call writeln(pfile,'G1 X-24')
+call writeln(pfile,"G3" x r)
+call writeln(pfile,"G1" MIDTSTOKK)
+call writeln(pfile,"G3" x r)
+call writeln(pfile,'G1 X-24')
+call writeln(pfile,G92)
+call writeln(pfile,"G0 Z-10")
+call writeln(pfile,"G0 X-245 Y-326")
+call writeln(pfile,"G4 F3")
+call writeln(pfile,"X-33.246 Y-847.889")
+call writeln(pfile,"G92 X0 Y0")
+
+antall=antall-1
+
+if antall=0 then do
+call closefile
+end
+else call writee
+
+TYPEE3:
+/* 3 BUER */
+MIDTSTOKK="X-69" /* stålet er 14 mm (55 mm midtstokk+radius 7mm)*/
+AVTREKK=RAM+55+55+14+14+14
+KAPP=(KAPPB-AVTREKK) / 3
+
+ytterbuer=kapp-10
+
+KAPP=KAPP/2
+
+A1= (KAPP*KAPP) + (BUEH0YDE*BUEH0YDE)
+R1=A1 / (BUEH0YDE*2)
+r1=trunc(r1, 3)
+R1=R1*-1
+R1= "R"r1 
+X1=KAPP*2
+X1=trunc(X1, 3)
+x1=x1*-1
+x1= "X"|| x1
+
+KAPP2=ytterbuer/2
+
+A2= (KAPP2*KAPP2) + (BUEH0YDE*BUEH0YDE)
+R2=A2 / (BUEH0YDE*2)
+r2=trunc(r2, 3)
+R2=R2*-1
+R2= "R"r2 
+X2=KAPP2*2
+X2=trunc(X2, 3)
+x2=x2*-1
+x2= "X"|| x2
+
+
+if RAM=44 then ramme="22mm"
+if RAM=36 then ramme="18mm"
+
+/* GCODE TYPE E3 3 BUER */
+WRITEE3:
+call writeln(pfile,"(E3 BUE "KAPPB" "antall" STK)")
+call writeln(pfile,"G0" ZAXE)
+call writeln(pfile,G91)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,"G3" x2 r2)
+call writeln(pfile,"G1" MIDTSTOKK)
+call writeln(pfile,"G3" x1 r1)
+call writeln(pfile,"G1" MIDTSTOKK)
+call writeln(pfile,"G3" x2 r2)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,G92)
+call writeln(pfile,"G0 Z-10")
+call writeln(pfile,"G0 X-245 Y-326")
+call writeln(pfile,"G4 F3")
+call writeln(pfile,"X-33.246 Y-847.889")
+call writeln(pfile,"G92 X0 Y0")
+antall=antall-1
+
+if antall=0 then do
+call closefile
+end
+else call writee3
+
+TYPEE4:
+/* 4 BUER */
+MIDTSTOKK="X-69"
+AVTREKK=RAM+55+55+55+14+14+14+14
+KAPP=(KAPPB-AVTREKK) / 4
+ytterbuer=kapp-10
+
+KAPP=KAPP/2
+
+A1= (KAPP*KAPP) + (BUEH0YDE*BUEH0YDE)
+R1=A1 / (BUEH0YDE*2)
+r1=trunc(r1, 3)
+R1=R1*-1
+R1= "R"r1 
+X1=KAPP*2
+X1=trunc(X1, 3)
+x1=x1*-1
+x1= "X"|| x1
+
+KAPP2=ytterbuer/2
+
+A2= (KAPP2*KAPP2) + (BUEH0YDE*BUEH0YDE)
+R2=A2 / (BUEH0YDE*2)
+r2=trunc(r2, 3)
+R2=R2*-1
+R2= "R"r2 
+X2=KAPP2*2
+X2=trunc(X2, 3)
+x2=x2*-1
+x2= "X"|| x2
+
+if RAM=44 then ramme="22mm"
+if RAM=36 then ramme="18mm"
+
+
+/* GCODE TYPE E 4 BUER */
+writee4:
+call writeln(pfile,"(E4 BUE "KAPPB" "antall" STK)")
+call writeln(pfile,"G0" ZAXE)
+call writeln(pfile,G91)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,"G3" x2 r2)
+call writeln(pfile,"G1" MIDTSTOKK)
+call writeln(pfile,"G3" x1 r1)
+call writeln(pfile,"G1" MIDTSTOKK)
+call writeln(pfile,"G3" x1 r1)
+call writeln(pfile,"G1" MIDTSTOKK)
+call writeln(pfile,"G3" x2 r2)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,G92)
+call writeln(pfile,"G0 Z-10")
+call writeln(pfile,"G0 X-245 Y-326")
+call writeln(pfile,"G4 F3")
+call writeln(pfile,"X-33.246 Y-847.889")
+call writeln(pfile,"G92 X0 Y0")
+
+antall=antall-1
+
+if antall=0 then do
+call closefile
+end
+else call writee4
+
+
+TYPEN2:
+/* 2 BUER */ 
+
+PROFIL="X-39"
+AVTREKK=RAM+20+25+14+14
+KAPP=(KAPPB-AVTREKK) / 2
+KAPP=KAPP/2
+
+/*inndeling*/
+inndel1=(kappb-ram)/2
+call writeln(ifile,"kappmal "KAPPb" 1ste rute :"inndel1)
+
+RADIUS1= (kapp*kapp) + (BUEH0YDE*BUEH0YDE)
+R1=RADIUS1 / (BUEH0YDE*2)
+R1=R1
+R1=R1*-1
+r1=trunc(r1, 3)
+R1= "R"r1 
+
+X=KAPP*2
+X1=X
+
+x=x*-1
+
+X1= "X"|| X1
+X= "X"|| X
+if RAM=44 then ramme="22mm"
+if RAM=36 then ramme="18mm"
+
+
+/* GCODE TYPE N 2 BUER */
+writen2:
+call writeln(pfile,"(N2 BUE "KAPPB" "antall" STK)")
+call writeln(pfile,"G0" ZAXE)
+call writeln(pfile,G91)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,"G3" x r1)
+call writeln(pfile,"G1" PROFIL)
+call writeln(pfile,"G3" x r1)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,G92)
+call writeln(pfile,"G0 Z-10")
+call writeln(pfile,"G0 X-245 Y-326")
+call writeln(pfile,"G4 F3")
+call writeln(pfile,"X-33.246 Y-847.889")
+call writeln(pfile,"G92 X0 Y0")
+
+antall=antall-1
+
+if antall=0 then do
+call closefile
+end
+else call writen2
+
+
+TYPEN3:
+/* 3 BUER  BRUKER INNDELING PÅ KITT ELLER SEKSKANT PÅ RADIUS BEREGNING */
+
+IF PROFILVALG=2 THEN PROFILTREKK=24+24
+IF PROFILVALG=1 THEN PROFILTREKK=16+16
+
+IF PROFILVALG=2 THEN PROFIL="X-38"
+IF PROFILVALG=1 THEN PROFIL="X-30"
+
+/*inndeling*/
+inndel1=(kappb-ram+24)/3
+inndel2=inndel1-12
+
+LYSBUE=KAPPB-RAM-PROFILTREKK
+
+LYSBUE=LYSBUE/3
+
+BUEYTTER=LYSBUE-10
+
+INND=LYSBUE-11 /* tilpasset, matte bli 3mm storre*/
+INND2=BUEYTTER-14
+
+RUTE11=INND/2
+RUTE22=INND2/2
+
+
+
+RADIUS1= (RUTE11*RUTE11) + (BUEH0YDE*BUEH0YDE)
+R1=RADIUS1 / (BUEH0YDE*2)
+R1=R1*-1
+r1=trunc(r1, 3)
+R1= "R"r1 
+
+RADIUS2= (RUTE22*RUTE22) + (BUEH0YDE*BUEH0YDE)
+R2=RADIUS2 / (BUEH0YDE*2)
+R2=R2*-1
+r2=trunc(r2, 3)
+R2= "R"r2 
+
+RUTE1=trunc(INND2, 3)
+RUTE2=trunc(INND, 3)
+rute1=rute1*-1
+rute2=rute2*-1
+
+X1= "X"|| RUTE2
+X2= "X"|| RUTE1
+if RAM=44 then ramme="22mm"
+if RAM=36 then ramme="18mm"
+
+/* GCODE TYPE N 3 BUER */
+
+writen3:
+call writeln(pfile,"(N3 BUE "KAPPB" "antall" STK)")
+call writeln(pfile,"G0" ZAXE)
+call writeln(pfile,G91)
+call writeln(pfile,"G1 X-24") /* 10 mm kant + hele stålet 14mm*/
+call writeln(pfile,"G3" X2 R2)
+call writeln(pfile,"G1" PROFIL)
+call writeln(pfile,"G3" X1 R1)
+call writeln(pfile,"G1" PROFIL)
+call writeln(pfile,"G3" X2 R2)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,G92)
+call writeln(pfile,"G0 Z-10")
+call writeln(pfile,"G0 X-245 Y-326")
+call writeln(pfile,"G4 F3")
+call writeln(pfile,"X-33.246 Y-847.889")
+call writeln(pfile,"G92 X0 Y0")
+
+antall=antall-1
+if antall=0 then do
+call closefile
+end
+else call writen3
+
+
+TYPEN4:
+/* 4 BUER */
+/* 24MM+ HALVE FRESETYKKELSE*/
+
+
+IF PROFILVALG=2 THEN PROFILTREKK=24+24+24
+IF PROFILVALG=1 THEN PROFILTREKK=16+16+16
+
+IF PROFILVALG=2 THEN PROFIL="X-38"
+IF PROFILVALG=1 THEN PROFIL="X-30"
+
+/*inndeling*/
+inndel1=(kappb-ram+24)/4
+inndel2=inndel1-12
+
+LYSBUE=KAPPB-RAM-PROFILTREKK
+
+LYSBUE=LYSBUE/4
+
+BUEYTTER=LYSBUE-10
+
+INND=LYSBUE-14
+INND2=BUEYTTER-14
+
+RUTE11=INND/2
+RUTE22=INND2/2
+
+RADIUS1= (RUTE11*RUTE11) + (BUEH0YDE*BUEH0YDE)
+R1=RADIUS1 / (BUEH0YDE*2)
+R1=R1*-1
+r1=trunc(r1, 3)
+R1= "R"r1 
+
+RADIUS2= (RUTE22*RUTE22) + (BUEH0YDE*BUEH0YDE)
+R2=RADIUS2 / (BUEH0YDE*2)
+R2=R2*-1
+r2=trunc(r2, 3)
+R2= "R"r2 
+
+RUTE1=trunc(INND, 3)
+RUTE2=trunc(INND2, 3)
+rute1=rute1*-1
+rute2=rute2*-1
+
+X1= "X"|| RUTE2
+X2= "X"|| RUTE1
+if RAM=44 then ramme="22mm"
+if RAM=36 then ramme="18mm"
+
+/* GCODE TYPE N 4 BUER */
+writen4:
+call writeln(pfile,"(N4 BUE "KAPPB" "antall" STK)")
+call writeln(pfile,"G0" ZAXE)
+call writeln(pfile,G91)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,"G3" X1 r2)
+call writeln(pfile,"G1" PROFIL)
+call writeln(pfile,"G3" X2 r1)
+call writeln(pfile,"G1" PROFIL)
+call writeln(pfile,"G3" X2 r1)
+call writeln(pfile,"G1" PROFIL)
+call writeln(pfile,"G3" X1 r2)
+call writeln(pfile,"G1 X-24")
+call writeln(pfile,G92)
+call writeln(pfile,"G0 Z-10")
+call writeln(pfile,"G0 X-245 Y-326")
+call writeln(pfile,"G4 F3")
+call writeln(pfile,"X-33.246 Y-847.889")
+call writeln(pfile,"G92 X0 Y0")
+antall=antall-1
+
+if antall=0 then do
+call closefile
+end
+else call writen4
+
+closefile:
+call writeln(pfile,G92)
+call writeln(pfile,"G0 Z-10")
+call writeln(pfile,"G0 X-245 Y-326")
+call writeln(pfile,"M50")
+call writeln(pfile,"M30")
+call writech(pfile,"")
+call writech(pfile,"")
+call writeln(pfile,"")
+call writech(pfile,"")
+call writech(pfile,"")
+call writech(pfile,"")
+call close(pfile)
+
+dato=date(s)
+tim=time(s)
+exit

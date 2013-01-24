@@ -1,0 +1,59 @@
+/*  */
+
+say faen
+
+exit
+
+parse arg 'a_6.0=' a_6.0 '&a_6.1=' a_6.1 '&a_kitt.0=' a_kitt.0 '&a_kitt.1=' a_kitt.1 '&b_6.0=' b_6.0 '&b_6.1=' b_6.1 '&b_kitt.0=' b_kitt.0 '&b_kitt.1=' b_kitt.1 '&c_6.0=' c_6.0 '&c_6.1=' c_6.1 '&c_kitt.0=' c_kitt.0 '&c_kitt.1=' c_kitt.1 '&d_6.0=' d_6.0 '&d_6.1=' d_6.1 '&e_6.0=' e_6.0 '&e_6.1=' e_6.1 '&e_kitt.0=' e_kitt.0 '&e_kitt.1=' e_kitt.1 '&f_6.0=' f_6.0 '&f_6.1=' f_6.1 '&f_kitt.0=' f_kitt.0 '&f_kitt.1=' f_kitt.1 '&g_6.0=' g_6.0 '&g_6.1=' g_6.1 '&g_kitt.0=' g_kitt.0 '&g_kitt.1=' g_kitt.1 '&h_6.0=' h_6.0 '&h_6.1=' h_6.1 '&h_kitt.0=' h_kitt.0 '&h_kitt.1=' h_kitt.1 '&i_6.0=' i_6.0 '&i_6.1=' i_6.1 '&j_6.0=' j_6.0 '&j_6.1=' j_6.1 '&j_kitt.0=' j_kitt.0 '&j_kitt.1=' j_kitt.1 '&k_6.0=' k_6.0 '&k_6.1=' k_6.1 '&k_kitt.0=' k_kitt.0 '&k_kitt.1=' k_kitt.1 '&l_6.0=' l_6.0 '&l_6.1=' l_6.1 '&l_kitt.0=' l_kitt.0 '&l_kitt.1=' l_kitt.1 '&m_6.0=' m_6.0 '&m_6.1=' m_6.1 '&m_kitt.0=' m_kitt.0 '&m_kitt.1=' m_kitt.1 '&n_6.0=' n_6.0 '&n_6.1=' n_6.1 '&n_kitt.0=' n_kitt.0 '&n_kitt.1=' n_kitt.1 '&o_6.0=' o_6.0 '&o_6.1=' o_6.1 '&o_kitt.0=' o_kitt.0 '&o_kitt.1=' o_kitt.1 '&p_6.0=' p_6.0 '&p_6.1=' p_6.1 '&p_kitt.0=' p_kitt.0 '&p_kitt.1=' p_kitt.1 '&obue=' obue '&m1pris=' m1pris '&m2pris=' m2pris '&impris=' impris '&hengslepris=' hengslepris '&klipspris=' klipspris '&flukte=' flukte '&deling=' deling '&xtram=' xtram '&mseks.0=' mseks.0 '&mseks.1=' mseks.1 '&mkitt.0=' mkitt.0 '&mkitt.1=' mkitt.1 '&kundenr=' kundenr
+
+say kundenr
+
+prisliste='web-root:verksted/datafiler_kunder/priser.'kundenr''
+
+say prisliste
+
+call open(pris,prisliste,'W')
+call writeln(pris,'#priser')
+call writeln(pris,'A 'a_6.0' 'a_6.1' 'a_kitt.0' 'a_kitt.1)
+call writeln(pris,'B 'b_6.0' 'b_6.1' 'b_kitt.0' 'b_kitt.1)
+call writeln(pris,'C 'c_6.0' 'c_6.1' 'c_kitt.0' 'c_kitt.1)
+call writeln(pris,'D 'd_6.0' 'd_6.1' 'd_kitt.0' 'd_kitt.1)
+call writeln(pris,'E 'e_6.0' 'e_6.1' 'e_kitt.0' 'e_kitt.1)
+call writeln(pris,'F 'f_6.0' 'f_6.1' 'f_kitt.0' 'f_kitt.1)
+call writeln(pris,'G 'g_6.0' 'g_6.1' 'g_kitt.0' 'g_kitt.1)
+call writeln(pris,'H 'h_6.0' 'h_6.1' 'h_kitt.0' 'h_kitt.1)
+call writeln(pris,'I 'i_6.0' 'i_6.1' 'i_kitt.0' 'i_kitt.1)
+call writeln(pris,'J 'j_6.0' 'j_6.1' 'j_kitt.0' 'j_kitt.1)
+call writeln(pris,'K 'k_6.0' 'k_6.1' 'k_kitt.0' 'k_kitt.1)
+call writeln(pris,'L 'l_6.0' 'l_6.1' 'l_kitt.0' 'l_kitt.1)
+call writeln(pris,'M 'm_6.0' 'm_6.1' 'm_kitt.0' 'm_kitt.1)
+call writeln(pris,'N 'n_6.0' 'n_6.1' 'n_kitt.0' 'n_kitt.1)
+call writeln(pris,'O 'o_6.0' 'o_6.1' 'o_kitt.0' 'o_kitt.1' 'obue)
+call writeln(pris,'P 'p_6.0' 'p_6.1' 'p_kitt.0' 'p_kitt.1)
+call writeln(pris,'#priser maling')
+call writeln(pris,'maling1 'm1pris)
+call writeln(pris,'maling2 'm2pris)
+call writeln(pris,'impreg 'impris)
+call writeln(pris,'#priser oppheng')
+call writeln(pris,'hengsler 'hengslepris)
+call writeln(pris,'klips 'klipspris)
+call writeln(pris,'#priser dilldall')
+call writeln(pris,'flukte 'flukte' 'deling' 'xtram)
+call writeln(pris,'minsteprisseks 'mseks.0)
+call writeln(pris,'minsteprisseks 'mseks.1)
+call writeln(pris,'minstepriskitt 'mkitt.0)
+call writeln(pris,'minstepriskitt 'mkitt.1)
+call close(pris)
+
+say '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+say '<html><head>'
+say '<br>'
+say 'Lagrer nye priser...'
+say '<br>'
+say '<br>'
+say '<META HTTP-EQUIV="Pragma" CONTENT="no-cache">'
+say '<META HTTP-EQUIV="Expires" CONTENT="0">'
+say '<meta http-equiv="Refresh" content="1;url=redigere_priser_fast.xgi?kundenr='kundenr'" />'
+say '</body></html>'
+
+exit

@@ -1,0 +1,29 @@
+#priser
+A 17.5 21
+B 20.5 24.6
+C 25 30
+D 47.5 47.5
+E 27 32.4
+F 24.5 29.4
+G 23.5 28.7
+H 90 108
+I 47.5 47.5
+J 180 180
+K 34 40.8
+L 24.5 29.4
+M 29 34.8
+N 31 37.2
+O 117 140.4 0
+P 122 146.4
+#priser maling
+maling1 7
+maling2 10
+impreg 2
+#priser oppheng
+hengsler 7
+klips 3
+#priser dilldall
+flukte 40
+minstepris6kant 120
+minstepriskitt 140
+minstepris_maling 35
