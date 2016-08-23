@@ -1,4 +1,3 @@
-xgi-database
+xgi-database for www.hagen-snekkerverksted.no
 ============
-
-xgi-database
+A full customised CMS for production. Generates reports,worksheets,employee stats,etc
